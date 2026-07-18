@@ -92,3 +92,121 @@ def add_person():
             "success": False,
             "message": str(e)
         }), 500
+import uuid
+
+from flask import Blueprint, jsonify, request
+
+from app.extensions import db
+from app.models import Person, Relationship
+
+
+person_bp = Blueprint(
+    "person",
+    __name__,
+    url_prefix="/api/persons"
+)
+
+
+@person_bp.route("/<string:person_id>", methods=["PUT"])
+def update_person(person_id):
+
+    body = request.get_json()
+
+    person = db.session.get(Person, person_id)
+
+    if not person:
+        return jsonify({
+            "message": "Person not found"
+        }), 404
+
+
+    data = body.get("data", {})
+
+
+    try:
+
+        # update person data
+        person.first_name = data.get(
+            "first name",
+            person.first_name
+        )
+
+        person.last_name = data.get(
+            "last name",
+            person.last_name
+        )
+
+        person.birthday = data.get(
+            "birthday",
+            person.birthday
+        )
+
+        person.avatar = data.get(
+            "avatar",
+            person.avatar
+        )
+
+        person.gender = data.get(
+            "gender",
+            person.gender
+        )
+
+
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "id": person_id
+        })
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        return jsonify({
+            "message": str(e)
+        }), 500 
+
+@person_bp.route("/<string:person_id>", methods=["DELETE"])
+def delete_person(person_id):
+
+    person = db.session.get(
+        Person,
+        person_id
+    )
+
+    if not person:
+        return jsonify({
+            "message": "Person not found"
+        }), 404
+
+
+    try:
+        # xóa relationship trước->k xoa vi nhung nguoi k ket hon van co con
+        # Relationship.query.filter(
+        #     db.or_(
+        #         Relationship.person_id == person_id,
+        #         Relationship.related_person_id == person_id
+        #     )
+        # ).delete()
+
+        # xóa person
+        db.session.delete(person)
+
+
+        db.session.commit()
+
+
+        return jsonify({
+            "success": True,
+            "id": person_id
+        })
+
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        return jsonify({
+            "message": str(e)
+        }), 500
