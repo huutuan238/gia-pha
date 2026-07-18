@@ -34,11 +34,11 @@ export default {
 
       const f3Card = f3Chart
         .setCardHtml()
-        .setCardDisplay([["first name", "last name"], ["birthday"]]);
+        .setCardDisplay([["full name"], ["birthday"]]);
 
       const f3EditTree = f3Chart
         .editTree()
-        .setFields(["first name", "last name", "birthday", "gender"])
+        .setFields(["full name", "birthday", "hometown", "education"])
         .setEditFirst(true) // true = open form on click, false = open info in click
         .setCardClickOpen(f3Card)
         .setOnChange((data, tree) => {
