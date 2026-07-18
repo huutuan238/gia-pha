@@ -1,7 +1,9 @@
+import uuid
+
 from flask import Blueprint, jsonify, request
 
-from app.models import Person, Relationship
 from app.extensions import db
+from app.models import Person, Relationship
 
 
 person_bp = Blueprint(
@@ -11,73 +13,82 @@ person_bp = Blueprint(
 )
 
 
-@person_bp.route("", methods=["GET"])
-def get_persons():
-    persons = Person.query.all()
+@person_bp.route("", methods=["POST"])
+def add_person():
 
-    result = []
+    body = request.get_json()
 
-    for person in persons:
+    if not body:
+        return jsonify({"message": "Request body is required"}), 400
 
-        rels = {
-            "spouses": [],
-            "children": [],
-            "parents": []
-        }
+    data = body.get("data", {})
+    rels = body.get("rels", {})
 
+    # Kiểm tra trùng id
+    if Person.query.get(body["id"]):
+        return jsonify({"message": "Person already exists"}), 409
 
-        # person -> spouse / children
-        relationships = Relationship.query.filter(
-            Relationship.person_id == person.id
-        ).all()
+    person = Person(
+        id=body["id"],
+        first_name=data.get("first name", ""),
+        last_name=data.get("last name", ""),
+        birthday=data.get("birthday", ""),
+        avatar=data.get("avatar", ""),
+        gender=data.get("gender", "")
+    )
 
+    try:
 
-        for rel in relationships:
+        db.session.add(person)
 
-            if rel.relation_type == "SPOUSE":
+        # Parent -> Child
+        for parent_id in rels.get("parents", []):
 
-                rels["spouses"].append(
-                    str(rel.related_person_id)
+            if not Person.query.get(parent_id):
+                db.session.rollback()
+                return jsonify({
+                    "message": f"Parent '{parent_id}' not found"
+                }), 404
+
+            db.session.add(
+                Relationship(
+                    id=str(uuid.uuid4()),
+                    person_id=parent_id,
+                    related_person_id=person.id,
+                    relation_type="PARENT"
                 )
-
-
-            elif rel.relation_type == "PARENT":
-
-                # person là cha/mẹ
-                rels["children"].append(
-                    str(rel.related_person_id)
-                )
-
-
-        # lấy parents của person
-        parent_relationships = Relationship.query.filter(
-            Relationship.related_person_id == person.id,
-            Relationship.relation_type == "PARENT"
-        ).all()
-
-
-        for rel in parent_relationships:
-
-            rels["parents"].append(
-                str(rel.person_id)
             )
 
+        # Spouse
+        for spouse_id in rels.get("spouses", []):
 
-        result.append(
-            {
-                "id": str(person.id),
+            if not Person.query.get(spouse_id):
+                db.session.rollback()
+                return jsonify({
+                    "message": f"Spouse '{spouse_id}' not found"
+                }), 404
 
-                "data": {
-                    "first name": person.first_name,
-                    "last name": person.last_name or "",
-                    "birthday": person.birthday or "",
-                    "avatar": person.avatar or "",
-                    "gender": person.gender or ""
-                },
+            db.session.add(
+                Relationship(
+                    id=str(uuid.uuid4()),
+                    person_id=person.id,
+                    related_person_id=spouse_id,
+                    relation_type="SPOUSE"
+                )
+            )
 
-                "rels": rels
-            }
-        )
+        db.session.commit()
 
+        return jsonify({
+            "success": True,
+            "id": person.id
+        }), 201
 
-    return jsonify(result)
+    except Exception as e:
+
+        db.session.rollback()
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500

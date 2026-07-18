@@ -11,7 +11,7 @@ import 'family-chart/styles/family-chart.css';
 export default {
   name: "FamilyChart",
   mounted() {
-    fetch("http://localhost:5001/api/persons")
+    fetch("http://localhost:5001/api/family-tree")
       .then(res => res.json())
       .then(data => create(data))
       .catch(err => console.error(err))
@@ -29,6 +29,13 @@ export default {
         .setFields(["first name","last name","birthday"])
         .setEditFirst(true)  // true = open form on click, false = open info in click
         .setCardClickOpen(f3Card)
+        .setOnChange((data, tree) => {
+          const main = f3EditTree.exportData();
+
+          console.log(main);
+
+          // gọi API Flask ở đây
+        });
         // .setNoEdit()  // if you want to just see info form
     
       f3Chart.updateTree({initial: true})
