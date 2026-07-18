@@ -10,23 +10,41 @@ def hello():
         [
     {
         "data": {
-            "avatar": "https://static8.depositphotos.com/1009634/988/v/950/depositphotos_9883921-stock-illustration-no-user-profile-picture.jpg",
-            "birthday": "1998",
-            "education": "Dai học",
-            "full name": "Tuan",
-            "gender": "M"
+            "avatar": "",
+            "birthday": 1930,
+            "death_date": 2013,
+            "full name": "Nguyen Huu Khuong",
+            "gender": "M",
+            "hometown": "My Thanh",
+            "last name": "",
+            "note": ""
         },
-        "id": "0",
+        "id": "12a9bddf-855a-4583-a695-c73fa8c0e9b2",
         "rels": {
             "children": [
-                "ce2fcb9a-6058-4326-b56a-aced35168561"
-            ],
-            "parents": [
-                "0c09cfa0-5e7c-4073-8beb-94f6c69ada19",
-                "0fa5c6bc-5b58-40f5-a07e-d787e26d8b56"
+                "0fa5c6bc-5b58-40f5-a07e-d787e26d8b56",
+                "f12db64d-f028-4418-b0e1-8eda22ab386d"
             ],
             "spouses": [
-                "8c92765f-92d3-4120-90dd-85a28302504c"
+                "bd56a527-b613-474d-9f38-fcac0aae218b"
+            ]
+        }
+    },
+    {
+        "data": {
+            "avatar": "",
+            "birthday": "",
+            "full name": "Nguyen Thi Thien",
+            "gender": "F"
+        },
+        "id": "bd56a527-b613-474d-9f38-fcac0aae218b",
+        "rels": {
+            "children": [
+                "0fa5c6bc-5b58-40f5-a07e-d787e26d8b56",
+                "f12db64d-f028-4418-b0e1-8eda22ab386d"
+            ],
+            "spouses": [
+                "12a9bddf-855a-4583-a695-c73fa8c0e9b2"
             ]
         }
     },
@@ -48,6 +66,28 @@ def hello():
             ],
             "spouses": [
                 "0"
+            ]
+        }
+    },
+        {
+        "data": {
+            "avatar": "https://static8.depositphotos.com/1009634/988/v/950/depositphotos_9883921-stock-illustration-no-user-profile-picture.jpg",
+            "birthday": "1998",
+            "education": "Dai học",
+            "full name": "Tuan",
+            "gender": "M"
+        },
+        "id": "0",
+        "rels": {
+            "children": [
+                "ce2fcb9a-6058-4326-b56a-aced35168561"
+            ],
+            "parents": [
+                "0c09cfa0-5e7c-4073-8beb-94f6c69ada19",
+                "0fa5c6bc-5b58-40f5-a07e-d787e26d8b56"
+            ],
+            "spouses": [
+                "8c92765f-92d3-4120-90dd-85a28302504c"
             ]
         }
     },
@@ -172,46 +212,6 @@ def hello():
             "parents": [
                 "ce2fcb9a-6058-4326-b56a-aced35168561",
                 "b4e33c68-20a7-47ba-9dcc-1168a07d5b52"
-            ]
-        }
-    },
-    {
-        "data": {
-            "avatar": "",
-            "birthday": 1930,
-            "death_date": 2013,
-            "full name": "Nguyen Huu Khuong",
-            "gender": "M",
-            "hometown": "My Thanh",
-            "last name": "",
-            "note": ""
-        },
-        "id": "12a9bddf-855a-4583-a695-c73fa8c0e9b2",
-        "rels": {
-            "children": [
-                "0fa5c6bc-5b58-40f5-a07e-d787e26d8b56",
-                "f12db64d-f028-4418-b0e1-8eda22ab386d"
-            ],
-            "spouses": [
-                "bd56a527-b613-474d-9f38-fcac0aae218b"
-            ]
-        }
-    },
-    {
-        "data": {
-            "avatar": "",
-            "birthday": "",
-            "full name": "Nguyen Thi Thien",
-            "gender": "F"
-        },
-        "id": "bd56a527-b613-474d-9f38-fcac0aae218b",
-        "rels": {
-            "children": [
-                "0fa5c6bc-5b58-40f5-a07e-d787e26d8b56",
-                "f12db64d-f028-4418-b0e1-8eda22ab386d"
-            ],
-            "spouses": [
-                "12a9bddf-855a-4583-a695-c73fa8c0e9b2"
             ]
         }
     },
