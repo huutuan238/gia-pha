@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from app.services.family_tree_service import count_generation, count_person, get_family_info
 from flask import Blueprint, jsonify
 
 from app.models import Person, Relationship
@@ -11,10 +12,14 @@ family_tree = Blueprint(
     url_prefix="/api/family-tree"
 )
 
+@family_tree.route("/info/<string:family_id>", methods=["GET"])
+def get_info(family_id):
+    person_id = '12a9bddf-855a-4583-a695-c73fa8c0e9b2'
+    result = get_family_info(family_id, person_id)
+    return jsonify(result)
 
 @family_tree.route("", methods=["GET"])
 def get_persons():
-
     persons = Person.query.all()
     relationships = Relationship.query.all()
 
