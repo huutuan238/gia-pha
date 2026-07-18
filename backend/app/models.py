@@ -6,7 +6,7 @@ class Person(db.Model):
     __tablename__ = "persons"
 
     id = db.Column(
-        db.Integer,
+        db.String(36),
         primary_key=True
     )
 
@@ -37,18 +37,18 @@ class Relationship(db.Model):
     __tablename__ = "relationships"
 
     id = db.Column(
-        db.Integer,
+        db.String(36),
         primary_key=True
     )
 
     person_id = db.Column(
-        db.Integer,
+        db.String,
         db.ForeignKey("persons.id"),
         nullable=False
     )
 
     related_person_id = db.Column(
-        db.Integer,
+        db.String,
         db.ForeignKey("persons.id"),
         nullable=False
     )
