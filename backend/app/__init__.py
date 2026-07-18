@@ -23,5 +23,8 @@ def create_app():
 
     # Import models để Alembic detect table
     from . import models
+    from app.routes.person import person_bp
+    
+    app.register_blueprint(person_bp)
 
     return app
