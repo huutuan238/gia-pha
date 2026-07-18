@@ -1,17 +1,3 @@
-<!--
-Say Hello World with Vue!
--->
-
-<script>
-export default {
-  data() {
-    return {
-      message: 'Hello Woqqqqrld!'
-    }
-  }
-}
-</script>
-
 <template>
 <main>
 
@@ -69,21 +55,26 @@ export default {
       <h2>Bắt đầu từ đâu</h2>
     </div>
     <div class="nav-grid">
-      <a class="nav-card" href="gia-pha.html">
+      <RouterLink class="nav-card"  to="/gia-pha">
         <span class="idx">01 — Xem gia phả</span>
         <h3>Cây phả hệ</h3>
         <p>Duyệt sơ đồ các thế hệ, mở rộng theo từng chi nhánh và xem chi tiết từng thành viên.</p>
-      </a>
-      <a class="nav-card" href="them-thanh-vien.html">
+      </RouterLink >
+      <RouterLink class="nav-card" to="/gia-pha" >
         <span class="idx">02 — Cập nhật</span>
         <h3>Thêm thành viên</h3>
         <p>Nhập thông tin thành viên mới và gán quan hệ cha mẹ – con vào cây gia phả.</p>
-      </a>
-      <a class="nav-card" href="su-kien.html">
+      </RouterLink>
+      <RouterLink class="nav-card" to="/event">
         <span class="idx">03 — Sự kiện</span>
         <h3>Giỗ &amp; họp mặt</h3>
         <p>Theo dõi ngày giỗ, họp mặt dòng họ và nhận thông báo khi có sự kiện mới.</p>
-      </a>
+      </RouterLink>
+      <RouterLink class="nav-card" to="/event">
+        <span class="idx">04 — Album ảnh</span>
+        <h3>Ảnh</h3>
+        <p>Theo dõi hình ảnh của tất cả các sự kiện</p>
+      </RouterLink>
     </div>
   </div>
 </section>
