@@ -1,22 +1,24 @@
 from collections import defaultdict
 
-from app.services.family_tree_service import count_generation, count_person, get_family_info
+from app.services.family_tree_service import (
+    count_generation,
+    count_person,
+    get_family_info,
+)
 from flask import Blueprint, jsonify
 
 from app.models import Person, Relationship
 
 
-family_tree = Blueprint(
-    "tree",
-    __name__,
-    url_prefix="/api/family-tree"
-)
+family_tree = Blueprint("tree", __name__, url_prefix="/api/family-tree")
+
 
 @family_tree.route("/info/<string:family_id>", methods=["GET"])
 def get_info(family_id):
-    person_id = '12a9bddf-855a-4583-a695-c73fa8c0e9b2'
+    person_id = "12a9bddf-855a-4583-a695-c73fa8c0e9b2"
     result = get_family_info(family_id, person_id)
     return jsonify(result)
+
 
 @family_tree.route("", methods=["GET"])
 def get_persons():
@@ -24,14 +26,9 @@ def get_persons():
     relationships = Relationship.query.all()
 
     # Map person_id -> rels
-    rel_map = defaultdict(lambda: {
-        "spouses": [],
-        "children": [],
-        "parents": []
-    })
+    rel_map = defaultdict(lambda: {"spouses": [], "children": [], "parents": []})
 
     for rel in relationships:
-
         if rel.relation_type == "PARENT":
             # parent -> child
             rel_map[rel.person_id]["children"].append(rel.related_person_id)
@@ -45,17 +42,18 @@ def get_persons():
     result = []
 
     for person in persons:
-
-        result.append({
-            "id": person.id,
-            "data": {
-                "first name": person.first_name,
-                "last name": person.last_name or "",
-                "birthday": person.birthday or "",
-                "avatar": person.avatar or "",
-                "gender": person.gender or ""
-            },
-            "rels": rel_map[person.id]
-        })
+        result.append(
+            {
+                "id": person.id,
+                "data": {
+                    "first name": person.first_name,
+                    "last name": person.last_name or "",
+                    "birthday": person.birthday or "",
+                    "avatar": person.avatar or "",
+                    "gender": person.gender or "",
+                },
+                "rels": rel_map[person.id],
+            }
+        )
 
     return jsonify(result)

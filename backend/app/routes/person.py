@@ -6,11 +6,7 @@ from app.extensions import db
 from app.models import Person, Relationship
 
 
-person_bp = Blueprint(
-    "person",
-    __name__,
-    url_prefix="/api/persons"
-)
+person_bp = Blueprint("person", __name__, url_prefix="/api/persons")
 
 
 @person_bp.route("", methods=["POST"])
@@ -34,64 +30,52 @@ def add_person():
         last_name=data.get("last name", ""),
         birthday=data.get("birthday", ""),
         avatar=data.get("avatar", ""),
-        gender=data.get("gender", "")
+        gender=data.get("gender", ""),
     )
 
     try:
-
         db.session.add(person)
 
         # Parent -> Child
         for parent_id in rels.get("parents", []):
-
             if not Person.query.get(parent_id):
                 db.session.rollback()
-                return jsonify({
-                    "message": f"Parent '{parent_id}' not found"
-                }), 404
+                return jsonify({"message": f"Parent '{parent_id}' not found"}), 404
 
             db.session.add(
                 Relationship(
                     id=str(uuid.uuid4()),
                     person_id=parent_id,
                     related_person_id=person.id,
-                    relation_type="PARENT"
+                    relation_type="PARENT",
                 )
             )
 
         # Spouse
         for spouse_id in rels.get("spouses", []):
-
             if not Person.query.get(spouse_id):
                 db.session.rollback()
-                return jsonify({
-                    "message": f"Spouse '{spouse_id}' not found"
-                }), 404
+                return jsonify({"message": f"Spouse '{spouse_id}' not found"}), 404
 
             db.session.add(
                 Relationship(
                     id=str(uuid.uuid4()),
                     person_id=person.id,
                     related_person_id=spouse_id,
-                    relation_type="SPOUSE"
+                    relation_type="SPOUSE",
                 )
             )
 
         db.session.commit()
 
-        return jsonify({
-            "success": True,
-            "id": person.id
-        }), 201
+        return jsonify({"success": True, "id": person.id}), 201
 
     except Exception as e:
-
         db.session.rollback()
 
-        return jsonify({
-            "success": False,
-            "message": str(e)
-        }), 500
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 import uuid
 
 from flask import Blueprint, jsonify, request
@@ -100,11 +84,7 @@ from app.extensions import db
 from app.models import Person, Relationship
 
 
-person_bp = Blueprint(
-    "person",
-    __name__,
-    url_prefix="/api/persons"
-)
+person_bp = Blueprint("person", __name__, url_prefix="/api/persons")
 
 
 @person_bp.route("/<string:person_id>", methods=["PUT"])
@@ -115,71 +95,39 @@ def update_person(person_id):
     person = db.session.get(Person, person_id)
 
     if not person:
-        return jsonify({
-            "message": "Person not found"
-        }), 404
-
+        return jsonify({"message": "Person not found"}), 404
 
     data = body.get("data", {})
 
-
     try:
-
         # update person data
-        person.first_name = data.get(
-            "first name",
-            person.first_name
-        )
+        person.first_name = data.get("first name", person.first_name)
 
-        person.last_name = data.get(
-            "last name",
-            person.last_name
-        )
+        person.last_name = data.get("last name", person.last_name)
 
-        person.birthday = data.get(
-            "birthday",
-            person.birthday
-        )
+        person.birthday = data.get("birthday", person.birthday)
 
-        person.avatar = data.get(
-            "avatar",
-            person.avatar
-        )
+        person.avatar = data.get("avatar", person.avatar)
 
-        person.gender = data.get(
-            "gender",
-            person.gender
-        )
-
+        person.gender = data.get("gender", person.gender)
 
         db.session.commit()
 
-        return jsonify({
-            "success": True,
-            "id": person_id
-        })
+        return jsonify({"success": True, "id": person_id})
 
     except Exception as e:
-
         db.session.rollback()
 
-        return jsonify({
-            "message": str(e)
-        }), 500 
+        return jsonify({"message": str(e)}), 500
+
 
 @person_bp.route("/<string:person_id>", methods=["DELETE"])
 def delete_person(person_id):
 
-    person = db.session.get(
-        Person,
-        person_id
-    )
+    person = db.session.get(Person, person_id)
 
     if not person:
-        return jsonify({
-            "message": "Person not found"
-        }), 404
-
+        return jsonify({"message": "Person not found"}), 404
 
     try:
         # xóa relationship trước->k xoa vi nhung nguoi k ket hon van co con
@@ -193,20 +141,11 @@ def delete_person(person_id):
         # xóa person
         db.session.delete(person)
 
-
         db.session.commit()
 
-
-        return jsonify({
-            "success": True,
-            "id": person_id
-        })
-
+        return jsonify({"success": True, "id": person_id})
 
     except Exception as e:
-
         db.session.rollback()
 
-        return jsonify({
-            "message": str(e)
-        }), 500
+        return jsonify({"message": str(e)}), 500
