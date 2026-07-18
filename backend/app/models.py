@@ -10,24 +10,50 @@ class Person(db.Model):
         primary_key=True
     )
 
-    full_name = db.Column(
+    first_name = db.Column(
         db.String(100),
         nullable=False
     )
 
-    birth_year = db.Column(
-        db.Integer
+    last_name = db.Column(
+        db.String(100)
     )
 
-    parent_id = db.Column(
+    birthday = db.Column(
+        db.String(20)
+    )
+
+    avatar = db.Column(
+        db.Text
+    )
+
+    gender = db.Column(
+        db.String(1)
+    )
+
+
+class Relationship(db.Model):
+
+    __tablename__ = "relationships"
+
+    id = db.Column(
         db.Integer,
-        db.ForeignKey("persons.id")
+        primary_key=True
     )
 
-    children = db.relationship(
-        "Person",
-        backref=db.backref(
-            "parent",
-            remote_side=[id]
-        )
+    person_id = db.Column(
+        db.Integer,
+        db.ForeignKey("persons.id"),
+        nullable=False
+    )
+
+    related_person_id = db.Column(
+        db.Integer,
+        db.ForeignKey("persons.id"),
+        nullable=False
+    )
+
+    relation_type = db.Column(
+        db.String(20),
+        nullable=False
     )
