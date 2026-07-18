@@ -4,6 +4,10 @@ export const getFamilyTree = () => {
   return apiClient.get("/family-tree");
 };
 
+export const getFamilyInfo = (familyId) => {
+    return apiClient.get(`family-tree/info/${familyId}`);
+  };
+
 export const addPerson = (person) => {
   return apiClient.post("/persons", person);
 };

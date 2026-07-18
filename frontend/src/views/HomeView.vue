@@ -41,19 +41,8 @@
         <div class="story-grid">
           <div>
             <span class="eyebrow">Lịch sử dòng họ</span>
-            <h2>Nguồn gốc từ làng Vân Cốc</h2>
-            <p>
-              Theo gia phả cổ còn lưu tại từ đường, thủy tổ Họ Nguyễn di cư từ
-              vùng Sơn Nam đến định cư tại làng Vân Cốc vào khoảng đầu thế kỷ
-              18. Trải qua hơn mười đời, con cháu dòng họ đã tỏa ra nhiều chi
-              nhánh, từ Bắc chí Nam, nhưng vẫn giữ lệ về chầu tổ vào dịp giỗ họ
-              hằng năm.
-            </p>
-            <p>
-              Dòng họ có truyền thống hiếu học và nhiều đời làm nghề dạy chữ,
-              bốc thuốc. Nhà thờ họ hiện đặt tại quê gốc, nơi lưu giữ sắc phong,
-              bài vị và cuốn gia phả chép tay được xem là báu vật của dòng tộc.
-            </p>
+            <h2>Nguồn gốc từ xã Mỹ Thành</h2>
+            <p>{{familyInfo.description }}</p>
             <a href="#dieu-huong" class="btn btn-gold btn-sm">Khám phá thêm</a>
           </div>
           <div class="story-plate framed">
@@ -87,17 +76,16 @@
       <div class="container">
         <div class="gen-strip">
           <div class="gen-item">
-            <span class="num">12</span
-            ><span class="label">Đời đã ghi nhận</span>
+            <span class="num">{{familyInfo.max_generation }}</span><span class="label">Đời đã ghi nhận</span>
           </div>
           <div class="gen-item">
-            <span class="num">238</span><span class="label">Thành viên</span>
+            <span class="num">{{familyInfo.count_person }}</span><span class="label">Thành viên</span>
           </div>
           <div class="gen-item">
-            <span class="num">6</span><span class="label">Chi nhánh</span>
+            <span class="num">{{familyInfo.branch_number}}</span><span class="label">Chi lớn</span>
           </div>
           <div class="gen-item">
-            <span class="num">1728</span><span class="label">Năm lập tổ</span>
+            <span class="num">{{familyInfo.start_year}}</span><span class="label">Năm lập tổ</span>
           </div>
         </div>
       </div>
@@ -144,3 +132,29 @@
     </section>
   </main>
 </template>
+
+<script>
+import { getFamilyInfo } from "../api/familyApi";
+export default {
+  data (){
+    return {
+      familyInfo: {}
+    };
+  },
+
+  mounted(){
+    this.getFamilyInfo()
+  },
+
+  methods:{
+    async getFamilyInfo() {
+      try {
+        const res = await getFamilyInfo("8b6c4f0e-7f3a-4d8e-9a61-2e7b5c9d1f20");
+        this.familyInfo = res.data;
+      } catch (error) {
+        console.error("Load family tree error:", error);
+      }
+    }
+  }
+}
+</script>
