@@ -5,7 +5,12 @@
         <span class="eyebrow">Lịch giỗ · họp mặt · thông báo</span>
         <h1 style="font-size: 28px">Sự kiện dòng họ</h1>
       </div>
-      <a href="#" class="btn btn-primary">+ Tạo sự kiện</a>
+      <button class="btn btn-primary" @click="showEventModal = true">+ Tạo sự kiện</button>
+      <EventModal
+        v-model:open="showEventModal"
+        :persons="personOptions"
+        @created="onEventCreated"
+        />
     </div>
 
     <div class="event-list">
@@ -42,6 +47,10 @@
 // Dữ liệu tĩnh khai báo ngay trong component.
 // Sau này sẽ thay bằng dữ liệu lấy từ API Flask (GET /api/events).
 import { reactive } from "vue";
+import { ref, computed } from 'vue'
+import EventModal from '../components/EventModal.vue'
+
+const showEventModal = ref(false)
 
 const events = reactive([
   {
