@@ -189,7 +189,7 @@ const panel = reactive({
 
 const form = reactive({
   fullName: '',  gender: 'M',
-  birthday: '', isDeceased: false, deathday: '',
+  birthday: '', isDeceased: false, deathDate: '',
   note: '', education: '', hometown: '', currentAddress: '',
 })
 
@@ -275,23 +275,27 @@ function buildYearsLabel(isDeceased, birthday, deathday) {
 }
 
 function buildDataFromForm() {
-  const deathday = form.isDeceased ? form.deathday : ''
   return {
     fullName: form.fullName,
     gender: form.gender,
     birthday: form.birthday,
-    isDeceased: form.isDeceased,
-    deathday,
+    deathDate: form.deathDate,
     note: form.note,
     education: form.education,
     hometown: form.hometown,
-    years: buildYearsLabel(form.isDeceased, form.birthday, deathday),
+    currentAddress: form.currentAddress,
   }
 }
-
-function nextId() {
-  const maxId = data.reduce((max, p) => Math.max(max, parseInt(p.id, 10) || 0), 0)
-  return String(maxId + 1)
+function generateId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback cho môi trường không có crypto.randomUUID (HTTP không secure context, trình duyệt cũ)
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
 }
 
 async function submitPanel() {
@@ -307,33 +311,20 @@ async function submitPanel() {
       person.data = buildDataFromForm()
 
       // Gửi lên backend đúng shape { id, data, rels }
-      await updatePerson(person.id, person)
-    } else if (panel.mode === 'create') {
-      const payload = { data: buildDataFromForm(), rels: {} }
-      const res = await addPerson(payload)
-      const created = res.data
-      // Dùng id thật do server sinh (fallback nextId() nếu server không trả id)
-      const newPerson = {
-        id: created?.id ?? nextId(),
-        data: created?.data ?? payload.data,
-        rels: created?.rels ?? payload.rels,
-      }
-      data.push(newPerson)
+      await updatePerson(person.id,person)
     } else if (panel.mode === 'add-child') {
       const parent = data.find((p) => p.id === panel.relativeOfId)
       if (!parent) return
-
+      const newId = generateId()
       const spouseId = parent.rels?.spouses?.[0]
       const parentIds = spouseId ? [panel.relativeOfId, spouseId] : [panel.relativeOfId]
-      const payload = { data: buildDataFromForm(), rels: { parents: parentIds } }
+      const payload = { id: newId, data: buildDataFromForm(), rels: { parents: parentIds } }
 
       const res = await addPerson(payload)
-      const created = res.data
-      const newId = created?.id ?? nextId()
       const newPerson = {
         id: newId,
-        data: created?.data ?? payload.data,
-        rels: created?.rels ?? payload.rels,
+        data: payload.data,
+        rels: payload.rels,
       }
       data.push(newPerson)
 
@@ -345,11 +336,11 @@ async function submitPanel() {
     } else if (panel.mode === 'add-spouse') {
       const person = data.find((p) => p.id === panel.relativeOfId)
       if (!person) return
+      const newId = generateId()
 
-      const payload = { data: buildDataFromForm(), rels: { spouses: [panel.relativeOfId] } }
+      const payload = { id: newId, data: buildDataFromForm(), rels: { spouses: [panel.relativeOfId] } }
       const res = await addPerson(payload)
       const created = res.data
-      const newId = created?.id ?? nextId()
       const newPerson = {
         id: newId,
         data: created?.data ?? payload.data,

@@ -9,7 +9,7 @@ export const getFamilyInfo = (familyId) => {
 };
 
 export const addPerson = (person) => {
-  return apiClient.post("/persons", person);
+  return apiClient.post("/persons/", person);
 };
 
 export const updatePerson = (id, person) => {
