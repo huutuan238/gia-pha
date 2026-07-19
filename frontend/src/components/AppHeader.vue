@@ -32,8 +32,12 @@
         <RouterLink to="/gia-pha" active-class="is-active">Gia phả</RouterLink>
         <RouterLink to="/events" active-class="is-active">Sự kiện</RouterLink>
         <RouterLink to="/albums" active-class="is-active">Album ảnh</RouterLink>
-        <RouterLink to="/login" active-class="is-active">Đăng nhập</RouterLink>
+        <!-- <RouterLink to="/login" active-class="is-active">Đăng nhập</RouterLink> -->
+        <a href="#" class="nav-cta" @click.prevent="openAuthModal('login')">Đăng nhập</a>
       </nav>
     </div>
   </header>
 </template>
+<script setup>
+import { openAuthModal } from '../stores/auth'
+</script>
