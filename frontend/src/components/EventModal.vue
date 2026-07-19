@@ -32,7 +32,7 @@
                   </div>
                   <div class="field">
                     <label>Ngày diễn ra</label>
-                    <input v-model="form.date" type="datetime-local" required>
+                    <input v-model="form.datetime" type="datetime-local" required>
                   </div>
                 </div>
   
@@ -46,7 +46,7 @@
   
                 <div class="field">
                   <label>Địa điểm</label>
-                  <input v-model.trim="form.location" type="text" placeholder="VD: Nhà thờ họ Hữu đại tôn">
+                  <input v-model.trim="form.location" type="text" placeholder="VD: Nhà thờ họ Hữu đại tôn" required>
                 </div>
   
                 <div class="field">
@@ -87,7 +87,7 @@
   const form = reactive({
     title: '',
     type: 'gio',
-    date: '',
+    datetime: '',
     personId: '',
     location: '',
     note: '',
@@ -96,7 +96,7 @@
   function resetForm() {
     form.title = ''
     form.type = 'gio'
-    form.date = ''
+    form.datetime = ''
     form.personId = ''
     form.location = ''
     form.note = ''
