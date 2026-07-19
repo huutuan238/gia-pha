@@ -8,12 +8,14 @@ import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import EventDetailView from "../views/EventDetailView.vue";
 import AlbumDetail from "../views/AlbumDetail.vue";
+import FamilyView from "../views/FamilyView.vue";
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: HomeView },
     { path: "/gia-pha", component: TreeView },
+    { path: "/family", component: FamilyView },
     { path: "/events", component: EventView },
     { path: "/albums", component: AlbumView },
     { path: "/login", component: LoginView },

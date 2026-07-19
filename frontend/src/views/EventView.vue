@@ -1,5 +1,5 @@
 <template>
-  <main id="main" class="section container" style="max-width: 840px">
+  <main id="main" class="section container" style="max-width: 1240px">
     <div class="tree-toolbar">
       <div>
         <span class="eyebrow">Lịch giỗ · họp mặt · thông báo</span>
@@ -32,7 +32,6 @@
         <tr>
           <th>Ngày tháng</th>
           <th>Loại</th>
-          <th>Tên</th>
           <th>Địa điểm</th>
           <th>Nội dung</th>
         </tr>
@@ -52,9 +51,6 @@
             <div class="cell-date-lunar">{{ event.lunerDateTime }}(AL)</div>
           </td>
           <td>{{ event.type }}</td>
-          <td class="cell-name">
-            {{ event.personName || getPersonName(event.personId) }}
-          </td>
           <td>{{ event.location }}</td>
           <td>
             <div class="cell-title">{{ event.title }}</div>

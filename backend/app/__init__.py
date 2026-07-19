@@ -27,10 +27,12 @@ def create_app():
     from app.routes.person import person_bp
     from app.routes.event import event_bp
     from app.routes.album import album_bp
+    from app.routes.family import families_bp
 
     app.register_blueprint(family_tree)
     app.register_blueprint(person_bp)
     app.register_blueprint(event_bp)
     app.register_blueprint(album_bp)
+    app.register_blueprint(families_bp)
 
     return app
