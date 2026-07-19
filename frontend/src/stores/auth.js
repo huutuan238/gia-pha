@@ -1,13 +1,5 @@
 import { reactive } from 'vue'
-import { registerUser, loginUser } from '../api/auth'
-
-export const uiStore = reactive({ showAuthModal: false, authModalMode: 'login' })
-
-export function openAuthModal(mode = 'login') {
-  uiStore.authModalMode = mode
-  uiStore.showAuthModal = true
-}
-
+import { registerUser, loginUser } from '../api/auth.js'
 
 const state = reactive({
   token: localStorage.getItem('gp_token') || null,

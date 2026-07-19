@@ -32,12 +32,43 @@
         <RouterLink to="/gia-pha" active-class="is-active">Gia phả</RouterLink>
         <RouterLink to="/events" active-class="is-active">Sự kiện</RouterLink>
         <RouterLink to="/albums" active-class="is-active">Album ảnh</RouterLink>
-        <!-- <RouterLink to="/login" active-class="is-active">Đăng nhập</RouterLink> -->
-        <a href="#" class="nav-cta" @click.prevent="openAuthModal('login')">Đăng nhập</a>
+
+        <!-- Chưa đăng nhập -->
+        <a
+          v-if="!authStore.state.user"
+          href="#"
+          class="nav-cta"
+          @click.prevent="openAuthModal('login')"
+        >
+          Đăng nhập
+        </a>
+
+        <!-- Đã đăng nhập -->
+        <div v-else class="nav-user">
+          <span class="nav-user-name">{{ authStore.state.user.username }}</span>
+          <a href="#" class="nav-cta" @click.prevent="authStore.logout()">
+            Đăng xuất
+          </a>
+        </div>
       </nav>
     </div>
   </header>
 </template>
+
 <script setup>
-import { openAuthModal } from '../stores/auth'
+import { openAuthModal } from '../stores/ui.js'
+import { authStore } from '../stores/auth.js'
 </script>
+
+<style scoped>
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+</style>
