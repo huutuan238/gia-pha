@@ -28,6 +28,11 @@ def create_app():
     from app.routes.event import event_bp
     from app.routes.album import album_bp
     from app.routes.family import families_bp
+    from app.routes.auth import auth_bp
+    from flask_jwt_extended import JWTManager
+    app.config["JWT_SECRET_KEY"] = "đổi-thành-chuỗi-bí-mật-thật-dài"
+    JWTManager(app)
+    app.register_blueprint(auth_bp)
 
     app.register_blueprint(family_tree)
     app.register_blueprint(person_bp)

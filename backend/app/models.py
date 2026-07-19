@@ -1,6 +1,6 @@
 import uuid
 from .extensions import db
-
+from werkzeug.security import check_password_hash, generate_password_hash
 
 class Person(db.Model):
     __tablename__ = "persons"
@@ -200,4 +200,29 @@ class Photo(db.Model):
             "caption": self.caption,
             "takenDate": self.taken_date.isoformat() if self.taken_date else None,
             "uploadedAt": self.uploaded_at.isoformat() if self.uploaded_at else None,
+        }
+    
+class User(db.Model):
+    __tablename__ = "users"
+ 
+    id = db.Column(db.String(36), primary_key=True, default=_gen_uuid)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), default="member", nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+ 
+    def set_password(self, raw_password):
+        self.password_hash = generate_password_hash(raw_password)
+ 
+    def check_password(self, raw_password):
+        return check_password_hash(self.password_hash, raw_password)
+ 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "role": self.role,
+            "createdAt": self.created_at.isoformat() if self.created_at else None,
         }
