@@ -20,6 +20,15 @@
       style="width: 100%; height: 900px; background-color: #8fa08f; color: #fff"
     ></div>
 
+    <button
+      v-if="!loading && !loadError"
+      class="btn btn-outline export-btn"
+      @click="exportTreeToPdf"
+      :disabled="exporting"
+    >
+      {{ exporting ? "Đang xuất..." : "In gia phả (PDF)" }}
+    </button>
+
     <!-- ================= PANEL TRƯỢT TỪ BÊN PHẢI ================= -->
     <transition name="slide">
       <div v-if="panel.open" class="side-panel paper">
@@ -129,13 +138,26 @@
         </template>
       </div>
     </transition>
-  </div>
-</template>
+  </div></template>
+
+<style scoped>
+.tree-shell {
+  position: relative;
+}
+.export-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+}
+</style>
 
 <script setup>
 import { onMounted, reactive, ref, computed, nextTick } from "vue";
 import * as f3 from "family-chart";
 import "family-chart/styles/family-chart.css";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import {
   getFamilyTree,
   addPerson,
@@ -154,6 +176,7 @@ const MAIN_PERSON_ID = "1";
 const data = reactive([]);
 const loading = ref(false);
 const loadError = ref("");
+const exporting = ref(false);
 
 /**
  * Lấy danh sách toàn bộ person từ backend qua getFamilyTree().
@@ -212,6 +235,41 @@ function initChart() {
   }
 
   f3Chart.updateTree({ initial: true });
+}
+
+// Xuất toàn bộ cây gia phả hiện tại ra file PDF
+async function exportTreeToPdf() {
+  if (!f3Chart || !chartEl.value) return;
+
+  exporting.value = true;
+  try {
+    // Thu phóng để toàn bộ cây (mọi nhánh) vừa khít trong khung nhìn trước khi chụp,
+    // tránh bị cắt mất phần đang nằm ngoài viewport do đang zoom/pan.
+    f3Chart.updateTree({ tree_position: "fit" });
+    await nextTick();
+    // Đợi transition vẽ lại xong (transition_time đang set 1000ms trong initChart)
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    const canvas = await html2canvas(chartEl.value, {
+      backgroundColor: "#8fa08f", // khớp màu nền chart đang set trong template
+      scale: 2, // chụp độ phân giải gấp đôi cho nét khi in
+      useCORS: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("gia-pha.pdf");
+  } catch (err) {
+    console.error("Xuất PDF thất bại:", err);
+    alert("Không thể xuất PDF. Vui lòng thử lại.");
+  } finally {
+    exporting.value = false;
+  }
 }
 
 // Được gọi từ nút "Thử lại" trong template khi lần tải trước bị lỗi
@@ -344,16 +402,18 @@ function buildYearsLabel(birthday, deathday) {
 }
 
 function buildDataFromForm() {
-  return {
+  const personData = {
     fullName: form.fullName,
     gender: form.gender,
     birthday: form.birthday,
-    deathDate: form.deathDate,
+    death_date: form.isDeceased ? form.deathDate : null,
     note: form.note,
     education: form.education,
     hometown: form.hometown,
-    currentAddress: form.currentAddress,
+    current_address: form.currentAddress,
   };
+  attachYears(personData);
+  return personData;
 }
 function generateId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
