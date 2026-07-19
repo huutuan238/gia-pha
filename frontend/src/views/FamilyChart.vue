@@ -144,7 +144,7 @@ function initChart() {
     .setCardYSpacing(150)
 
   f3Card = f3Chart.setCardHtml()
-    .setCardDisplay([['full_name'], ['birthday']])
+    .setCardDisplay([['fullName'], ['birthday']])
 
   // Không dùng f3EditTree — mọi click mở panel tự custom
   f3Card.setOnCardClick((e, d) => openEditPanel(d.data))
@@ -196,7 +196,7 @@ const form = reactive({
 function personName(id) {
   const person = data.find((p) => p.id === id)
   if (!person) return ''
-  return `${person.data['full_name'] || ''}`.trim()
+  return `${person.data['fullName'] || ''}`.trim()
 }
 
 const panelSubtitle = computed(() => {
@@ -220,10 +220,10 @@ function resetForm() {
 
 function fillForm(person) {
   const d = person.data
-  form.fullName = d['full_name'] || ''
+  form.fullName = d.fullName || ''
   form.gender = d.gender || 'M'
   form.birthday = d.birthday || ''
-  form.isDeceased = d.deathday != ''
+  form.isDeceased = !!d.death_date 
   form.deathDate = d.death_date || ''
   form.note = d.note || ''
   form.education = d.education || ''
