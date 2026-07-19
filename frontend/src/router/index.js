@@ -6,15 +6,17 @@ import EventView from "../views/EventView.vue";
 import AlbumView from "../views/AlbumView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
+import EventDetailView from "../views/EventDetailView.vue";
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: HomeView },
     { path: "/gia-pha", component: TreeView },
-    { path: "/event", component: EventView },
+    { path: "/events", component: EventView },
     { path: "/album", component: AlbumView },
     { path: "/login", component: LoginView },
     { path: "/register", component: RegisterView },
+    { path: "/events/:id", component: EventDetailView },
   ],
 });

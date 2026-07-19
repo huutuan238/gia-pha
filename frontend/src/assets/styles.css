@@ -1238,3 +1238,89 @@ section {
   transform: translateY(10px) scale(0.98);
   opacity: 0;
 }
+.event-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.event-table thead th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--paper-deep);
+}
+
+.event-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.event-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.event-table tbody tr.is-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.event-table tbody tr.is-clickable:hover {
+  background: rgba(168, 130, 59, 0.08);
+}
+
+.cell-date {
+  font-weight: 600;
+}
+.cell-date-lunar {
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.cell-name {
+  color: var(--lacquer-deep);
+  font-weight: 600;
+}
+
+.cell-title {
+  font-weight: 600;
+}
+.cell-desc {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 32px 16px;
+}
+
+@media (max-width: 720px) {
+  .event-table thead {
+    display: none;
+  }
+  .event-table, .event-table tbody, .event-table tr, .event-table td {
+    display: block;
+    width: 100%;
+  }
+  .event-table tbody tr {
+    border-bottom: 1px solid var(--line-strong);
+    padding: 8px 0;
+  }
+  .event-table tbody td {
+    border-bottom: none;
+    padding: 4px 16px;
+  }
+}

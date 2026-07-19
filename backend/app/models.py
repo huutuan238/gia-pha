@@ -69,3 +69,65 @@ class Family(db.Model):
     # Mô tả thêm
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+class Event(db.Model):
+
+    __tablename__ = "events"
+
+    id = db.Column(
+        db.String(36),
+        primary_key=True
+    )
+    family_id = db.Column(
+        db.String(36),
+        db.ForeignKey("families.id"),
+        nullable=False
+    )
+    event_datetime = db.Column(
+        db.DateTime,
+        nullable=False
+    )
+    event_type = db.Column(
+        db.String(50),
+        nullable=False
+    )
+    title = db.Column(
+        db.String(255),
+        nullable=False
+    )
+    location = db.Column(
+        db.String(255)
+    )
+    description = db.Column(
+        db.Text
+    )
+    notified = db.Column(
+        db.Boolean,
+        default=False,
+        nullable=False
+    )
+    recipient_count = db.Column(
+        db.Integer,
+        default=0
+    )
+    created_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now()
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now(),
+        onupdate=db.func.now()
+    )
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "family_id": self.family_id,
+            "datetime": self.event_datetime.isoformat(sep=" ") if self.event_datetime else None,
+            "type": self.event_type,
+            "title": self.title,
+            "location": self.location,
+            "description": self.description,
+            "notified": self.notified,
+            "recipients": self.recipient_count,
+        }

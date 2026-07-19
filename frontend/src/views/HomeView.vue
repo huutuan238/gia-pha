@@ -118,7 +118,7 @@
               gia phả.
             </p>
           </RouterLink>
-          <RouterLink class="nav-card" to="/event">
+          <RouterLink class="nav-card" to="/events">
             <span class="idx">03 — Sự kiện</span>
             <h3>Giỗ &amp; họp mặt</h3>
             <p>
@@ -126,7 +126,7 @@
               kiện mới.
             </p>
           </RouterLink>
-          <RouterLink class="nav-card" to="/event">
+          <RouterLink class="nav-card" to="/album">
             <span class="idx">04 — Album ảnh</span>
             <h3>Ảnh</h3>
             <p>Theo dõi hình ảnh của tất cả các sự kiện</p>

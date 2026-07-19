@@ -25,8 +25,10 @@ def create_app():
     # from . import models
     from app.routes.family_tree import family_tree
     from app.routes.person import person_bp
+    from app.routes.event import event_bp
 
     app.register_blueprint(family_tree)
     app.register_blueprint(person_bp)
+    app.register_blueprint(event_bp)
 
     return app

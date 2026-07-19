@@ -79,7 +79,7 @@
               <div class="field">
                 <label>Nội dung chi tiết</label>
                 <textarea
-                  v-model.trim="form.note"
+                  v-model.trim="form.description"
                   rows="3"
                   placeholder="Chi tiết thêm về sự kiện..."
                 ></textarea>
@@ -132,7 +132,7 @@ const form = reactive({
   datetime: "",
   personId: "",
   location: "",
-  note: "",
+  description: "",
 });
 
 function resetForm() {
@@ -141,7 +141,7 @@ function resetForm() {
   form.datetime = "";
   form.personId = "";
   form.location = "";
-  form.note = "";
+  form.description = "";
   error.value = "";
 }
 
