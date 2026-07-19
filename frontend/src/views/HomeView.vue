@@ -126,7 +126,7 @@
               kiện mới.
             </p>
           </RouterLink>
-          <RouterLink class="nav-card" to="/album">
+          <RouterLink class="nav-card" to="/albums">
             <span class="idx">04 — Album ảnh</span>
             <h3>Ảnh</h3>
             <p>Theo dõi hình ảnh của tất cả các sự kiện</p>

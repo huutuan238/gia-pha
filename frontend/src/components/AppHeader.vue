@@ -31,7 +31,7 @@
         <RouterLink to="/" active-class="is-active"> Giới thiệu </RouterLink>
         <RouterLink to="/gia-pha" active-class="is-active">Gia phả</RouterLink>
         <RouterLink to="/events" active-class="is-active">Sự kiện</RouterLink>
-        <RouterLink to="/album" active-class="is-active">Album ảnh</RouterLink>
+        <RouterLink to="/albums" active-class="is-active">Album ảnh</RouterLink>
         <RouterLink to="/login" active-class="is-active">Đăng nhập</RouterLink>
       </nav>
     </div>

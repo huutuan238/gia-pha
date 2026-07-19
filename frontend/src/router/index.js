@@ -7,6 +7,7 @@ import AlbumView from "../views/AlbumView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import EventDetailView from "../views/EventDetailView.vue";
+import AlbumDetail from "../views/AlbumDetail.vue";
 
 export default createRouter({
   history: createWebHistory(),
@@ -14,9 +15,10 @@ export default createRouter({
     { path: "/", component: HomeView },
     { path: "/gia-pha", component: TreeView },
     { path: "/events", component: EventView },
-    { path: "/album", component: AlbumView },
+    { path: "/albums", component: AlbumView },
     { path: "/login", component: LoginView },
     { path: "/register", component: RegisterView },
     { path: "/events/:id", component: EventDetailView },
+    { path: "/albums/:id", component: AlbumDetail },
   ],
 });

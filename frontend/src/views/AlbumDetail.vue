@@ -28,7 +28,7 @@
           @dragover.prevent="isDragOver = true"
           @dragleave.prevent="isDragOver = false"
           @drop.prevent="onDrop"
-          @click="fileInput.click()"
+          @click="$refs.fileInput.click()"
         >
           <input
             ref="fileInput"
@@ -66,7 +66,7 @@
     uploadPhoto,
     deletePhoto,
     resolvePhotoUrl,
-  } from "../api/albumApi";
+  } from "../api/album";
   
   export default {
     data() {
@@ -261,4 +261,3 @@
     color: var(--lacquer);
   }
   </style>
-  
