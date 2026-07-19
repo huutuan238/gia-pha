@@ -125,6 +125,7 @@ async function loadFamilyData() {
   loadError.value = ''
   try {
     const items = await fetchFamilyData()
+    items.forEach((p) => { if (p?.data) attachYears(p.data) })
     data.splice(0, data.length, ...items)
   } catch (err) {
     console.error('Không tải được dữ liệu gia phả:', err)
@@ -144,7 +145,7 @@ function initChart() {
     .setCardYSpacing(150)
 
   f3Card = f3Chart.setCardHtml()
-    .setCardDisplay([['fullName'], ['birthday']])
+    .setCardDisplay([['fullName'], ['years']])
 
   // Không dùng f3EditTree — mọi click mở panel tự custom
   f3Card.setOnCardClick((e, d) => openEditPanel(d.data))
@@ -199,6 +200,11 @@ function personName(id) {
   return `${person.data['fullName'] || ''}`.trim()
 }
 
+function attachYears(personData) {
+  personData.years = buildYearsLabel(personData.birthday, personData.death_date)
+  return personData
+}
+
 const panelSubtitle = computed(() => {
   if (panel.mode === 'edit') return `Đang sửa: ${personName(panel.targetId)}`
   if (panel.mode === 'add-child') return `Thêm con của: ${personName(panel.relativeOfId)}`
@@ -240,15 +246,6 @@ function openEditPanel(person) {
   panel.open = true
 }
 
-function openCreatePanel() {
-  panel.mode = 'create'
-  panel.targetId = null
-  panel.relativeOfId = null
-  panel.error = ''
-  resetForm()
-  panel.open = true
-}
-
 function openAddModal(kind) {
   panel.mode = kind === 'child' ? 'add-child' : 'add-spouse'
   panel.relativeOfId = panel.targetId
@@ -268,9 +265,9 @@ function yearOf(dateStr) {
   return dateStr ? dateStr.slice(0, 4) : ''
 }
 
-function buildYearsLabel(isDeceased, birthday, deathday) {
+function buildYearsLabel(birthday, deathday) {
   const by = yearOf(birthday)
-  if (isDeceased) return `${by} – ${yearOf(deathday)}`
+  if (!!deathday) return `${by} – ${yearOf(deathday)}`
   return by
 }
 
