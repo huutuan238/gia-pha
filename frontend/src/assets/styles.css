@@ -1056,7 +1056,9 @@ section {
   font-size: 14px;
   cursor: pointer;
 }
-.add-member-btn:hover { background: var(--color-seal-dark); }
+.add-member-btn:hover {
+  background: var(--color-seal-dark);
+}
 
 /* ---------- Panel trượt từ phải ---------- */
 .side-panel {
@@ -1072,10 +1074,14 @@ section {
   z-index: 20;
   box-sizing: border-box;
 }
-.slide-enter-active, .slide-leave-active {
-  transition: transform 0.28s ease, opacity 0.28s ease;
+.slide-enter-active,
+.slide-leave-active {
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease;
 }
-.slide-enter-from, .slide-leave-to {
+.slide-enter-from,
+.slide-leave-to {
   transform: translateX(24px);
   opacity: 0;
 }
@@ -1090,7 +1096,9 @@ section {
   color: var(--color-ink-soft);
   cursor: pointer;
 }
-.panel-close:hover { color: var(--color-seal); }
+.panel-close:hover {
+  color: var(--color-seal);
+}
 
 .panel-subtitle {
   font-size: 13px;
@@ -1129,7 +1137,10 @@ section {
   padding-top: 20px;
   border-top: 1px solid var(--color-paper-line);
 }
-.relation-actions .btn { font-size: 13px; padding: 9px 14px; }
+.relation-actions .btn {
+  font-size: 13px;
+  padding: 9px 14px;
+}
 
 .delete-btn {
   width: 100%;
@@ -1142,7 +1153,9 @@ section {
   font-weight: 600;
   cursor: pointer;
 }
-.delete-btn:hover { background: rgba(165, 49, 43, 0.08); }
+.delete-btn:hover {
+  background: rgba(165, 49, 43, 0.08);
+}
 
 .event-modal-backdrop {
   position: fixed;
@@ -1175,7 +1188,9 @@ section {
   color: var(--ink-soft);
   cursor: pointer;
 }
-.modal-close:hover { color: var(--lacquer); }
+.modal-close:hover {
+  color: var(--lacquer);
+}
 
 .event-modal h3 {
   margin-top: 0.2rem;
@@ -1203,17 +1218,23 @@ section {
 }
 
 /* ---------- Transitions ---------- */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.2s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
-.pop-enter-active, .pop-leave-active {
-  transition: transform 0.22s ease, opacity 0.22s ease;
+.pop-enter-active,
+.pop-leave-active {
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
 }
-.pop-enter-from, .pop-leave-to {
+.pop-enter-from,
+.pop-leave-to {
   transform: translateY(10px) scale(0.98);
   opacity: 0;
 }
