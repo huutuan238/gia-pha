@@ -11,10 +11,9 @@
       id="FamilyChart"
       ref="chartEl"
       class="f3"
-      style="width:100%;height:900px;background-color:white;color:#fff;"
+      style="width:100%;height:900px;background-color:black;color:#fff;"
     ></div>
 
-    <button v-if="!loading && !loadError" class="add-member-btn" @click="openCreatePanel">+ Thêm thành viên</button>
 
     <!-- ================= PANEL TRƯỢT TỪ BÊN PHẢI ================= -->
     <transition name="slide">
@@ -34,16 +33,24 @@
           </div>
 
           <div class="field full">
-            <label>first name</label>
-            <input v-model="form.firstName" type="text">
-          </div>
-          <div class="field full">
-            <label>last name</label>
-            <input v-model="form.lastName" type="text">
+            <label>Họ và tên</label>
+            <input v-model="form.fullName" type="text">
           </div>
           <div class="field full">
             <label>Ngày sinh</label>
             <input v-model="form.birthday" type="date">
+          </div>
+          <div class="field full">
+            <label>Quê quán</label>
+            <input v-model="form.hometown" type="text">
+          </div>
+          <div class="field full">
+            <label> Nơi thường trú</label>
+            <input v-model="form.currentAddress" type="text">
+          </div>
+          <div class="field full">
+            <label>Học vấn</label>
+            <input v-model="form.education" type="text">
           </div>
 
           <!-- Checkbox Đã mất -> hiện thêm ô ngày mất -->
@@ -55,25 +62,11 @@
           </div>
           <div class="field full" v-if="form.isDeceased">
             <label>Ngày mất</label>
-            <input v-model="form.deathday" type="date">
-          </div>
-
-          <div class="field full">
-            <label>Tình trạng hôn nhân</label>
-            <select v-model="form.maritalStatus">
-              <option>Độc thân</option>
-              <option>Đã kết hôn</option>
-              <option>Ly hôn</option>
-              <option>Góa</option>
-            </select>
+            <input v-model="form.deathDate" type="date">
           </div>
           <div class="field full">
-            <label>Học vấn</label>
-            <input v-model="form.education" type="text">
-          </div>
-          <div class="field full">
-            <label>Quê quán</label>
-            <input v-model="form.hometown" type="text">
+            <label>Ghi chú</label>
+            <input v-model="form.note" type="text">
           </div>
 
           <div class="panel-actions">
@@ -91,10 +84,10 @@
         <!-- Chỉ hiện khi đang SỬA 1 người đã tồn tại -->
         <template v-if="panel.mode === 'edit'">
           <div class="relation-actions">
-            <button class="btn btn-paper" @click="openAddModal('child')">+ Add Son/Daughter</button>
-            <button class="btn btn-paper" @click="openAddModal('spouse')">+ Add Spouse</button>
+            <button class="btn btn-paper" @click="openAddModal('child')">+ Thêm con</button>
+            <button class="btn btn-paper" @click="openAddModal('spouse')">+ Thêm vợ/chồng</button>
           </div>
-          <button class="delete-btn" @click="deleteCurrentPerson" :disabled="panel.submitting">Delete</button>
+          <button class="delete-btn" @click="deleteCurrentPerson" :disabled="panel.submitting">Xoá</button>
         </template>
       </div>
     </transition>
@@ -105,7 +98,7 @@
 import { onMounted, reactive, ref, computed, nextTick } from 'vue'
 import * as f3 from 'family-chart'
 import 'family-chart/styles/family-chart.css'
-import { getFamilyTree, addPerson, updatePerson, deletePerson } from '../api/familyApi' // TODO: chỉnh lại đúng đường dẫn tới file service của bạn
+import { getFamilyTree, addPerson, updatePerson, deletePerson } from '../api/familyApi'
 
 const chartEl = ref(null)
 let f3Chart = null
@@ -151,7 +144,7 @@ function initChart() {
     .setCardYSpacing(150)
 
   f3Card = f3Chart.setCardHtml()
-    .setCardDisplay([['first name', 'last name'], ['years']])
+    .setCardDisplay([['full_name'], ['birthday']])
 
   // Không dùng f3EditTree — mọi click mở panel tự custom
   f3Card.setOnCardClick((e, d) => openEditPanel(d.data))
@@ -195,15 +188,15 @@ const panel = reactive({
 })
 
 const form = reactive({
-  firstName: '', lastName: '', gender: 'M',
+  fullName: '',  gender: 'M',
   birthday: '', isDeceased: false, deathday: '',
-  maritalStatus: 'Độc thân', education: '', hometown: '',
+  note: '', education: '', hometown: '', currentAddress: '',
 })
 
 function personName(id) {
   const person = data.find((p) => p.id === id)
   if (!person) return ''
-  return `${person.data['first name'] || ''} ${person.data['last name'] || ''}`.trim()
+  return `${person.data['full_name'] || ''}`.trim()
 }
 
 const panelSubtitle = computed(() => {
@@ -214,28 +207,28 @@ const panelSubtitle = computed(() => {
 })
 
 function resetForm() {
-  form.firstName = ''
-  form.lastName = ''
+  form.fullName = ''
   form.gender = 'M'
   form.birthday = ''
   form.isDeceased = false
   form.deathday = ''
-  form.maritalStatus = 'Độc thân'
+  form.note = ''
   form.education = ''
   form.hometown = ''
+  form.currentAddress = ''
 }
 
 function fillForm(person) {
   const d = person.data
-  form.firstName = d['first name'] || ''
-  form.lastName = d['last name'] || ''
+  form.fullName = d['full_name'] || ''
   form.gender = d.gender || 'M'
   form.birthday = d.birthday || ''
-  form.isDeceased = !!d.isDeceased
-  form.deathday = d.deathday || ''
-  form.maritalStatus = d.marital_status || 'Độc thân'
+  form.isDeceased = d.deathday != ''
+  form.deathDate = d.death_date || ''
+  form.note = d.note || ''
   form.education = d.education || ''
   form.hometown = d.hometown || ''
+  form.currentAddress = d.current_address || ''
 }
 
 function openEditPanel(person) {
@@ -284,13 +277,12 @@ function buildYearsLabel(isDeceased, birthday, deathday) {
 function buildDataFromForm() {
   const deathday = form.isDeceased ? form.deathday : ''
   return {
-    'first name': form.firstName,
-    'last name': form.lastName,
+    fullName: form.fullName,
     gender: form.gender,
     birthday: form.birthday,
     isDeceased: form.isDeceased,
     deathday,
-    marital_status: form.maritalStatus,
+    note: form.note,
     education: form.education,
     hometown: form.hometown,
     years: buildYearsLabel(form.isDeceased, form.birthday, deathday),

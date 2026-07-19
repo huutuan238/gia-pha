@@ -1,8 +1,6 @@
 from collections import defaultdict
 
 from app.services.family_tree_service import (
-    count_generation,
-    count_person,
     get_family_info,
 )
 from flask import Blueprint, jsonify
@@ -45,13 +43,7 @@ def get_persons():
         result.append(
             {
                 "id": person.id,
-                "data": {
-                    "first name": person.first_name,
-                    "last name": person.last_name or "",
-                    "birthday": person.birthday or "",
-                    "avatar": person.avatar or "",
-                    "gender": person.gender or "",
-                },
+                "data": person.to_dict(),
                 "rels": rel_map[person.id],
             }
         )

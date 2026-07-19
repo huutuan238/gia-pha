@@ -76,13 +76,6 @@ def add_person():
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-import uuid
-
-from flask import Blueprint, jsonify, request
-
-from app.extensions import db
-from app.models import Person, Relationship
-
 
 person_bp = Blueprint("person", __name__, url_prefix="/api/persons")
 

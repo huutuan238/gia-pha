@@ -22,7 +22,7 @@ def create_app():
     migrate.init_app(app, db)
 
     # Import models để Alembic detect table
-    from . import models
+    # from . import models
     from app.routes.family_tree import family_tree
     from app.routes.person import person_bp
 
