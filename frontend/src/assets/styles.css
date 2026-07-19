@@ -1324,3 +1324,76 @@ section {
     padding: 4px 16px;
   }
 }
+
+.album-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(43, 36, 32, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.album-modal {
+  position: relative;
+  width: 100%;
+  max-width: 850px;
+  max-height: 90vh;
+  /* overflow-y: auto; */
+  background: var(--paper-card);
+  padding: 32px 28px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.modal-close:hover { color: var(--lacquer); }
+
+.album-modal h3 {
+  margin-top: 0.2rem;
+  margin-bottom: var(--space-3);
+}
+
+.modal-error {
+  margin-top: 4px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--lacquer);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.pop-enter-active, .pop-leave-active {
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.pop-enter-from, .pop-leave-to {
+  transform: translateY(10px) scale(0.98);
+  opacity: 0;
+}

@@ -1,3 +1,4 @@
+import uuid
 from .extensions import db
 
 
@@ -130,4 +131,73 @@ class Event(db.Model):
             "description": self.description,
             "notified": self.notified,
             "recipients": self.recipient_count,
+        }
+
+def _gen_uuid():
+    return str(uuid.uuid4())
+ 
+ 
+class Album(db.Model):
+    __tablename__ = "albums"
+ 
+    id = db.Column(db.String(36), primary_key=True, default=_gen_uuid)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    cover_photo_url = db.Column(db.String(500), nullable=True)
+    created_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now()
+        )
+    updated_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now(),
+        onupdate=db.func.now()
+    )
+ 
+    photos = db.relationship(
+        "Photo",
+        backref="album",
+        cascade="all, delete-orphan",  # xoá album -> tự xoá hết ảnh trong album
+        order_by="Photo.uploaded_at.desc()",
+    )
+ 
+    def to_dict(self, include_photos=False):
+        data = {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "coverPhotoUrl": self.cover_photo_url,
+            "photoCount": len(self.photos),
+            "createdAt": self.created_at.isoformat() if self.created_at else None,
+        }
+        if include_photos:
+            data["photos"] = [p.to_dict() for p in self.photos]
+        return data
+ 
+ 
+class Photo(db.Model):
+    __tablename__ = "photos"
+ 
+    id = db.Column(db.String(36), primary_key=True, default=_gen_uuid)
+    album_id = db.Column(
+        db.String(36),
+        db.ForeignKey("albums.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    url = db.Column(db.String(500), nullable=False)
+    caption = db.Column(db.String(500), nullable=True)
+    taken_date = db.Column(db.Date, nullable=True)
+    uploaded_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now()
+        )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "albumId": self.album_id,
+            "url": self.url,
+            "caption": self.caption,
+            "takenDate": self.taken_date.isoformat() if self.taken_date else None,
+            "uploadedAt": self.uploaded_at.isoformat() if self.uploaded_at else None,
         }

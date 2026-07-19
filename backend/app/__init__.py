@@ -26,9 +26,11 @@ def create_app():
     from app.routes.family_tree import family_tree
     from app.routes.person import person_bp
     from app.routes.event import event_bp
+    from app.routes.album import album_bp
 
     app.register_blueprint(family_tree)
     app.register_blueprint(person_bp)
     app.register_blueprint(event_bp)
+    app.register_blueprint(album_bp)
 
     return app
