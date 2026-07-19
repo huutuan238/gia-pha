@@ -42,7 +42,7 @@
           <div>
             <span class="eyebrow">Lịch sử dòng họ</span>
             <h2>Nguồn gốc từ xã Mỹ Thành</h2>
-            <p>{{familyInfo.description }}</p>
+            <p>{{ familyInfo.description }}</p>
             <a href="#dieu-huong" class="btn btn-gold btn-sm">Khám phá thêm</a>
           </div>
           <div class="story-plate framed">
@@ -76,16 +76,20 @@
       <div class="container">
         <div class="gen-strip">
           <div class="gen-item">
-            <span class="num">{{familyInfo.max_generation }}</span><span class="label">Đời đã ghi nhận</span>
+            <span class="num">{{ familyInfo.max_generation }}</span
+            ><span class="label">Đời đã ghi nhận</span>
           </div>
           <div class="gen-item">
-            <span class="num">{{familyInfo.count_person }}</span><span class="label">Thành viên</span>
+            <span class="num">{{ familyInfo.count_person }}</span
+            ><span class="label">Thành viên</span>
           </div>
           <div class="gen-item">
-            <span class="num">{{familyInfo.branch_number}}</span><span class="label">Chi lớn</span>
+            <span class="num">{{ familyInfo.branch_number }}</span
+            ><span class="label">Chi lớn</span>
           </div>
           <div class="gen-item">
-            <span class="num">{{familyInfo.start_year}}</span><span class="label">Năm lập tổ</span>
+            <span class="num">{{ familyInfo.start_year }}</span
+            ><span class="label">Năm lập tổ</span>
           </div>
         </div>
       </div>
@@ -136,17 +140,17 @@
 <script>
 import { getFamilyInfo } from "../api/familyApi";
 export default {
-  data (){
+  data() {
     return {
-      familyInfo: {}
+      familyInfo: {},
     };
   },
 
-  mounted(){
-    this.getFamilyInfo()
+  mounted() {
+    this.getFamilyInfo();
   },
 
-  methods:{
+  methods: {
     async getFamilyInfo() {
       try {
         const res = await getFamilyInfo("8b6c4f0e-7f3a-4d8e-9a61-2e7b5c9d1f20");
@@ -154,7 +158,7 @@ export default {
       } catch (error) {
         console.error("Load family tree error:", error);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
