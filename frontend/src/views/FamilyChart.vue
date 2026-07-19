@@ -54,15 +54,15 @@
 
           <div class="field full">
             <label>Họ và tên</label>
-            <input v-model="form.fullName" type="text" />
+            <input v-model="form.fullName" type="text" required />
           </div>
           <div class="field full">
             <label>Ngày sinh</label>
-            <input v-model="form.birthday" type="date" />
+            <input v-model="form.birthday" type="date" required />
           </div>
           <div class="field full">
             <label>Quê quán</label>
-            <input v-model="form.hometown" type="text" />
+            <input v-model="form.hometown" type="text" required />
           </div>
           <div class="field full">
             <label> Nơi thường trú</label>
