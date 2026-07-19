@@ -5,7 +5,7 @@ from app.extensions import db
 
 def get_family_info(family_id, person_id):
     family_info: Family = db.session.get(Family, family_id)
-    max_generation = count_generation("12a9bddf-855a-4583-a695-c73fa8c0e9b2")
+    max_generation = count_generation("1")
     count = count_person(person_id)
     result = {
         "max_generation": max_generation,

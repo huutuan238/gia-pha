@@ -529,14 +529,12 @@ section {
   align-items: start;
 }
 .story-plate {
-  aspect-ratio: 3/4;
+  aspect-ratio: 16/9; /* trước đây là 3/4 (dọc) — đổi sang ngang */
   background: linear-gradient(160deg, var(--paper-deep), var(--paper-card));
   border: 1px solid var(--line-strong);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3);
-  position: relative;
+  overflow: hidden; /* thêm dòng này để ảnh không tràn khỏi khung */
+  padding: 0; /* bỏ padding cũ (dành cho icon con dấu), ảnh cần full khung */
+  display: block;
 }
 .story-plate .seal svg {
   width: 84px;
@@ -1311,7 +1309,10 @@ section {
   .event-table thead {
     display: none;
   }
-  .event-table, .event-table tbody, .event-table tr, .event-table td {
+  .event-table,
+  .event-table tbody,
+  .event-table tr,
+  .event-table td {
     display: block;
     width: 100%;
   }
@@ -1356,7 +1357,9 @@ section {
   color: var(--ink-soft);
   cursor: pointer;
 }
-.modal-close:hover { color: var(--lacquer); }
+.modal-close:hover {
+  color: var(--lacquer);
+}
 
 .album-modal h3 {
   margin-top: 0.2rem;
@@ -1383,17 +1386,23 @@ section {
   cursor: not-allowed;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.2s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
-.pop-enter-active, .pop-leave-active {
-  transition: transform 0.22s ease, opacity 0.22s ease;
+.pop-enter-active,
+.pop-leave-active {
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
 }
-.pop-enter-from, .pop-leave-to {
+.pop-enter-from,
+.pop-leave-to {
   transform: translateY(10px) scale(0.98);
   opacity: 0;
 }

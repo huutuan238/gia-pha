@@ -38,35 +38,21 @@
 
     <section>
       <div class="container">
-        <div class="story-grid">
+        <div class="story-grid is-stacked">
+          <div class="story-plate framed">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <img
+              src="../assets/nha-tho-to.jpg"
+              alt="Nhà thờ tổ Họ Nguyễn"
+              class="story-plate-img"
+            />
+          </div>
           <div>
             <span class="eyebrow">Lịch sử dòng họ</span>
             <h2>Nguồn gốc từ xã Mỹ Thành</h2>
             <p>{{ familyInfo.description }}</p>
             <a href="#dieu-huong" class="btn btn-gold btn-sm">Khám phá thêm</a>
-          </div>
-          <div class="story-plate framed">
-            <span class="corner tl"></span><span class="corner tr"></span>
-            <span class="corner bl"></span><span class="corner br"></span>
-            <span class="seal" aria-hidden="true">
-              <svg viewBox="0 0 40 40">
-                <circle
-                  cx="20"
-                  cy="20"
-                  r="18.5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                />
-                <path
-                  d="M20 29 V15 M20 15 L13.5 8.5 M20 15 L26.5 8.5 M14.5 21 L20 15 L25.5 21"
-                  stroke="currentColor"
-                  stroke-width="1.2"
-                  fill="none"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </span>
           </div>
         </div>
       </div>
@@ -162,3 +148,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.story-grid.is-stacked {
+  grid-template-columns: 1fr;
+}
+
+.story-plate {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  padding: 0;
+}
+
+.story-plate-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+</style>

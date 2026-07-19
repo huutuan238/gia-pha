@@ -5,11 +5,11 @@ export const getAllEvent = () => {
 };
 
 export const getEventById = (id) => {
-    return apiClient.get(`/events/${id}`, );
+  return apiClient.get(`/events/${id}`);
 };
 
 export const deleteEvent = (id) => {
-    return apiClient.delete(`/events/${id}`, );
+  return apiClient.delete(`/events/${id}`);
 };
 
 export const addEvent = (eventInfo) => {

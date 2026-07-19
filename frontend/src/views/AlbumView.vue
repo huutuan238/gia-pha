@@ -2,10 +2,14 @@
   <main id="main" class="section container">
     <div class="tree-toolbar">
       <div>
-        <span class="eyebrow">{{ albums.length }} album · {{ totalPhotos }} ảnh</span>
+        <span class="eyebrow"
+          >{{ albums.length }} album · {{ totalPhotos }} ảnh</span
+        >
         <h1 style="font-size: 28px">Album ảnh gia đình</h1>
       </div>
-      <button class="btn btn-primary" @click="showCreateModal = true">+ Tạo album</button>
+      <button class="btn btn-primary" @click="showCreateModal = true">
+        + Tạo album
+      </button>
       <AlbumModal v-model:open="showCreateModal" @created="onAlbumCreated" />
     </div>
 
@@ -13,7 +17,13 @@
 
     <div v-else-if="loadError" class="tree-status tree-status-error">
       {{ loadError }}
-      <button class="btn btn-outline" style="margin-left:12px;" @click="getAlbums">Thử lại</button>
+      <button
+        class="btn btn-outline"
+        style="margin-left: 12px"
+        @click="getAlbums"
+      >
+        Thử lại
+      </button>
     </div>
 
     <template v-else>
@@ -34,7 +44,7 @@
               :src="resolvePhotoUrl(album.coverPhotoUrl)"
               :alt="album.title"
               class="cover-img"
-            >
+            />
             <span v-else class="cover-placeholder">Chưa có ảnh bìa</span>
           </div>
           <div class="album-info">
@@ -62,7 +72,7 @@ const loadError = ref("");
 const showCreateModal = ref(false);
 
 const totalPhotos = computed(() =>
-  albums.reduce((sum, album) => sum + (album.photoCount || 0), 0)
+  albums.reduce((sum, album) => sum + (album.photoCount || 0), 0),
 );
 
 async function getAlbums() {
@@ -71,7 +81,9 @@ async function getAlbums() {
   try {
     const res = await fetchAlbums();
     const payload = res.data;
-    const items = Array.isArray(payload) ? payload : (payload.items || payload.data || []);
+    const items = Array.isArray(payload)
+      ? payload
+      : payload.items || payload.data || [];
     albums.splice(0, albums.length, ...items);
   } catch (err) {
     console.error("Load albums error:", err);

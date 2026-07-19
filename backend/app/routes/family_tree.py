@@ -13,7 +13,7 @@ family_tree = Blueprint("tree", __name__, url_prefix="/api/family-tree")
 
 @family_tree.route("/info/<string:family_id>", methods=["GET"])
 def get_info(family_id):
-    person_id = "12a9bddf-855a-4583-a695-c73fa8c0e9b2"
+    person_id = "1"
     result = get_family_info(family_id, person_id)
     return jsonify(result)
 
