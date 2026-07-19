@@ -147,6 +147,9 @@ const chartEl = ref(null);
 let f3Chart = null;
 let f3Card = null;
 
+// id của người muốn focus làm main person khi mở cây (thuỷ tổ)
+const MAIN_PERSON_ID = "1";
+
 /* ================== DỮ LIỆU (lấy từ backend) ================== */
 const data = reactive([]);
 const loading = ref(false);
@@ -188,12 +191,25 @@ function initChart() {
     .createChart(chartEl.value, data)
     .setTransitionTime(1000)
     .setCardXSpacing(250)
-    .setCardYSpacing(150);
+    .setCardYSpacing(150)
+    .setShowSiblingsOfMain(true); // hiện đầy đủ anh/chị/em ruột của main person
 
   f3Card = f3Chart.setCardHtml().setCardDisplay([["fullName"], ["years"]]);
 
-  // Không dùng f3EditTree — mọi click mở panel tự custom
-  f3Card.setOnCardClick((e, d) => openEditPanel(d.data));
+  // Click vào card: vừa focus (đổi main person -> viền sáng + tự recalculate cây quanh người này),
+  // vừa mở panel sửa custom của mình.
+  f3Card.setOnCardClick((e, d) => {
+    f3Chart.updateMainId(d.data.id);
+    f3Chart.updateTree({ tree_position: "inherit" });
+    openEditPanel(d.data);
+  });
+
+  // Focus main person vào MAIN_PERSON_ID nếu tồn tại trong data,
+  // tránh để family-chart mặc định chọn data[0] (thường không phải thuỷ tổ,
+  // khiến cây chỉ hiện 1 nhánh thay vì toàn bộ con cháu).
+  if (data.some((p) => p.id === MAIN_PERSON_ID)) {
+    f3Chart.updateMainId(MAIN_PERSON_ID);
+  }
 
   f3Chart.updateTree({ initial: true });
 }
@@ -273,7 +289,7 @@ function resetForm() {
   form.gender = "M";
   form.birthday = "";
   form.isDeceased = false;
-  form.deathday = "";
+  form.deathDate = "";
   form.note = "";
   form.education = "";
   form.hometown = "";
