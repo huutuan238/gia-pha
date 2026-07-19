@@ -19,12 +19,17 @@
     <transition name="slide">
       <div v-if="panel.open" class="side-panel paper">
         <button class="panel-close" @click="closePanel" aria-label="Đóng">✕</button>
-
-        <div class="seal-badge" style="margin-bottom:16px;">
+        <template v-if="panel.mode === 'edit'">
+          <div class="relation-actions">
+            <button class="btn btn-paper" @click="openAddModal('child')">+ Thêm con</button>
+            <button class="btn btn-paper" @click="openAddModal('spouse')">+ Thêm vợ/chồng</button>
+          </div>
+        </template>
+        <div class="seal-badge" style="margin-bottom:16px; margin-top:16px; ">
           {{ panel.mode === 'edit' ? 'SỬA' : 'THÊM' }}
         </div>
         <p v-if="panelSubtitle" class="panel-subtitle">{{ panelSubtitle }}</p>
-
+        
         <form @submit.prevent="submitPanel">
           <!-- Giới tính -->
           <div class="field-radio-group" style="margin-bottom:20px;">
@@ -83,10 +88,6 @@
 
         <!-- Chỉ hiện khi đang SỬA 1 người đã tồn tại -->
         <template v-if="panel.mode === 'edit'">
-          <div class="relation-actions">
-            <button class="btn btn-paper" @click="openAddModal('child')">+ Thêm con</button>
-            <button class="btn btn-paper" @click="openAddModal('spouse')">+ Thêm vợ/chồng</button>
-          </div>
           <button class="delete-btn" @click="deleteCurrentPerson" :disabled="panel.submitting">Xoá</button>
         </template>
       </div>
