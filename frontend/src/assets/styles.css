@@ -1071,6 +1071,7 @@ section {
   padding: 32px 28px;
   z-index: 20;
   box-sizing: border-box;
+  background-color: beige;
 }
 .slide-enter-active,
 .slide-leave-active {
@@ -1144,7 +1145,7 @@ section {
   width: 100%;
   margin-top: 16px;
   padding: 10px;
-  background: transparent;
+  background: red;
   border: 1px solid var(--color-seal);
   color: var(--color-seal);
   border-radius: 3px;

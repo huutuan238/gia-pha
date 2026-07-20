@@ -51,19 +51,17 @@
         <p v-if="panelSubtitle" class="panel-subtitle">{{ panelSubtitle }}</p>
 
         <form @submit.prevent="submitPanel">
-          <!-- Giới tính -->
-          <div class="field-radio-group" style="margin-bottom: 20px">
-            <label
-              ><input type="radio" value="M" v-model="form.gender" /> Nam</label
-            >
-            <label
-              ><input type="radio" value="F" v-model="form.gender" /> Nữ</label
-            >
-          </div>
 
           <div class="field full">
             <label>Họ và tên</label>
             <input v-model="form.fullName" type="text" required />
+          </div>
+          <div class="field-radio-group" style="margin-bottom: 20px">
+            <label style="display: flex;">Giới tính</label>
+            <select class="select-field" v-model="form.gender">
+              <option value="M"> Nam</option>
+              <option value="F">  Nữ</option>
+            </select>
           </div>
           <div class="field full">
             <label>Ngày sinh</label>
@@ -221,11 +219,11 @@ function initChart() {
 
   // Click vào card: vừa focus (đổi main person -> viền sáng + tự recalculate cây quanh người này),
   // vừa mở panel sửa custom của mình.
-  f3Card.setOnCardClick((e, d) => {
-    f3Chart.updateMainId(d.data.id);
-    f3Chart.updateTree({ tree_position: "inherit" });
-    openEditPanel(d.data);
-  });
+  // f3Card.setOnCardClick((e, d) => {
+  //   f3Chart.updateMainId(d.data.id);
+  //   f3Chart.updateTree({ tree_position: "inherit" });
+  //   openEditPanel(d.data);
+  // });
 
   // Focus main person vào MAIN_PERSON_ID nếu tồn tại trong data,
   // tránh để family-chart mặc định chọn data[0] (thường không phải thuỷ tổ,
@@ -302,6 +300,7 @@ const panel = reactive({
   open: false,
   mode: "edit",
   targetId: null,
+  gender: "M",
   relativeOfId: null,
   submitting: false,
   error: "",
@@ -344,7 +343,7 @@ const panelSubtitle = computed(() => {
 
 function resetForm() {
   form.fullName = "";
-  form.gender = "M";
+  form.gender = panel.mode == "add-spouse" && panel.gender == "M" ? "F" : "M";
   form.birthday = "";
   form.isDeceased = false;
   form.deathDate = "";
@@ -370,6 +369,7 @@ function fillForm(person) {
 function openEditPanel(person) {
   panel.mode = "edit";
   panel.targetId = person.id;
+  panel.gender = person.data?.gender;
   panel.relativeOfId = null;
   panel.error = "";
   fillForm(person);
