@@ -26,14 +26,24 @@
       class="search-box"
       @focusout="handleSearchFocusOut"
     >
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Tìm kiếm..."
-        class="search-input"
-        @focus="searchDropdownOpen = true"
-        @input="searchDropdownOpen = true"
-      />
+      <div class="search-row">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Tìm kiếm..."
+          class="search-input"
+          @focus="searchDropdownOpen = true"
+          @input="searchDropdownOpen = true"
+        />
+        <button
+          type="button"
+          class="btn btn-outline reset-btn"
+          title="Về thuỷ tổ"
+          @click="resetToRoot"
+        >
+          ⟲
+        </button>
+      </div>
       <div
         v-if="searchDropdownOpen && filteredSearchOptions.length"
         class="search-dropdown"
@@ -181,13 +191,22 @@
   position: absolute;
   top: 16px;
   left: 16px;
-  width: 200px;
+  width: 220px;
   z-index: 10;
 }
+.search-row {
+  display: flex;
+  gap: 6px;
+}
 .search-input {
-  width: 100%;
+  flex: 1;
   padding: 6px 10px;
   box-sizing: border-box;
+}
+.reset-btn {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  line-height: 1;
 }
 .search-dropdown {
   overflow-y: auto;
@@ -261,6 +280,14 @@ function selectSearchPerson(personId) {
   searchQuery.value = "";
 }
 
+function resetToRoot() {
+  if (!f3Chart) return;
+  f3Chart.updateMainId(MAIN_PERSON_ID);
+  f3Chart.updateTree({ initial: true });
+  searchDropdownOpen.value = false;
+  searchQuery.value = "";
+}
+
 function handleSearchFocusOut() {
   // đợi 1 chút để click vào option kịp xử lý trước khi đóng dropdown
   setTimeout(() => {
@@ -311,11 +338,11 @@ function initChart() {
 
   // Click vào card: vừa focus (đổi main person -> viền sáng + tự recalculate cây quanh người này),
   // vừa mở panel sửa custom của mình.
-  // f3Card.setOnCardClick((e, d) => {
-  //   f3Chart.updateMainId(d.data.id);
-  //   f3Chart.updateTree({ tree_position: "inherit" });
-  //   openEditPanel(d.data);
-  // });
+  f3Card.setOnCardClick((e, d) => {
+    f3Chart.updateMainId(d.data.id);
+    f3Chart.updateTree({ tree_position: "inherit" });
+    openEditPanel(d.data);
+  });
 
   // Focus main person vào MAIN_PERSON_ID nếu tồn tại trong data,
   // tránh để family-chart mặc định chọn data[0] (thường không phải thuỷ tổ,
