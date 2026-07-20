@@ -15,3 +15,7 @@ export const deleteEvent = (id) => {
 export const addEvent = (eventInfo) => {
   return apiClient.post("/events", eventInfo);
 };
+
+export const updateEvent = (id, eventInfo) => {
+    return apiClient.put(`/events/${id}`, eventInfo);
+  };

@@ -26,6 +26,6 @@ def admin_required(fn):
         verify_jwt_in_request()  # báo lỗi 401 nếu thiếu/token không hợp lệ
         claims = get_jwt()
         if claims.get("role") != "admin":
-            return jsonify({"error": "Chỉ quản trị viên (admin) mới được thực hiện thao tác này."}), 403
+            return jsonify({"error": f'{claims}'}), 403
         return fn(*args, **kwargs)
     return wrapper

@@ -54,7 +54,8 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=user.id, additional_claims={"role": user.role})
+
     return jsonify({"token": token, "user": user.to_dict()}), 201
 
 
@@ -74,7 +75,7 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "Tên đăng nhập hoặc mật khẩu không đúng."}), 401
 
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=user.id, additional_claims={"role": user.role})
     return jsonify({"token": token, "user": user.to_dict()}), 200
 
 

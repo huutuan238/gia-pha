@@ -9,8 +9,10 @@ import RegisterView from "../views/RegisterView.vue";
 import EventDetailView from "../views/EventDetailView.vue";
 import AlbumDetail from "../views/AlbumDetail.vue";
 import FamilyView from "../views/FamilyView.vue";
+import AdminDashBoard from "../views/AdminDashBoard.vue";
+import { authStore } from "../stores/auth.js";
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: HomeView },
@@ -22,5 +24,20 @@ export default createRouter({
     { path: "/register", component: RegisterView },
     { path: "/events/:id", component: EventDetailView },
     { path: "/albums/:id", component: AlbumDetail },
+    {
+      path: "/admin",
+      component: AdminDashBoard,
+      meta: { requiresAdmin: true },
+    },
   ],
 });
+
+// Chặn vào /admin (và mọi route có meta.requiresAdmin) nếu chưa đăng nhập
+// hoặc không phải role admin.
+router.beforeEach((to) => {
+  if (to.meta.requiresAdmin && authStore.state.user?.role !== "admin") {
+    return "/"; // hoặc trang 403 riêng nếu bạn có
+  }
+});
+
+export default router;
