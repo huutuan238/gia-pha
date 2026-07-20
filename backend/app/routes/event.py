@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+from app.decorators import admin_required
 from flask import Blueprint, jsonify, request
 
 from app.extensions import db
@@ -44,6 +45,7 @@ def get_event(event_id):
 
 
 @event_bp.route("", methods=["POST"])
+@admin_required
 def create_event():
     body = request.get_json()
 
@@ -68,6 +70,7 @@ def create_event():
 
 
 @event_bp.route("/<string:event_id>", methods=["PUT"])
+@admin_required
 def update_event(event_id):
     body = request.get_json()
 
@@ -119,6 +122,7 @@ def update_event(event_id):
 
 
 @event_bp.route("/<string:event_id>", methods=["DELETE"])
+@admin_required
 def delete_event(event_id):
     event = db.session.get(
         Event,

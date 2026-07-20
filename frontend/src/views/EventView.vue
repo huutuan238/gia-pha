@@ -5,7 +5,7 @@
         <span class="eyebrow">Lịch giỗ · họp mặt · thông báo</span>
         <h1 style="font-size: 28px">Sự kiện dòng họ</h1>
       </div>
-      <button class="btn btn-primary" @click="showEventModal = true">
+      <button v-if="isAdmin" class="btn btn-primary" @click="showEventModal = true">
         + Tạo sự kiện
       </button>
       <EventModal
@@ -68,6 +68,7 @@
 import EventModal from "../components/EventModal.vue";
 import { getAllEvent } from "../api/event.js";
 import { getFamilyTree } from "../api/familyApi.js"; // TODO: chỉnh lại đúng đường dẫn/tên hàm nếu khác
+import { authStore } from '../stores/auth.js'
 
 export default {
   components: { EventModal },
@@ -79,6 +80,7 @@ export default {
       loadError: "",
       showEventModal: false,
       familyMembers: [], // [{ id, data, rels }, ...] lấy từ getFamilyTree()
+    //   isAdmin: false,
     };
   },
 
@@ -89,6 +91,9 @@ export default {
         id: p.id,
         name: `${p.data?.["first name"] || ""} ${p.data?.["last name"] || ""}`.trim(),
       }));
+    },
+    isAdmin() {
+      return authStore.state.user?.role === 'admin'
     },
   },
 
