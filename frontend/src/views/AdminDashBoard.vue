@@ -30,31 +30,40 @@
         <section v-show="activeTab === 'events'">
           <div class="tree-toolbar" style="margin-top:24px;">
             <p style="color:var(--color-cream-dim); font-size:14px; margin:0;">Quản lý sự kiện dòng họ</p>
-            <button class="btn btn-primary" @click="openEventPanel()">+ Tạo sự kiện</button>
+            <button class="btn btn-primary" @click="openCreateEvent">+ Tạo sự kiện</button>
           </div>
   
           <p v-if="eventsError" class="alert-error">{{ eventsError }}</p>
   
-          <div class="event-list">
-            <div class="paper event-row" v-for="event in events" :key="event.id">
-              <div class="event-date">
-                <span class="d">{{ formatDay(event.datetime) }}</span>
-                <span class="m">{{ formatMonth(event.datetime) }}</span>
-              </div>
-              <div class="event-body">
-                <h3>{{ event.title }}</h3>
-                <p>{{ event.description }}</p>
-              </div>
-              <div class="event-meta" style="gap:10px;">
-                <button class="btn btn-outline" style="color:var(--color-ink); border-color:var(--color-paper-line); padding:6px 12px; font-size:13px;" @click="openEventPanel(event)">
-                  Sửa
-                </button>
-                <button class="btn btn-outline" style="color:var(--color-seal); border-color:var(--color-seal); padding:6px 12px; font-size:13px;" @click="removeEvent(event)">
-                  Xoá
-                </button>
-              </div>
-            </div>
-            <p v-if="!events.length" style="color:var(--color-cream-dim);">Chưa có sự kiện nào.</p>
+          <div class="paper" style="overflow-x:auto;">
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th>Tiêu đề</th>
+                  <th>Loại</th>
+                  <th>Thời gian</th>
+                  <th>Địa điểm</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="event in events" :key="event.id">
+                  <td>{{ event.title }}</td>
+                  <td>{{ eventTypeLabel(event.type) }}</td>
+                  <td>{{ formatDateTime(event.datetime) }}</td>
+                  <td>{{ event.location }}</td>
+                  <td style="text-align:right; white-space:nowrap;">
+                    <button class="btn btn-outline" style="color:var(--color-ink); border-color:var(--color-paper-line); padding:6px 12px; font-size:13px; margin-right:8px;" @click="openEditEvent(event)">
+                      Sửa
+                    </button>
+                    <button class="btn btn-outline" style="color:var(--color-seal); border-color:var(--color-seal); padding:6px 12px; font-size:13px;" @click="removeEvent(event)">
+                      Xoá
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p v-if="!events.length" style="color:var(--color-ink-soft); padding:16px;">Chưa có sự kiện nào.</p>
           </div>
         </section>
   
@@ -138,61 +147,14 @@
       </template>
     </main>
   
-    <!-- ============ PANEL SỰ KIỆN ============ -->
-    <Teleport to="body">
-      <div v-if="eventPanel.open" class="modal-overlay" @click.self="closeEventPanel">
-        <div class="paper modal-card">
-          <button class="modal-close" @click="closeEventPanel">✕</button>
-          <h2 style="font-size:20px; margin-bottom:20px;">
-            {{ eventPanel.editingId ? 'Sửa sự kiện' : 'Tạo sự kiện mới' }}
-          </h2>
-          <p v-if="eventFormError" class="alert-error">{{ eventFormError }}</p>
-  
-          <form @submit.prevent="submitEvent">
-            <div class="form-grid">
-              <div class="field full">
-                <label>Dòng họ</label>
-                <select v-model="eventForm.familyId">
-                  <option value="">— Chọn dòng họ —</option>
-                  <option v-for="f in families" :key="f.id" :value="f.id">{{ f.name }}</option>
-                </select>
-              </div>
-              <div class="field full">
-                <label>Tiêu đề</label>
-                <input v-model="eventForm.title" type="text" placeholder="Giỗ tổ họ Nguyễn">
-              </div>
-              <div class="field">
-                <label>Loại sự kiện</label>
-                <select v-model="eventForm.eventType">
-                  <option>Giỗ</option>
-                  <option>Họp mặt</option>
-                  <option>Sinh nhật</option>
-                  <option>Khác</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Thời gian</label>
-                <input v-model="eventForm.eventDatetime" type="datetime-local">
-              </div>
-              <div class="field full">
-                <label>Địa điểm</label>
-                <input v-model="eventForm.location" type="text">
-              </div>
-              <div class="field full">
-                <label>Mô tả</label>
-                <textarea v-model="eventForm.description" rows="3"></textarea>
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn btn-outline" @click="closeEventPanel">Hủy</button>
-              <button type="submit" class="btn btn-primary" :disabled="eventSubmitting">
-                {{ eventSubmitting ? 'Đang lưu…' : 'Lưu' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Teleport>
+    <!-- Modal thêm/sửa sự kiện — dùng component EventModal đã có sẵn -->
+    <EventModal
+      v-model:open="showEventModal"
+      :persons="[]"
+      :event-to-edit="editingEvent"
+      @created="onEventCreated"
+      @updated="onEventCreated"
+    />
   
     <!-- ============ PANEL DÒNG HỌ ============ -->
     <Teleport to="body">
@@ -242,9 +204,10 @@
   <script setup>
   import { reactive, ref, computed, onMounted } from 'vue'
   import { authStore } from '../stores/auth.js'
-  import { getAllEvent, addEvent, updateEvent, deleteEvent } from '../api/event.js'
+  import { getAllEvent, deleteEvent } from '../api/event.js'
   import { getAllFamily, addFamily, updateFamily, deleteFamily } from '../api/family.js'
   import { getAllUser, updateUserRole } from '../api/user.js'
+  import EventModal from '../components/EventModal.vue'
   
   const isAdmin = computed(() => authStore.state.user?.role === 'admin')
   const currentUserId = computed(() => authStore.state.user?.id)
@@ -259,12 +222,18 @@
   /* ================== SỰ KIỆN ================== */
   const events = ref([])
   const eventsError = ref('')
-  const eventPanel = reactive({ open: false, editingId: null })
-  const eventForm = reactive({
-    familyId: '', title: '', eventType: 'Giỗ', eventDatetime: '', location: '', description: '',
-  })
-  const eventFormError = ref('')
-  const eventSubmitting = ref(false)
+  const showEventModal = ref(false)
+  const editingEvent = ref(null) // null = chế độ tạo mới; có giá trị = chế độ sửa
+  
+  function openCreateEvent() {
+    editingEvent.value = null
+    showEventModal.value = true
+  }
+  
+  function openEditEvent(event) {
+    editingEvent.value = event
+    showEventModal.value = true
+  }
   
   async function fetchEvents() {
     eventsError.value = ''
@@ -276,71 +245,28 @@
     }
   }
   
-  function formatDay(iso) {
-    return iso ? new Date(iso).getDate().toString().padStart(2, '0') : '--'
-  }
-  function formatMonth(iso) {
-    return iso ? `Th.${new Date(iso).getMonth() + 1}` : ''
-  }
-  
-  function resetEventForm() {
-    eventForm.familyId = ''
-    eventForm.title = ''
-    eventForm.eventType = 'Giỗ'
-    eventForm.eventDatetime = ''
-    eventForm.location = ''
-    eventForm.description = ''
+  const EVENT_TYPE_LABELS = {
+    gio: 'Giỗ',
+    ho: 'Họ',
+    'hop-mat': 'Họp mặt',
+    khac: 'Khác',
   }
   
-  function openEventPanel(event = null) {
-    eventFormError.value = ''
-    if (event) {
-      eventPanel.editingId = event.id
-      eventForm.familyId = event.familyId || ''
-      eventForm.title = event.title || ''
-      eventForm.eventType = event.type || 'Giỗ'
-      eventForm.eventDatetime = event.datetime ? event.datetime.slice(0, 16) : ''
-      eventForm.location = event.location || ''
-      eventForm.description = event.description || ''
-    } else {
-      eventPanel.editingId = null
-      resetEventForm()
-    }
-    eventPanel.open = true
-  }
-  function closeEventPanel() {
-    eventPanel.open = false
+  function eventTypeLabel(type) {
+    return EVENT_TYPE_LABELS[type] || type || '—'
   }
   
-  async function submitEvent() {
-    if (!eventForm.title.trim() || !eventForm.familyId || !eventForm.eventDatetime) {
-      eventFormError.value = 'Vui lòng nhập đủ Dòng họ, Tiêu đề và Thời gian.'
-      return
-    }
-    eventSubmitting.value = true
-    eventFormError.value = ''
-    const payload = {
-      family_id: eventForm.familyId,
-      title: eventForm.title,
-      event_type: eventForm.eventType,
-      event_datetime: eventForm.eventDatetime,
-      location: eventForm.location,
-      description: eventForm.description,
-    }
-    try {
-      if (eventPanel.editingId) {
-        await updateEvent(eventPanel.editingId, payload)
-      } else {
-        await addEvent(payload)
-      }
-      await fetchEvents()
-      closeEventPanel()
-    } catch (err) {
-      const body = err.response?.data
-      eventFormError.value = (body?.errors && body.errors.join(', ')) || body?.error || 'Lưu thất bại.'
-    } finally {
-      eventSubmitting.value = false
-    }
+  function formatDateTime(iso) {
+    if (!iso) return '—'
+    const d = new Date(iso)
+    const pad = (n) => String(n).padStart(2, '0')
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  }
+  
+  // EventModal tự lưu qua addEvent() rồi emit "created" — mình chỉ cần
+  // tải lại danh sách từ server để đồng bộ (thay vì tự chèn tay vào mảng).
+  function onEventCreated() {
+    fetchEvents()
   }
   
   async function removeEvent(event) {
