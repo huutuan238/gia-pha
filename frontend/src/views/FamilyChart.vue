@@ -20,6 +20,35 @@
       style="width: 100%; height: 900px; background-color: #8fa08f; color: #fff"
     ></div>
 
+    <!-- ================= SEARCH BOX ================= -->
+    <div
+      v-if="!loading && !loadError"
+      class="search-box"
+      @focusout="handleSearchFocusOut"
+    >
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Tìm kiếm..."
+        class="search-input"
+        @focus="searchDropdownOpen = true"
+        @input="searchDropdownOpen = true"
+      />
+      <div
+        v-if="searchDropdownOpen && filteredSearchOptions.length"
+        class="search-dropdown"
+      >
+        <div
+          v-for="opt in filteredSearchOptions"
+          :key="opt.value"
+          class="search-option"
+          @click="selectSearchPerson(opt.value)"
+        >
+          {{ opt.label }}
+        </div>
+      </div>
+    </div>
+
     <button
       v-if="!loading && !loadError"
       class="btn btn-outline export-btn"
@@ -51,7 +80,6 @@
         <p v-if="panelSubtitle" class="panel-subtitle">{{ panelSubtitle }}</p>
 
         <form @submit.prevent="submitPanel">
-
           <div class="field full">
             <label>Họ và tên</label>
             <input v-model="form.fullName" type="text" required />
@@ -136,7 +164,8 @@
         </template>
       </div>
     </transition>
-  </div></template>
+  </div>
+</template>
 
 <style scoped>
 .tree-shell {
@@ -147,6 +176,32 @@
   top: 16px;
   right: 16px;
   z-index: 10;
+}
+.search-box {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 200px;
+  z-index: 10;
+}
+.search-input {
+  width: 100%;
+  padding: 6px 10px;
+  box-sizing: border-box;
+}
+.search-dropdown {
+  overflow-y: auto;
+  max-height: 300px;
+  background-color: #000;
+  color: #fff;
+}
+.search-option {
+  padding: 5px 8px;
+  cursor: pointer;
+  border-bottom: 0.5px solid currentColor;
+}
+.search-option:hover {
+  background-color: #333;
 }
 </style>
 
@@ -175,6 +230,43 @@ const data = reactive([]);
 const loading = ref(false);
 const loadError = ref("");
 const exporting = ref(false);
+
+/* ================== SEARCH STATE ================== */
+const searchQuery = ref("");
+const searchDropdownOpen = ref(false);
+
+const allSearchOptions = computed(() => {
+  const seen = new Set();
+  const options = [];
+  data.forEach((d) => {
+    if (seen.has(d.id)) return;
+    seen.add(d.id);
+    options.push({ label: d.data?.fullName || "", value: d.id });
+  });
+  return options;
+});
+
+const filteredSearchOptions = computed(() => {
+  const q = searchQuery.value.toLowerCase();
+  return allSearchOptions.value.filter((o) =>
+    o.label.toLowerCase().includes(q),
+  );
+});
+
+function selectSearchPerson(personId) {
+  if (!f3Chart) return;
+  f3Chart.updateMainId(personId);
+  f3Chart.updateTree({ initial: true });
+  searchDropdownOpen.value = false;
+  searchQuery.value = "";
+}
+
+function handleSearchFocusOut() {
+  // đợi 1 chút để click vào option kịp xử lý trước khi đóng dropdown
+  setTimeout(() => {
+    searchDropdownOpen.value = false;
+  }, 200);
+}
 
 /**
  * Lấy danh sách toàn bộ person từ backend qua getFamilyTree().
