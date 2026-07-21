@@ -12,75 +12,63 @@ person_bp = Blueprint("person", __name__, url_prefix="/api/persons")
 @person_bp.route("/", methods=["POST"])
 def add_person():
     body = request.get_json()
-    from pathlib import Path
-    import json
+    if not body:
+        return jsonify({"message": "Request body is required"}), 400
 
-    persons = json.loads(
-        Path(__file__).with_name("data.json").read_text(encoding="utf-8")
+    data = body.get("data", {})
+    rels = body.get("rels", {})
+
+    # Kiểm tra trùng id
+    if Person.query.get(body["id"]):
+        return jsonify({"message": "Person already exists"}), 409
+
+    person = Person(
+        id=body["id"],
+        family_id='8b6c4f0e-7f3a-4d8e-9a61-2e7b5c9d1f20',
+        full_name=data.get("fullName", ""),
+        birthday=data.get("birthday", ""),
+        avatar=data.get("avatar", ""),
+        gender=data.get("gender", ""),
+        hometown=data.get("hometown", ""),
+        current_address=data.get("currentAddress", ""),
+        death_date=data.get("deathDate") or None,
+        education=data.get("education", ""),
+        notes=data.get("notes", ""),
+        sibling_index=data.get("sibling_index", ""),
     )
+
     try:
-        for body in persons:
+        db.session.add(person)
 
-            if not body:
-                return jsonify({"message": "Request body is required"}), 400
+        # Parent -> Child
+        for parent_id in rels.get("parents", []):
+            if not Person.query.get(parent_id):
+                db.session.rollback()
+                return jsonify({"message": f"Parent '{parent_id}' not found"}), 404
 
-            data = body.get("data", {})
-            rels = body.get("rels", {})
-
-            if data.get('gender') == 'M' and rels.get('spouses'):
-                del rels['spouses']
-            
-
-            # Kiểm tra trùng id
-            if Person.query.get(body["id"]):
-                return jsonify({"message": "Person already exists"}), 409
-
-            person = Person(
-                id=body["id"],
-                family_id='8b6c4f0e-7f3a-4d8e-9a61-2e7b5c9d1f20',
-                full_name=data.get("first name", ""),
-                birthday=data.get("birthday", "")or None,
-                avatar=data.get("avatar", ""),
-                gender=data.get("gender", ""),
-                hometown=data.get("hometown", ""),
-                current_address=data.get("currentAddress", ""),
-                death_date=data.get("deathDate") or None,
-                education=data.get("education", ""),
-                notes=data.get("notes", ""),
-                sibling_index=data.get("sibling_index", 1),
+            db.session.add(
+                Relationship(
+                    id=str(uuid.uuid4()),
+                    person_id=parent_id,
+                    related_person_id=person.id,
+                    relation_type="PARENT",
+                )
             )
 
-            db.session.add(person)
+        # Spouse
+        for spouse_id in rels.get("spouses", []):
+            if not Person.query.get(spouse_id):
+                db.session.rollback()
+                return jsonify({"message": f"Spouse '{spouse_id}' not found"}), 404
 
-            # Parent -> Child
-            for parent_id in rels.get("parents", []):
-                if not Person.query.get(parent_id):
-                    db.session.rollback()
-                    return jsonify({"message": f"Parent '{parent_id}' not found"}), 404
-
-                db.session.add(
-                    Relationship(
-                        id=str(uuid.uuid4()),
-                        person_id=parent_id,
-                        related_person_id=person.id,
-                        relation_type="PARENT",
-                    )
+            db.session.add(
+                Relationship(
+                    id=str(uuid.uuid4()),
+                    person_id=person.id,
+                    related_person_id=spouse_id,
+                    relation_type="SPOUSE",
                 )
-
-            # Spouse
-            for spouse_id in rels.get("spouses", []):
-                if not Person.query.get(spouse_id):
-                    db.session.rollback()
-                    return jsonify({"message": f"Spouse '{spouse_id}' not found"}), 404
-
-                db.session.add(
-                    Relationship(
-                        id=str(uuid.uuid4()),
-                        person_id=person.id,
-                        related_person_id=spouse_id,
-                        relation_type="SPOUSE",
-                    )
-                )
+            )
 
         db.session.commit()
 
