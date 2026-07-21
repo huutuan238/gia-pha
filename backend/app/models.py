@@ -36,7 +36,7 @@ class Person(db.Model):
             "death_date": self.death_date.isoformat() if self.death_date else None,
             "avatar": self.avatar,
             "hometown": self.hometown,
-            "current_address": self.current_address,
+            "currentAddress": self.current_address,
             "gender": self.gender,
             "education": self.education,
             "notes": self.notes,

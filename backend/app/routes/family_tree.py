@@ -23,29 +23,45 @@ def get_persons():
     persons = Person.query.all()
     relationships = Relationship.query.all()
 
-    # Map person_id -> rels
-    rel_map = defaultdict(lambda: {"spouses": [], "children": [], "parents": []})
+    person_map = {
+        p.id: p
+        for p in persons
+    }
+
+    rel_map = defaultdict(
+        lambda: {
+            "spouses": [],
+            "children": [],
+            "parents": [],
+        }
+    )
 
     for rel in relationships:
         if rel.relation_type == "PARENT":
-            # parent -> child
             rel_map[rel.person_id]["children"].append(rel.related_person_id)
             rel_map[rel.related_person_id]["parents"].append(rel.person_id)
 
         elif rel.relation_type == "SPOUSE":
-            # chỉ lưu 1 chiều trong DB nhưng trả về 2 chiều
             rel_map[rel.person_id]["spouses"].append(rel.related_person_id)
             rel_map[rel.related_person_id]["spouses"].append(rel.person_id)
+
+    # Sort children theo sibling_index
+    for rels in rel_map.values():
+        rels["children"].sort(
+            key=lambda child_id: (
+                person_map[child_id].sibling_index
+                if person_map[child_id].sibling_index is not None
+                else 999999
+            )
+        )
 
     result = []
 
     for person in persons:
-        result.append(
-            {
-                "id": person.id,
-                "data": person.to_dict(),
-                "rels": rel_map[person.id],
-            }
-        )
+        result.append({
+            "id": person.id,
+            "data": person.to_dict(),
+            "rels": rel_map[person.id],
+        })
 
     return jsonify(result)

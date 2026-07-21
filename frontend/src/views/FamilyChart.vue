@@ -117,7 +117,7 @@
           <!-- Con thứ mấy -->
           <div class="field full">
             <label>Con thứ</label>
-            <select class="select-field" v-model="form.birthOrder">
+            <select class="select-field" v-model="form.siblingIndex">
               <option v-for="n in 15" :key="n" :value="n">
                 Con thứ {{ n }}
               </option>
@@ -157,7 +157,7 @@
           </div>
           <div class="field full">
             <label>Ghi chú</label>
-            <input v-model="form.note" type="text" />
+            <input v-model="form.notes" type="text" />
           </div>
 
           <div class="panel-actions">
@@ -360,14 +360,16 @@ function initChart() {
 
   f3Chart = f3
     .createChart(chartEl.value, data)
-  //   .setTransitionTime(0)        // tắt animation cho lần render đầu, chỉ bật lại sau
-  // .setAncestryDepth(3)         // chỉ hiện tối đa 3 đời ông bà lên trên
-  // .setProgenyDepth(3)          // chỉ hiện tối đa 3 đời con cháu xuống dưới
-    .setCardXSpacing(250)
-    .setCardYSpacing(150)
+    .setTransitionTime(0)        // tắt animation cho lần render đầu, chỉ bật lại sau
+    .setAncestryDepth(3)         // chỉ hiện tối đa 3 đời ông bà lên trên
+    .setProgenyDepth(3)          // chỉ hiện tối đa 3 đời con cháu xuống dưới
+    .setCardXSpacing(350)
+    .setCardYSpacing(250)
     .setShowSiblingsOfMain(true); // hiện đầy đủ anh/chị/em ruột của main person
 
-  f3Card = f3Chart.setCardHtml().setCardDisplay([["fullName"], ["years"]]);
+    f3Chart.updateMainId('n7_1_1_5_1')  // Charles III
+    f3Card = f3Chart.setCardHtml().setCardDisplay([["fullName"], ["years"]]);
+
 
   // Click vào card: vừa focus (đổi main person -> viền sáng + tự recalculate cây quanh người này),
   // vừa mở panel sửa custom của mình.
@@ -463,13 +465,13 @@ const form = reactive({
   gender: "M",
   birthday: "",
   isLunar: false,
-  birthOrder: "",
   isDeceased: false,
   deathDate: "",
-  note: "",
+  notes: "",
   education: "",
   hometown: "",
   currentAddress: "",
+  siblingIndex: "1",
 });
 
 function personName(id) {
@@ -500,13 +502,13 @@ function resetForm() {
   form.gender = panel.mode == "add-spouse" && panel.gender == "M" ? "F" : "M";
   form.birthday = "";
   form.isLunar = false;
-  form.birthOrder = "";
   form.isDeceased = false;
   form.deathDate = "";
-  form.note = "";
+  form.notes = "";
   form.education = "";
   form.hometown = "";
   form.currentAddress = "";
+  form.siblingIndex = "1";
 }
 
 function fillForm(person) {
@@ -515,13 +517,13 @@ function fillForm(person) {
   form.gender = d.gender || "M";
   form.birthday = d.birthday || "";
   form.isLunar = !!d.is_lunar;
-  form.birthOrder = d.birth_order ?? "";
   form.isDeceased = !!d.death_date;
   form.deathDate = d.death_date || "";
-  form.note = d.note || "";
+  form.notes = d.notes || "";
   form.education = d.education || "";
   form.hometown = d.hometown || "";
-  form.currentAddress = d.current_address || "";
+  form.currentAddress = d.currentAddress || "";
+  form.siblingIndex = d.siblingIndex || "";
 }
 
 function openEditPanel(person) {
@@ -565,9 +567,9 @@ function buildDataFromForm() {
     gender: form.gender,
     birthday: form.birthday,
     is_lunar: form.isLunar,
-    birth_order: form.birthOrder === "" ? null : Number(form.birthOrder),
+    siblingIndex: form.siblingIndex === "" ? null : Number(form.siblingIndex),
     death_date: form.isDeceased ? form.deathDate : null,
-    note: form.note,
+    note: form.notes,
     education: form.education,
     hometown: form.hometown,
     current_address: form.currentAddress,
