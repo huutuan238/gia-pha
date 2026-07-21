@@ -360,7 +360,9 @@ function initChart() {
 
   f3Chart = f3
     .createChart(chartEl.value, data)
-    .setTransitionTime(1000)
+  //   .setTransitionTime(0)        // tắt animation cho lần render đầu, chỉ bật lại sau
+  // .setAncestryDepth(3)         // chỉ hiện tối đa 3 đời ông bà lên trên
+  // .setProgenyDepth(3)          // chỉ hiện tối đa 3 đời con cháu xuống dưới
     .setCardXSpacing(250)
     .setCardYSpacing(150)
     .setShowSiblingsOfMain(true); // hiện đầy đủ anh/chị/em ruột của main person
