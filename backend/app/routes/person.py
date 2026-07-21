@@ -81,16 +81,12 @@ def add_person():
 
 @person_bp.route("/<string:person_id>", methods=["PUT"])
 def update_person(person_id):
-
     body = request.get_json()
-
-    person = db.session.get(Person, person_id)
-
+    person: Person = db.session.get(Person, person_id)
     if not person:
         return jsonify({"message": "Person not found"}), 404
 
     data = body.get("data", {})
-
     try:
         # update person data
         person.full_name=data.get("fullName", ""),
@@ -102,6 +98,7 @@ def update_person(person_id):
         person.death_date=data.get("deathDate") or None,
         person.education=data.get("education", ""),
         person.note=data.get("note", ""),
+        person.sibling_index=data.get("siblingIndex", ""),
         db.session.commit()
 
         return jsonify({"success": True, "id": person_id})
