@@ -7,6 +7,7 @@ class Person(db.Model):
 
     id = db.Column(db.String(36), primary_key=True)
     family_id = db.Column(db.String(36), db.ForeignKey("families.id"), nullable=True)
+    user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=True)
     full_name = db.Column(db.String(100), nullable=True)
     birthday = db.Column(db.Date)
     hometown = db.Column(db.String(255))
@@ -15,7 +16,8 @@ class Person(db.Model):
     avatar = db.Column(db.Text)
     gender = db.Column(db.String(1))
     education = db.Column(db.String(255))
-    note = db.Column(db.Text)
+    notes = db.Column(db.Text)
+    sibling_index = db.Column(db.Integer)
     created_at = db.Column(
         db.DateTime,
         server_default=db.func.now()
@@ -37,7 +39,8 @@ class Person(db.Model):
             "current_address": self.current_address,
             "gender": self.gender,
             "education": self.education,
-            "note": self.note,
+            "notes": self.notes,
+            "siblingIndex": self.sibling_index,
         }
 
 
