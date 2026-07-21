@@ -30,6 +30,7 @@ def create_app():
     from app.routes.family import families_bp
     from app.routes.auth import auth_bp
     from app.routes.user import users_bp
+    from app.routes.search import search_bp
 
     from flask_jwt_extended import JWTManager
     app.config["JWT_SECRET_KEY"] = "đổi-thành-chuỗi-bí-mật-thật-dài"
@@ -42,5 +43,6 @@ def create_app():
     app.register_blueprint(event_bp)
     app.register_blueprint(album_bp)
     app.register_blueprint(families_bp)
+    app.register_blueprint(search_bp)
 
     return app

@@ -101,10 +101,29 @@
               <option value="F">  Nữ</option>
             </select>
           </div>
+
+          <!-- Ngày sinh + checkbox âm/dương lịch -->
           <div class="field full">
             <label>Ngày sinh</label>
-            <input v-model="form.birthday" type="date" required />
+            <div class="birthday-row">
+              <input v-model="form.birthday" type="date" required />
+              <label class="lunar-checkbox">
+                <input type="checkbox" v-model="form.isLunar" />
+                Âm lịch
+              </label>
+            </div>
           </div>
+
+          <!-- Con thứ mấy -->
+          <div class="field full">
+            <label>Con thứ</label>
+            <select class="select-field" v-model="form.birthOrder">
+              <option v-for="n in 15" :key="n" :value="n">
+                Con thứ {{ n }}
+              </option>
+            </select>
+          </div>
+
           <div class="field full">
             <label>Quê quán</label>
             <input v-model="form.hometown" type="text" required />
@@ -133,7 +152,7 @@
             </label>
           </div>
           <div class="field full" v-if="form.isDeceased">
-            <label>Ngày mất</label>
+            <label>Ngày mất(Ghi ngày giỗ(AL))</label>
             <input v-model="form.deathDate" type="date" />
           </div>
           <div class="field full">
@@ -221,6 +240,18 @@
 }
 .search-option:hover {
   background-color: #333;
+}
+.birthday-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lunar-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-weight: normal;
 }
 </style>
 
@@ -429,6 +460,8 @@ const form = reactive({
   fullName: "",
   gender: "M",
   birthday: "",
+  isLunar: false,
+  birthOrder: "",
   isDeceased: false,
   deathDate: "",
   note: "",
@@ -464,6 +497,8 @@ function resetForm() {
   form.fullName = "";
   form.gender = panel.mode == "add-spouse" && panel.gender == "M" ? "F" : "M";
   form.birthday = "";
+  form.isLunar = false;
+  form.birthOrder = "";
   form.isDeceased = false;
   form.deathDate = "";
   form.note = "";
@@ -477,6 +512,8 @@ function fillForm(person) {
   form.fullName = d.fullName || "";
   form.gender = d.gender || "M";
   form.birthday = d.birthday || "";
+  form.isLunar = !!d.is_lunar;
+  form.birthOrder = d.birth_order ?? "";
   form.isDeceased = !!d.death_date;
   form.deathDate = d.death_date || "";
   form.note = d.note || "";
@@ -525,6 +562,8 @@ function buildDataFromForm() {
     fullName: form.fullName,
     gender: form.gender,
     birthday: form.birthday,
+    is_lunar: form.isLunar,
+    birth_order: form.birthOrder === "" ? null : Number(form.birthOrder),
     death_date: form.isDeceased ? form.deathDate : null,
     note: form.note,
     education: form.education,
