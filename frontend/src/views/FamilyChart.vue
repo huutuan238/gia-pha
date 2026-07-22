@@ -157,7 +157,7 @@
           </div>
           <div class="field full">
             <label>Ghi chú</label>
-            <input v-model="form.notes" type="text" />
+            <textarea v-model="form.notes" type="text" />
           </div>
 
           <div class="panel-actions">

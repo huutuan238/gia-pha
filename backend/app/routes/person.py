@@ -34,7 +34,7 @@ def add_person():
         death_date=data.get("deathDate") or None,
         education=data.get("education", ""),
         notes=data.get("notes", ""),
-        sibling_index=data.get("sibling_index", ""),
+        sibling_index=data.get("siblingIndex", ""),
     )
 
     try:
