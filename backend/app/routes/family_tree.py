@@ -13,7 +13,7 @@ family_tree = Blueprint("tree", __name__, url_prefix="/api/family-tree")
 
 @family_tree.route("/info/<string:family_id>", methods=["GET"])
 def get_info(family_id):
-    person_id = "1"
+    person_id = "u_nguyenhuuhuan_195"
     result = get_family_info(family_id, person_id)
     return jsonify(result)
 
@@ -23,10 +23,7 @@ def get_persons():
     persons = Person.query.all()
     relationships = Relationship.query.all()
 
-    person_map = {
-        p.id: p
-        for p in persons
-    }
+    person_map = {p.id: p for p in persons}
 
     rel_map = defaultdict(
         lambda: {
@@ -58,9 +55,24 @@ def get_persons():
     result = []
 
     for person in persons:
+        data = person.to_dict()
+
+        # Tạo search_label
+        parent_ids = rel_map[person.id]["parents"]
+
+        if parent_ids:
+            father = person_map[parent_ids[0]]
+            father_last_name = father.full_name.split()[-1]
+            data["search_label"] = f"{person.full_name}({father_last_name})"
+        else:
+            spouses = rel_map[person.id]["spouses"]
+            spouse = person_map[spouses[0]]
+            spouse_last_name = spouse.full_name.split()[-1]
+            data["search_label"] = f"{person.full_name}({spouse_last_name})"
+
         result.append({
             "id": person.id,
-            "data": person.to_dict(),
+            "data": data,
             "rels": rel_map[person.id],
         })
 

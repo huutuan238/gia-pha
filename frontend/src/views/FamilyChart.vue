@@ -291,7 +291,7 @@ const allSearchOptions = computed(() => {
   data.forEach((d) => {
     if (seen.has(d.id)) return;
     seen.add(d.id);
-    options.push({ label: d.data?.fullName || "", value: d.id });
+    options.push({ label: d.data?.search_label || "", value: d.id });
   });
   return options;
 });

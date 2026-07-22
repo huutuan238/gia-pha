@@ -67,7 +67,7 @@
           </div>
           <div class="gen-item">
             <span class="num">{{ familyInfo.count_person }}</span
-            ><span class="label">Thành viên</span>
+            ><span class="label">Con cháu</span>
           </div>
           <div class="gen-item">
             <span class="num">{{ familyInfo.branch_number }}</span
