@@ -25,6 +25,7 @@ def add_person():
     person = Person(
         id=body["id"],
         family_id='8b6c4f0e-7f3a-4d8e-9a61-2e7b5c9d1f20',
+        user_id=data.get("userId", ""),
         full_name=data.get("fullName", ""),
         birthday=data.get("birthday", ""),
         avatar=data.get("avatar", ""),

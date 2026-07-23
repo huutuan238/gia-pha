@@ -31,6 +31,7 @@ class Person(db.Model):
         return {
             "id": self.id,
             "family_id": self.family_id,
+            "userId": self.user_id,
             "fullName": self.full_name,
             "birthday": self.birthday.isoformat() if self.birthday else None,
             "death_date": self.death_date.isoformat() if self.death_date else None,

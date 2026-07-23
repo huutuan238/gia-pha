@@ -167,14 +167,14 @@
               @click="closePanel"
               :disabled="panel.submitting"
             >
-              Cancel
+              Huỷ
             </button>
             <button
               type="submit"
               class="btn btn-primary"
               :disabled="panel.submitting"
             >
-              {{ panel.submitting ? "Đang lưu..." : "Submit" }}
+              {{ panel.submitting ? "Đang lưu..." : "Xác nhận" }}
             </button>
           </div>
 
@@ -182,7 +182,7 @@
         </form>
 
         <!-- Chỉ hiện khi đang SỬA 1 người đã tồn tại -->
-        <template v-if="panel.mode === 'edit'">
+        <template v-if="panel.mode === 'edit' && (isAdmin || panel.createUserId == userId)">
           <button
             class="delete-btn"
             @click="deleteCurrentPerson"
@@ -261,6 +261,7 @@ import * as f3 from "family-chart";
 import "family-chart/styles/family-chart.css";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { authStore } from '../stores/auth.js'
 import {
   getFamilyTree,
   addPerson,
@@ -284,7 +285,8 @@ const exporting = ref(false);
 /* ================== SEARCH STATE ================== */
 const searchQuery = ref("");
 const searchDropdownOpen = ref(false);
-
+const isAdmin = computed(() => authStore.isAdmin())
+const userId = computed(() => authStore.state.user?.id)
 const allSearchOptions = computed(() => {
   const seen = new Set();
   const options = [];
@@ -458,6 +460,7 @@ const panel = reactive({
   relativeOfId: null,
   submitting: false,
   error: "",
+  createUserId: null
 });
 
 const form = reactive({
@@ -527,13 +530,14 @@ function fillForm(person) {
 }
 
 function openEditPanel(person) {
-  panel.mode = "edit";
-  panel.targetId = person.id;
-  panel.gender = person.data?.gender;
-  panel.relativeOfId = null;
-  panel.error = "";
-  fillForm(person);
-  panel.open = true;
+    panel.mode = "edit";
+    panel.targetId = person.id;
+    panel.createUserId = person.data?.userId;
+    panel.gender = person.data?.gender;
+    panel.relativeOfId = null;
+    panel.error = "";
+    fillForm(person);
+    panel.open = true;
 }
 
 function openAddModal(kind) {
@@ -573,6 +577,7 @@ function buildDataFromForm() {
     education: form.education,
     hometown: form.hometown,
     current_address: form.currentAddress,
+    userId: userId.value,
   };
   attachYears(personData);
   return personData;

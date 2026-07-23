@@ -53,9 +53,14 @@ function logout() {
   clearSession()
 }
 
+function isAdmin() {
+  return state.user?.role === 'admin'
+}
+
 export const authStore = {
   state,
   register,
   login,
   logout,
+  isAdmin
 }
