@@ -510,6 +510,7 @@
     width: 100%;
     max-width: 600px;
     max-height: 90vh;
+    background: var(--paper-card);
     overflow-y: auto;
     padding: 36px;
     position: relative;

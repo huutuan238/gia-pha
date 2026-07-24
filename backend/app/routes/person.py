@@ -28,7 +28,7 @@ def add_person():
         user_id=data.get("userId", ""),
         full_name=data.get("fullName", ""),
         birthday=data.get("birthday", ""),
-        avatar=data.get("avatar", ""),
+        avatar="src/assets/male.png" if data.get("gender", "") == 'M' else "src/assets/female.png",
         gender=data.get("gender", ""),
         hometown=data.get("hometown", ""),
         current_address=data.get("currentAddress", ""),
