@@ -66,9 +66,12 @@ def get_persons():
             data["search_label"] = f"{person.full_name}({father_last_name})"
         else:
             spouses = rel_map[person.id]["spouses"]
-            spouse = person_map[spouses[0]]
-            spouse_last_name = spouse.full_name.split()[-1]
-            data["search_label"] = f"{person.full_name}({spouse_last_name})"
+            if len(spouses):
+                spouse = person_map[spouses[0]]
+                spouse_last_name = spouse.full_name.split()[-1]
+                data["search_label"] = f"{person.full_name}({spouse_last_name})"
+            else:
+                data["search_label"] = f"{person.full_name}"
 
         result.append({
             "id": person.id,

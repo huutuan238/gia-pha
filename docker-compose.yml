@@ -19,7 +19,7 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: flaskdb
+      DB_NAME: postgres
       DB_USER: postgres
       DB_PASSWORD: password
     ports:
