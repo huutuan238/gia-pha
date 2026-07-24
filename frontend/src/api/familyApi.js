@@ -19,3 +19,11 @@ export const updatePerson = (id, person) => {
 export const deletePerson = (id) => {
   return apiClient.delete(`/persons/${id}`);
 };
+
+export const updateRelationships = (parentId, childrens) => {
+  const data = {
+    parentId: parentId,
+    childrens: childrens
+  }
+  return apiClient.post(`/persons/update-relationships`, data);
+};

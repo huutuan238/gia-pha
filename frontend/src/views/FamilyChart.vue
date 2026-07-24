@@ -267,6 +267,7 @@ import {
   addPerson,
   updatePerson,
   deletePerson,
+  updateRelationships,
 } from "../api/familyApi";
 
 const chartEl = ref(null);
@@ -455,6 +456,7 @@ function refreshChart() {
 const panel = reactive({
   open: false,
   mode: "edit",
+  isADD: false, 
   targetId: null,
   gender: "M",
   relativeOfId: null,
@@ -515,7 +517,7 @@ function resetForm() {
 }
 
 function fillForm(person) {
-  const d = person.data;
+  const d = person.data || {};
   form.fullName = d.fullName || "";
   form.gender = d.gender || "M";
   form.birthday = d.birthday || "";
@@ -530,6 +532,7 @@ function fillForm(person) {
 }
 
 function openEditPanel(person) {
+  if (person.data?.fullName) {
     panel.mode = "edit";
     panel.targetId = person.id;
     panel.createUserId = person.data?.userId;
@@ -537,7 +540,17 @@ function openEditPanel(person) {
     panel.relativeOfId = null;
     panel.error = "";
     fillForm(person);
-    panel.open = true;
+  } else {
+    // Đây là node "ADD" ma do family-chart tự vẽ khi thiếu vợ/chồng
+    panel.mode = "add-spouse";
+    panel.isADD=true,
+    panel.targetId = null;
+    panel.relativeOfId = person.rels?.spouses?.[0] ?? null;
+    panel.gender = null;
+    panel.error = "";
+    resetForm();
+  }
+  panel.open = true;
 }
 
 function openAddModal(kind) {
@@ -572,8 +585,8 @@ function buildDataFromForm() {
     birthday: form.birthday,
     is_lunar: form.isLunar,
     siblingIndex: form.siblingIndex === "" ? null : Number(form.siblingIndex),
-    death_date: form.isDeceased ? form.deathDate : null,
-    note: form.notes,
+    deathDate: form.isDeceased ? form.deathDate : null,
+    notes: form.notes,
     education: form.education,
     hometown: form.hometown,
     current_address: form.currentAddress,
@@ -601,7 +614,11 @@ async function submitPanel() {
   try {
     if (panel.mode === "edit") {
       const person = data.find((p) => p.id === panel.targetId);
-      if (!person) return;
+      if (!person) {
+        panel.error = "Không tìm thấy thành viên để cập nhật.";
+        panel.submitting = false;
+        return;
+      }
 
       // Cập nhật data local trước
       person.data = buildDataFromForm();
@@ -610,7 +627,11 @@ async function submitPanel() {
       await updatePerson(person.id, person);
     } else if (panel.mode === "add-child") {
       const parent = data.find((p) => p.id === panel.relativeOfId);
-      if (!parent) return;
+      if (!parent) {
+        panel.error = "Không tìm thấy người để gán làm cha/mẹ.";
+        panel.submitting = false;
+        return;
+      }
       const newId = generateId();
       const spouseId = parent.rels?.spouses?.[0];
       const parentIds = spouseId
@@ -638,13 +659,24 @@ async function submitPanel() {
       }
     } else if (panel.mode === "add-spouse") {
       const person = data.find((p) => p.id === panel.relativeOfId);
-      if (!person) return;
-      const newId = generateId();
+      if (!person) {
+        panel.error = "Không tìm thấy người để gán làm vợ/chồng.";
+        panel.submitting = false;
+        return;
+      }
+      let newId;
+      let children = []
+      if (panel.isADD) {
+        newId = person.rels?.spouses[0];
+        children = person.rels?.children
+      } else {
+        newId = generateId();
+      }
 
       const payload = {
         id: newId,
         data: buildDataFromForm(),
-        rels: { spouses: [panel.relativeOfId] },
+        rels: { spouses: [panel.relativeOfId], children: children },
       };
       const res = await addPerson(payload);
       const created = res.data;
@@ -656,6 +688,14 @@ async function submitPanel() {
       data.push(newPerson);
 
       person.rels.spouses = [...(person.rels.spouses || []), newId];
+      if (person.rels.children?.length) {
+        updateRelationships
+        try {
+              await updateRelationships(newId, person.rels.children);
+            } catch (err) {
+              console.error(`Cập nhật phụ huynh cho con ${childId} thất bại:`, err);
+        }
+      }
     }
   } catch (err) {
     console.error("Lưu thất bại:", err);
