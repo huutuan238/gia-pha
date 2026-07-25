@@ -394,7 +394,23 @@ onMounted(async () => {
   initChart();
 });
 
-function refreshChart() {
+// Bản nhẹ — không gọi API, chỉ vẽ lại cây từ state hiện có trong bộ nhớ.
+// Dùng cho các trường hợp KHÔNG đụng tới node "ADD" ảo (sửa người đã có,
+// thêm con bình thường, xoá) — những trường hợp này đã chạy đúng ngay lập
+// tức mà không cần F5.
+function refreshChartLocal() {
+  f3Chart.updateData(data);
+  f3Chart.updateTree({ tree_position: "inherit" });
+}
+
+// Bản tải lại từ server — CHỈ dùng riêng cho trường hợp "biến node ADD ảo
+// thành người thật" (thêm vợ/chồng). Đây là trường hợp DUY NHẤT bị lỗi
+// hiển thị sai cho tới khi F5, vì node ADD là placeholder do family-chart
+// tự tính ra khi dựng cây (không nằm trong `data`), nên patch tay không
+// đảm bảo family-chart tính lại đúng. Gọi lại loadFamilyData() để đồng bộ
+// tuyệt đối với backend, đổi lấy 1 lần gọi API thêm cho riêng case này.
+async function refreshChartFromServer() {
+  await loadFamilyData();
   f3Chart.updateData(data);
   f3Chart.updateTree({ tree_position: "inherit" });
 }
@@ -403,7 +419,8 @@ function refreshChart() {
 const panel = reactive({
   open: false,
   mode: "edit",
-  isADD: false, 
+  isADD: false,
+  addNodeId: null, // id thật của node "ADD" do family-chart tự sinh (nếu đang ở node ADD)
   targetId: null,
   gender: "M",
   relativeOfId: null,
@@ -481,6 +498,8 @@ function fillForm(person) {
 function openEditPanel(person) {
   if (person.data?.fullName) {
     panel.mode = "edit";
+    panel.isADD = false;
+    panel.addNodeId = null;
     panel.targetId = person.id;
     panel.createUserId = person.data?.userId;
     panel.gender = person.data?.gender;
@@ -488,9 +507,13 @@ function openEditPanel(person) {
     panel.error = "";
     fillForm(person);
   } else {
-    // Đây là node "ADD" ma do family-chart tự vẽ khi thiếu vợ/chồng
+    // Đây là node "ADD" ma do family-chart tự vẽ khi thiếu vợ/chồng.
+    // Lưu lại person.id NGAY TẠI ĐÂY (lúc click) vào panel.addNodeId, vì
+    // khi submitPanel() chạy, biến `person` cục bộ ở đó sẽ trỏ tới người
+    // thật (fg) chứ không còn là node ADD nữa -> không lấy lại được id này.
     panel.mode = "add-spouse";
-    panel.isADD=true,
+    panel.isADD = true;
+    panel.addNodeId = person.id;
     panel.targetId = null;
     panel.relativeOfId = person.rels?.spouses?.[0] ?? null;
     panel.gender = null;
@@ -502,6 +525,8 @@ function openEditPanel(person) {
 
 function openAddModal(kind) {
   panel.mode = kind === "child" ? "add-child" : "add-spouse";
+  panel.isADD = false;
+  panel.addNodeId = null;
   panel.relativeOfId = panel.targetId;
   panel.error = "";
   resetForm();
@@ -558,6 +583,9 @@ function generateId() {
 async function submitPanel() {
   panel.error = "";
   panel.submitting = true;
+  // Chỉ bật true đúng 1 trường hợp: biến node "ADD" ảo thành người thật.
+  // Mọi trường hợp khác dùng bản refresh nhẹ (không gọi thêm API).
+  let needsServerRefresh = false;
 
   try {
     if (panel.mode === "edit") {
@@ -612,36 +640,66 @@ async function submitPanel() {
         panel.submitting = false;
         return;
       }
-      let newId;
-      let children = []
-      if (panel.isADD) {
-        newId = person.rels?.spouses[0];
-        children = person.rels?.children
-      } else {
-        newId = generateId();
-      }
+
+      // Nếu đang từ node "ADD" ma -> dùng lại đúng id mà family-chart đã
+      // gán cho node đó (lưu từ lúc click, xem openEditPanel), coi như
+      // "update/hiện thực hoá" node ảo này thành 1 Person thật. Ngược lại
+      // (bấm "+ Thêm vợ/chồng" thủ công từ panel Sửa) -> sinh id mới.
+      const newId = panel.isADD && panel.addNodeId ? panel.addNodeId : generateId();
+      const children = person.rels?.children || [];
+
+      // Chỉ khi person đã CÓ SẴN CON mới cần refresh từ server. Trường hợp
+      // này (dù bấm vào node "ADD" ma hay bấm nút "+ Thêm vợ/chồng" thủ
+      // công) đều đụng tới đúng 1 node ADD ảo do family-chart đã render sẵn
+      // cho các con đó — cần refresh từ server để chắc chắn thay thế đúng
+      // (xem lý do ở refreshChartFromServer bên dưới). Nếu person chưa có
+      // con nào, không hề có node ADD ảo liên quan -> refresh nhẹ là đủ.
+      needsServerRefresh = children.length > 0;
 
       const payload = {
         id: newId,
         data: buildDataFromForm(),
-        rels: { spouses: [panel.relativeOfId], children: children },
+        rels: { spouses: [panel.relativeOfId], children },
       };
-      const res = await addPerson(payload);
+
+      let res;
+      try {
+        res = await addPerson(payload);
+      } catch (err) {
+        // Trường hợp hiếm: id của node ADD trùng với 1 Person có thật đã
+        // tồn tại trong DB (409) -> fallback sinh id mới rồi thử lại 1 lần
+        if (err.response?.status === 409) {
+          payload.id = generateId();
+          res = await addPerson(payload);
+        } else {
+          throw err;
+        }
+      }
+
       const created = res.data;
       const newPerson = {
-        id: newId,
+        id: payload.id,
         data: created?.data ?? payload.data,
         rels: created?.rels ?? payload.rels,
       };
       data.push(newPerson);
 
-      person.rels.spouses = [...(person.rels.spouses || []), newId];
-      if (person.rels.children?.length) {
-        updateRelationships
+      person.rels.spouses = [...(person.rels.spouses || []), payload.id];
+
+      if (children.length) {
         try {
-              await updateRelationships(newId, person.rels.children);
-            } catch (err) {
-              console.error(`Cập nhật phụ huynh cho con ${childId} thất bại:`, err);
+          await updateRelationships(payload.id, children);
+
+          // Đồng bộ luôn state cục bộ để family-chart nhận diện đủ 2 phụ
+          // huynh ngay lập tức, không cần F5 lại trang mới thấy.
+          children.forEach((childId) => {
+            const child = data.find((p) => p.id === childId);
+            if (child && !child.rels.parents?.includes(payload.id)) {
+              child.rels.parents = [...(child.rels.parents || []), payload.id];
+            }
+          });
+        } catch (err) {
+          console.error("Cập nhật quan hệ cha/mẹ - con thất bại:", err);
         }
       }
     }
@@ -653,7 +711,11 @@ async function submitPanel() {
   }
 
   panel.submitting = false;
-  refreshChart();
+  if (needsServerRefresh) {
+    await refreshChartFromServer();
+  } else {
+    refreshChartLocal();
+  }
   closePanel();
 }
 
@@ -685,7 +747,7 @@ async function deleteCurrentPerson() {
   });
   data.splice(idx, 1);
 
-  refreshChart();
+  refreshChartLocal();
   closePanel();
 }
 </script>
