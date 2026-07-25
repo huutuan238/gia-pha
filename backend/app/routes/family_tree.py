@@ -39,8 +39,10 @@ def get_persons():
             rel_map[rel.related_person_id]["parents"].append(rel.person_id)
 
         elif rel.relation_type == "SPOUSE":
-            rel_map[rel.person_id]["spouses"].append(rel.related_person_id)
-            rel_map[rel.related_person_id]["spouses"].append(rel.person_id)
+            if rel.related_person_id not in rel_map[rel.person_id]["spouses"]:
+                rel_map[rel.person_id]["spouses"].append(rel.related_person_id)
+            if rel.person_id not in rel_map[rel.related_person_id]["spouses"]:
+                rel_map[rel.related_person_id]["spouses"].append(rel.person_id)
 
     # Sort children theo sibling_index
     for rels in rel_map.values():
