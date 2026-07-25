@@ -28,10 +28,7 @@
           để con cháu dù ở đâu cũng tìm về được gốc rễ của mình.
         </p>
         <div class="hero-actions">
-          <a href="gia-pha.html" class="btn btn-primary">Xem cây gia phả</a>
-          <a href="them-thanh-vien.html" class="btn btn-ghost"
-            >Thêm thành viên mới</a
-          >
+          <RouterLink to="/gia-pha" class="btn btn-primary">Xem cây gia phả</RouterLink>
         </div>
       </div>
     </section>
@@ -88,7 +85,7 @@
           <h2>Bắt đầu từ đâu</h2>
         </div>
         <div class="nav-grid">
-          <RouterLink class="nav-card" o="/gia-pha">
+          <RouterLink class="nav-card" to="/gia-pha">
             <span class="idx">01 — Xem gia phả</span>
             <h3>Cây phả hệ</h3>
             <p>

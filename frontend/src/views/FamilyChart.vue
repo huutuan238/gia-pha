@@ -197,62 +197,7 @@
 </template>
 
 <style scoped>
-.tree-shell {
-  position: relative;
-}
-.export-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 10;
-}
-.search-box {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  width: 220px;
-  z-index: 10;
-}
-.search-row {
-  display: flex;
-  gap: 6px;
-}
-.search-input {
-  flex: 1;
-  padding: 6px 10px;
-  box-sizing: border-box;
-}
-.reset-btn {
-  flex-shrink: 0;
-  padding: 6px 10px;
-  line-height: 1;
-}
-.search-dropdown {
-  overflow-y: auto;
-  max-height: 300px;
-  background-color: #000;
-  color: #fff;
-}
-.search-option {
-  padding: 5px 8px;
-  cursor: pointer;
-  border-bottom: 0.5px solid currentColor;
-}
-.search-option:hover {
-  background-color: #333;
-}
-.birthday-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.lunar-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-  font-weight: normal;
-}
+
 </style>
 
 <script setup>

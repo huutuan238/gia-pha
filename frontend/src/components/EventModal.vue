@@ -48,22 +48,14 @@
                   </div>
                   <div class="field">
                     <label>Ngày diễn ra</label>
-                    <input
-                      v-model="form.datetime"
-                      type="datetime-local"
-                      required
-                    />
+                    <div class="birthday-row">
+                      <input
+                        v-model="form.datetime"
+                        type="datetime-local"
+                        required
+                      />
                   </div>
-                </div>
-  
-                <div class="field" v-if="persons && persons.length">
-                  <label>Liên quan tới thành viên</label>
-                  <select v-model="form.personId">
-                    <option value="">— Không chọn —</option>
-                    <option v-for="p in persons" :key="p.id" :value="p.id">
-                      {{ p.name }}
-                    </option>
-                  </select>
+                  </div>
                 </div>
   
                 <div class="field">
