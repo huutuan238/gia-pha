@@ -18,7 +18,7 @@ const router = createRouter({
   routes: [
     { path: "/", component: HomeView },
     { path: "/gia-pha", component: TreeView },
-    { path: "/pha-do", component: FamilyChartInfo },
+    { path: "/tra-cuu", component: FamilyChartInfo },
     { path: "/family", component: FamilyView },
     { path: "/events", component: EventView },
     { path: "/albums", component: AlbumView },
