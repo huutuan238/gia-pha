@@ -1,71 +1,188 @@
+<script setup>
+import { ref, computed, watch, onBeforeUnmount } from "vue";
+import FamilyChart from "./FamilyChart.vue";
+import { tree } from "d3";
+import {
+  getPersonLineageStats
+} from "../api/search.js";
+
+const chartRef = ref(null);
+
+/* ================== SEARCH BOX Ở CẤP TRANG ================== */
+const searchQuery = ref("");
+const searchDropdownOpen = ref(false);
+
+const filteredSearchOptions = computed(() => {
+  if (!chartRef.value) return [];
+  const q = searchQuery.value.trim().toLowerCase();
+  const options = chartRef.value.getSearchOptions();
+  if (!q) return options;
+  return options.filter((o) => o.label.toLowerCase().includes(q));
+});
+
+function handleSearchFocusOut() {
+  setTimeout(() => {
+    searchDropdownOpen.value = false;
+  }, 200);
+}
+
+function selectPerson(personId, label) {
+  chartRef.value?.focusPerson(personId);
+  searchDropdownOpen.value = false;
+  searchQuery.value = "";
+  fetchPersonStats(personId, label);
+}
+
+function resetSearch() {
+  chartRef.value?.resetToRoot();
+  searchQuery.value = "";
+  searchDropdownOpen.value = false;
+  personStats.value = null;
+  statsError.value = "";
+}
+
+// Bấm trực tiếp vào 1 thẻ trong cây cũng cập nhật thẻ thống kê tương tự
+function onPersonClick(personData) {
+  fetchPersonStats(personData.id, personData.fullName);
+}
+
+/* ================== SỐ ĐỜI + CON CHÁU (NAM/NỮ) ================== */
+
+
+const personStats = ref(null);
+const statsLoading = ref(false);
+const statsError = ref("");
+
+const totalDescendants = computed(() => {
+  if (!personStats.value) return 0;
+  return (
+    (personStats.value.maleDescendants ?? 0) +
+    (personStats.value.femaleDescendants ?? 0)
+  );
+});
+
+async function fetchPersonStats(personId, fallbackName) {
+  statsError.value = "";
+  statsLoading.value = true;
+  personStats.value = null;
+  try {
+    const { data } = await getPersonLineageStats(personId)
+    personStats.value = data
+  } catch (err) {
+    console.error("Không tải được thông tin con cháu:", err);
+    statsError.value = `Không tải được thông tin: ${err.response?.data?.error || err.message}`;
+  } finally {
+    statsLoading.value = false;
+  }
+}
+</script>
+
 <template>
   <main>
     <section style="padding-bottom: 0">
       <div class="container">
         <span class="eyebrow">Sơ đồ phả hệ</span>
-        <h1>Xem gia phả</h1>
+        <h1>Tra cứu gia phả</h1>
         <p class="lede" style="max-width: 60ch">
-          Duyệt cây gia phả theo từng đời. Bấm vào một thành viên để xem chi
-          tiết, hoặc thu gọn một nhánh để dễ theo dõi.
+          Nhập tên một người để xem vị trí trên cây, và thông tin liên quan. Bấm vào một thành viên trên cây cũng cho kết quả tương tự.
         </p>
       </div>
     </section>
 
     <section>
       <div class="container">
-        <div class="tree-toolbar">
-          <div class="filters">
-            <select class="select-field">
-              <option>Toàn bộ chi nhánh</option>
-              <option>Chi trưởng</option>
-              <option>Chi thứ hai</option>
-              <option>Chi thứ ba</option>
-            </select>
-            <select class="select-field">
-              <option>Toàn bộ các đời</option>
-              <option>Đời 9 — 12</option>
-              <option>Đời 5 — 8</option>
-              <option>Đời 1 — 4</option>
-            </select>
-          
-            <!-- ================= SEARCH BOX ================= -->
-            <div
-              class="search-box"
-              @focusout="handleSearchFocusOut"
+        <!-- ================= SEARCH BOX (kích thước theo container) ================= -->
+        <div class="search-panel paper" @focusout="handleSearchFocusOut">
+          <div class="search-row">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Nhập tên người cần tra cứu…"
+              class="search-input"
+              autocomplete="off"
+              @focus="searchDropdownOpen = true"
+              @input="searchDropdownOpen = true"
+            />
+            <button
+              type="button"
+              class="btn btn-outline reset-btn"
+              title="Về thuỷ tổ"
+              @click="resetSearch"
             >
-              <div class="search-row">
-                <label>Tên: </label>
-                <input
-                  v-model="searchQuery"
-                  type="text"
-                  placeholder="Tìm kiếm..."
-                  class="search-input select-field"
-                  @focus="searchDropdownOpen = true"
-                  @input="searchDropdownOpen = true"
-                />
-                <button
-                  type="button"
-                  class="btn btn-outline reset-btn"
-                  title="Về thuỷ tổ"
-                  @click="resetToRoot"
-                >
-                  ⟲
-                </button>
+              ⟲ Về thuỷ tổ
+            </button>
+          </div>
+
+          <div
+            v-if="searchDropdownOpen && searchQuery.trim() && filteredSearchOptions.length"
+            class="search-dropdown"
+          >
+            <div
+              v-for="opt in filteredSearchOptions"
+              :key="opt.value"
+              class="search-option"
+              style="color:black"
+              @click="selectPerson(opt.value, opt.label)"
+            >
+              {{ opt.label }}
+            </div>
+          </div>
+
+          <!-- ================= KẾT QUẢ: SỐ ĐỜI + CON CHÁU ================= -->
+          <div v-if="statsLoading" class="stats-loading">
+            Đang tải thông tin con cháu…
+          </div>
+          <p v-else-if="statsError" class="alert-error stats-error">
+            {{ statsError }}
+          </p>
+          <div v-else-if="personStats" class="stats-result">
+            <div class="stats-head">
+              <span class="stats-name">{{ personStats.full_name }}</span>
+              <span class="stats-gen-badge">Đời thứ {{ personStats.generation ?? "—" }}</span>
+            </div>
+            <div
+            v-if="personStats?.father || personStats.mother || personStats.spouses?.length"
+            class="family-relations"
+          >
+            <div v-if="personStats.father" class="relation-chip">
+              <span class="relation-label">Bố:</span>
+              <span class="relation-value">{{ personStats.father.full_name }}</span>
+            </div>
+            <div v-if="personStats.mother" class="relation-chip">
+              <span class="relation-label">Mẹ:</span>
+              <span class="relation-value">{{ personStats.mother.full_name }}</span>
+            </div>
+            <div
+              v-for="(spouse, idx) in personStats.spouses"
+              :key="spouse.id"
+              class="relation-chip"
+            >
+              <span class="relation-label">
+                {{ personStats.spouses.length > 1 ? `Vợ/chồng ${idx + 1}` : "Vợ/chồng:" }}
+              </span>
+              <span class="relation-value">{{ spouse.full_name }}</span>
+            </div>
+          </div>
+            <div class="stats-row">
+              <div class="stats-item">
+                <span class="stats-number">{{ personStats.children_count ?? 0 }}</span>
+                <span class="stats-label">Con</span>
               </div>
-              <div
-                v-if="searchDropdownOpen && filteredSearchOptions.length"
-                class="search-dropdown"
-              >
-                <div
-                  v-for="opt in filteredSearchOptions"
-                  :key="opt.value"
-                  class="search-option"
-                  @click="selectSearchPerson(opt.value)"
-                >
-                  {{ opt.label }}
-                </div>
+              <div class="stats-item">
+                <span class="stats-number">{{ personStats.grandchildren_count ?? 0 }}</span>
+                <span class="stats-label">Cháu</span>
+              </div>
+              <div class="stats-item">
+                <span class="stats-number">{{ personStats.great_grandchildren_count }}</span>
+                <span class="stats-label">Chắt</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="tree-wrap">
+          <div class="tree">
+            <FamilyChart ref="chartRef" is-search @person-click="onPersonClick" />
           </div>
         </div>
 
@@ -85,335 +202,135 @@
       </div>
     </section>
   </main>
-  <div class="tree-shell">
-    <div v-if="loading" class="tree-status">Đang tải dữ liệu gia phả...</div>
-    <div v-else-if="loadError" class="tree-status tree-status-error">
-      {{ loadError }}
-      <button
-        class="btn btn-outline"
-        style="margin-left: 12px"
-        @click="retryLoad"
-      >
-        Thử lại
-      </button>
-    </div>
-    
-    <div
-      v-show="!loading && !loadError"
-      id="FamilyChart"
-      ref="chartEl"
-      class="f3"
-      style="width: 100%; height: 900px; background-color: #8fa08f; color: #fff"
-    ></div>
-
-    <!-- ================= SEARCH BOX ================= -->
-    <!-- <div
-      v-if="!loading && !loadError"
-      class="search-box"
-      @focusout="handleSearchFocusOut"
-    >
-      <div class="search-row">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Tìm kiếm..."
-          class="search-input"
-          @focus="searchDropdownOpen = true"
-          @input="searchDropdownOpen = true"
-        />
-        <button
-          type="button"
-          class="btn btn-outline reset-btn"
-          title="Về thuỷ tổ"
-          @click="resetToRoot"
-        >
-          ⟲
-        </button>
-      </div>
-      <div
-        v-if="searchDropdownOpen && filteredSearchOptions.length"
-        class="search-dropdown"
-      >
-        <div
-          v-for="opt in filteredSearchOptions"
-          :key="opt.value"
-          class="search-option"
-          @click="selectSearchPerson(opt.value)"
-        >
-          {{ opt.label }}
-        </div>
-      </div>
-    </div> -->
-
-    <button
-      v-if="!loading && !loadError"
-      class="btn btn-outline export-btn"
-      @click="exportTreeToPdf"
-      :disabled="exporting"
-    >
-      {{ exporting ? "Đang xuất..." : "In gia phả (PDF)" }}
-    </button>
-
-  </div>
 </template>
 
 <style scoped>
-.tree-shell {
+.search-panel {
+  padding: 24px;
+  margin-bottom: 24px;
   position: relative;
-}
-.export-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 10;
+  z-index: 20;
 }
 
-/* search box giờ nằm trong .filters, không còn absolute nữa */
-.search-box {
-  position: relative;
-  width: 220px;
-}
 .search-row {
   display: flex;
-  gap: 6px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .search-input {
   flex: 1;
-  box-sizing: border-box;
+  min-width: 240px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-paper-line, #e2ddce);
+  border-radius: 8px;
+  background: var(--paper-card, #fff);
+  color: var(--color-ink, #2c281f);
 }
 .reset-btn {
-  flex-shrink: 0;
-  padding: 6px 10px;
-  line-height: 1;
+  white-space: nowrap;
+  padding: 12px 18px;
+  font-size: 14px;
 }
+
 .search-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
+  margin-top: 10px;
+  border: 1px solid var(--color-paper-line, #e2ddce);
+  border-radius: 8px;
+  background: var(--paper-card, #fff);
+  max-height: 320px;
   overflow-y: auto;
-  max-height: 300px;
-  background-color: #000;
-  color: #fff;
-  z-index: 20;
+}
+.family-relations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.relation-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(86, 73, 47, 0.06);
+  border: 1px solid var(--color-paper-line, #e2ddce);
 }
 .search-option {
-  padding: 5px 8px;
+  padding: 12px 16px;
+  font-size: 14.5px;
   cursor: pointer;
-  border-bottom: 0.5px solid currentColor;
+  border-bottom: 1px solid var(--color-paper-line, #e2ddce);
 }
-.search-option:hover {
-  background-color: #333;
+.search-option:last-child { border-bottom: none; }
+.search-option:hover { background: rgba(197, 160, 60, 0.12); }
+
+.stats-loading {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--color-ink-soft, #6b6455);
+}
+.stats-error { margin-top: 18px; }
+
+.stats-result {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-paper-line, #e2ddce);
+}
+.stats-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.stats-name {
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--color-ink, #2c281f);
+}
+.stats-gen-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-seal, #a5312b);
+  border: 1px solid var(--color-seal, #a5312b);
+  border-radius: 999px;
+  padding: 5px 14px;
+  white-space: nowrap;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.stats-item {
+  text-align: center;
+  padding: 20px 14px;
+  border-radius: 10px;
+  background: rgba(86, 73, 47, 0.05);
+}
+.stats-item-total {
+  background: rgba(14, 24, 19, 0.05);
+}
+.stats-number {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-ink, #2c281f);
+  line-height: 1.1;
+}
+.stats-label {
+  display: block;
+  font-size: 13px;
+  color: var(--color-ink-soft, #6b6455);
+  margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .stats-row { grid-template-columns: 1fr; }
+  .search-row { flex-direction: column; }
 }
 </style>
-
-<script setup>
-import { onMounted, reactive, ref, computed, nextTick } from "vue";
-import * as f3 from "family-chart";
-import "family-chart/styles/family-chart.css";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import {
-  getFamilyTree,
-  addPerson,
-  updatePerson,
-  deletePerson,
-} from "../api/familyApi";
-
-const chartEl = ref(null);
-let f3Chart = null;
-let f3Card = null;
-
-// id của người muốn focus làm main person khi mở cây (thuỷ tổ)
-const MAIN_PERSON_ID = "1";
-
-/* ================== DỮ LIỆU (lấy từ backend) ================== */
-const data = reactive([]);
-const loading = ref(false);
-const loadError = ref("");
-const exporting = ref(false);
-
-/* ================== SEARCH STATE ================== */
-const searchQuery = ref("");
-const searchDropdownOpen = ref(false);
-
-const allSearchOptions = computed(() => {
-  const seen = new Set();
-  const options = [];
-  data.forEach((d) => {
-    if (seen.has(d.id)) return;
-    seen.add(d.id);
-    options.push({ label: d.data?.fullName || "", value: d.id });
-  });
-  return options;
-});
-
-const filteredSearchOptions = computed(() => {
-  const q = searchQuery.value.toLowerCase();
-  return allSearchOptions.value.filter((o) =>
-    o.label.toLowerCase().includes(q),
-  );
-});
-
-function selectSearchPerson(personId) {
-  if (!f3Chart) return;
-  f3Chart.updateMainId(personId);
-  f3Chart.updateTree({ initial: true });
-  searchDropdownOpen.value = false;
-  searchQuery.value = "";
-}
-
-function resetToRoot() {
-  if (!f3Chart) return;
-  f3Chart.updateMainId(MAIN_PERSON_ID);
-  f3Chart.updateTree({ initial: true });
-  searchDropdownOpen.value = false;
-  searchQuery.value = "";
-}
-
-function handleSearchFocusOut() {
-  // đợi 1 chút để click vào option kịp xử lý trước khi đóng dropdown
-  setTimeout(() => {
-    searchDropdownOpen.value = false;
-  }, 200);
-}
-
-/**
- * Lấy danh sách toàn bộ person từ backend qua getFamilyTree().
- * Kỳ vọng response.data là mảng [{ id, data, rels }, ...].
- * Nếu backend bọc trong { items: [...] } hoặc { data: [...] }, chỉnh lại chỗ đọc response bên dưới.
- */
-async function fetchFamilyData() {
-  const res = await getFamilyTree();
-  const payload = res.data;
-  return Array.isArray(payload) ? payload : payload.items || payload.data || [];
-}
-
-async function loadFamilyData() {
-  loading.value = true;
-  loadError.value = "";
-  try {
-    const items = await fetchFamilyData();
-    items.forEach((p) => {
-      if (p?.data) attachYears(p.data);
-    });
-    data.splice(0, data.length, ...items);
-  } catch (err) {
-    console.error("Không tải được dữ liệu gia phả:", err);
-    loadError.value = "Không thể tải dữ liệu từ server. Vui lòng thử lại.";
-  } finally {
-    loading.value = false;
-  }
-}
-
-/* ================== KHỞI TẠO CHART ================== */
-function initChart() {
-  if (f3Chart) return; // đã khởi tạo rồi thì thôi
-
-  f3Chart = f3
-    .createChart(chartEl.value, data)
-    .setTransitionTime(1000)
-    .setCardXSpacing(250)
-    .setCardYSpacing(150)
-    .setShowSiblingsOfMain(true); // hiện đầy đủ anh/chị/em ruột của main person
-
-  f3Card = f3Chart.setCardHtml().setCardDisplay([["fullName"], ["years"]]);
-
-  // Focus main person vào MAIN_PERSON_ID nếu tồn tại trong data,
-  // tránh để family-chart mặc định chọn data[0] (thường không phải thuỷ tổ,
-  // khiến cây chỉ hiện 1 nhánh thay vì toàn bộ con cháu).
-  if (data.some((p) => p.id === MAIN_PERSON_ID)) {
-    f3Chart.updateMainId(MAIN_PERSON_ID);
-  }
-
-  f3Chart.updateTree({ initial: true });
-}
-
-// Xuất toàn bộ cây gia phả hiện tại ra file PDF
-async function exportTreeToPdf() {
-  if (!f3Chart || !chartEl.value) return;
-
-  exporting.value = true;
-  try {
-    // Thu phóng để toàn bộ cây (mọi nhánh) vừa khít trong khung nhìn trước khi chụp,
-    // tránh bị cắt mất phần đang nằm ngoài viewport do đang zoom/pan.
-    f3Chart.updateTree({ tree_position: "fit" });
-    await nextTick();
-    // Đợi transition vẽ lại xong (transition_time đang set 1000ms trong initChart)
-    await new Promise((resolve) => setTimeout(resolve, 350));
-
-    const canvas = await html2canvas(chartEl.value, {
-      backgroundColor: "#8fa08f", // khớp màu nền chart đang set trong template
-      scale: 2, // chụp độ phân giải gấp đôi cho nét khi in
-      useCORS: true,
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: canvas.width > canvas.height ? "landscape" : "portrait",
-      unit: "px",
-      format: [canvas.width, canvas.height],
-    });
-    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-    pdf.save("gia-pha.pdf");
-  } catch (err) {
-    console.error("Xuất PDF thất bại:", err);
-    alert("Không thể xuất PDF. Vui lòng thử lại.");
-  } finally {
-    exporting.value = false;
-  }
-}
-
-// Được gọi từ nút "Thử lại" trong template khi lần tải trước bị lỗi
-async function retryLoad() {
-  await loadFamilyData();
-  if (!loadError.value && data.length > 0) {
-    // chartEl chỉ tồn tại trong DOM khi loading=false && loadError='' (v-show ở trên vẫn giữ el trong DOM,
-    // nhưng để chắc chắn ta chờ 1 tick trước khi tạo chart)
-    await nextTick();
-    initChart();
-  }
-}
-
-onMounted(async () => {
-  await loadFamilyData();
-
-  // Nếu tải lỗi hoặc không có dữ liệu, không khởi tạo chart
-  if (loadError.value || data.length === 0) return;
-
-  initChart();
-});
-
-
-/* ================== STATE PANEL ================== */
-const panel = reactive({
-  open: false,
-  mode: "edit",
-  targetId: null,
-  gender: "M",
-  relativeOfId: null,
-  submitting: false,
-  error: "",
-});
-
-
-function attachYears(personData) {
-  personData.years = buildYearsLabel(
-    personData.birthday,
-    personData.death_date,
-  );
-  return personData;
-}
-// Trên thẻ chỉ hiện năm, không hiện ngày/tháng đầy đủ:
-// - Còn sống: "1998 –"
-// - Đã mất:   "1928 – 2005"
-function yearOf(dateStr) {
-  return dateStr ? dateStr.slice(0, 4) : "";
-}
-
-function buildYearsLabel(birthday, deathday) {
-  const by = yearOf(birthday);
-  if (!!deathday) return `${by} – ${yearOf(deathday)}`;
-  return by;
-}
-</script>

@@ -7,10 +7,10 @@ from collections import deque
 def get_family_info(family_id, person_id):
     family_info: Family = db.session.get(Family, family_id)
     max_generation = count_generation(person_id)
-    count = count_person(person_id)
+    person_lineage_info = get_person_lineage_info(person_id)
     result = {
         "max_generation": max_generation,
-        "count_person": count,
+        "count_person": person_lineage_info.get("total_descendants"),
         "start_year": family_info.founded_year,
         "description": family_info.description,
         "branch_number": family_info.branch_number,
@@ -45,7 +45,8 @@ def count_generation(root_id):
     return max_generation
 
 
-def count_person(root_id: str) -> dict:
+def get_person_lineage_info(root_id: str) -> dict:
+    search_person_info: Person = db.session.get(Person, root_id)
     relationships = Relationship.query.filter(
         Relationship.relation_type.in_(["PARENT", "SPOUSE"])
     ).all()
@@ -125,6 +126,7 @@ def count_person(root_id: str) -> dict:
     spouses = Person.query.filter(Person.id.in_(spouse_ids)).all() if spouse_ids else []
 
     return {
+        "full_name": search_person_info.full_name,
         "generation": generation,
         "children_count": children_count,
         "grandchildren_count": grandchildren_count,

@@ -20,9 +20,12 @@
       style="width: 100%; height: 900px; background-color: #8fa08f; color: #fff"
     ></div>
 
-    <!-- ================= SEARCH BOX ================= -->
+    <!-- ================= SEARCH BOX =================
+         Chỉ hiện khi KHÔNG ở chế độ isSearch — vì lúc đó trang cha
+         (ví dụ trang tra cứu) sẽ tự vẽ ô tìm kiếm riêng và gọi
+         focusPerson()/getSearchOptions() được expose bên dưới. -->
     <div
-      v-if="!loading && !loadError"
+      v-if="!isSearch && !loading && !loadError"
       class="search-box"
       @focusout="handleSearchFocusOut"
     >
@@ -32,6 +35,7 @@
           type="text"
           placeholder="Tìm kiếm..."
           class="search-input"
+          autocomplete="off"
           @focus="searchDropdownOpen = true"
           @input="searchDropdownOpen = true"
         />
@@ -68,7 +72,9 @@
       {{ exporting ? "Đang xuất..." : "In gia phả (PDF)" }}
     </button>
 
-    <!-- ================= PANEL TRƯỢT TỪ BÊN PHẢI ================= -->
+    <!-- ================= PANEL TRƯỢT TỪ BÊN PHẢI =================
+         Không bao giờ mở khi isSearch = true (xem guard trong
+         setOnCardClick bên dưới), nên có thể giữ nguyên khối này. -->
     <transition name="slide">
       <div v-if="panel.open" class="side-panel paper">
         <button class="panel-close" @click="closePanel" aria-label="Đóng">
@@ -215,6 +221,16 @@ import {
   updateRelationships,
 } from "../api/familyApi";
 
+// isSearch = true  -> chế độ chỉ xem/tra cứu: tắt panel sửa/thêm/xoá và
+//                      tắt luôn search box nội bộ (trang cha tự vẽ search
+//                      riêng, gọi vào focusPerson()/getSearchOptions()).
+// isSearch = false -> hành vi mặc định như cũ (có thể sửa/thêm/xoá).
+const props = defineProps({
+  isSearch: { type: Boolean, default: false },
+});
+
+const emit = defineEmits(["person-click"]);
+
 const chartEl = ref(null);
 let f3Chart = null;
 let f3Card = null;
@@ -228,7 +244,7 @@ const loading = ref(false);
 const loadError = ref("");
 const exporting = ref(false);
 
-/* ================== SEARCH STATE ================== */
+/* ================== SEARCH STATE (chỉ dùng khi !isSearch) ================== */
 const searchQuery = ref("");
 const searchDropdownOpen = ref(false);
 const isAdmin = computed(() => authStore.isAdmin())
@@ -274,6 +290,18 @@ function handleSearchFocusOut() {
   }, 200);
 }
 
+/* ================== API MÀ TRANG CHA CÓ THỂ GỌI VÀO ================== */
+// Trang cha (chế độ isSearch) tự vẽ ô tìm kiếm riêng, rồi gọi 2 hàm này
+// qua template ref, ví dụ:
+//   const chartRef = ref(null)
+//   chartRef.value.focusPerson(personId)
+//   const options = chartRef.value.getSearchOptions()
+defineExpose({
+  focusPerson: selectSearchPerson,
+  resetToRoot,
+  getSearchOptions: () => allSearchOptions.value,
+});
+
 /**
  * Lấy danh sách toàn bộ person từ backend qua getFamilyTree().
  * Kỳ vọng response.data là mảng [{ id, data, rels }, ...].
@@ -308,23 +336,24 @@ function initChart() {
 
   f3Chart = f3
     .createChart(chartEl.value, data)
-    .setTransitionTime(0)        // tắt animation cho lần render đầu, chỉ bật lại sau
+    .setTransitionTime(1000)
     .setAncestryDepth(3)         // chỉ hiện tối đa 3 đời ông bà lên trên
     .setProgenyDepth(3)          // chỉ hiện tối đa 3 đời con cháu xuống dưới
     .setCardXSpacing(350)
     .setCardYSpacing(250)
     .setShowSiblingsOfMain(true); // hiện đầy đủ anh/chị/em ruột của main person
 
-    f3Chart.updateMainId('n7_1_1_5_1')  // Charles III
-    f3Card = f3Chart.setCardHtml().setCardDisplay([["fullName"], ["years"]]);
+  f3Card = f3Chart.setCardHtml().setCardDisplay([["fullName"], ["years"]]);
 
-
-  // Click vào card: vừa focus (đổi main person -> viền sáng + tự recalculate cây quanh người này),
-  // vừa mở panel sửa custom của mình.
+  // Click vào card: luôn focus (đổi main person -> viền sáng + tự
+  // recalculate cây quanh người này) và báo lên trang cha qua sự kiện
+  // "person-click". Chỉ mở panel sửa khi KHÔNG ở chế độ isSearch.
   f3Card.setOnCardClick((e, d) => {
     f3Chart.updateMainId(d.data.id);
     f3Chart.updateTree({ tree_position: "inherit" });
-    if (userId.value) {
+    emit("person-click", d.data);
+
+    if (!props.isSearch && userId.value) {
       openEditPanel(d.data);
     }
   });
@@ -349,7 +378,7 @@ async function exportTreeToPdf() {
     // tránh bị cắt mất phần đang nằm ngoài viewport do đang zoom/pan.
     f3Chart.updateTree({ tree_position: "fit" });
     await nextTick();
-    // Đợi transition vẽ lại xong (transition_time đang set 1000ms trong initChart)
+    // Đợi transition vẽ lại xong
     await new Promise((resolve) => setTimeout(resolve, 350));
 
     const canvas = await html2canvas(chartEl.value, {

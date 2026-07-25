@@ -1,6 +1,6 @@
 import uuid
 
-from app.services.family_tree_service import count_generation, count_person
+from app.services.family_tree_service import count_generation, get_person_lineage_info
 from flask import Blueprint, jsonify, request
 
 from app.extensions import db
@@ -10,15 +10,10 @@ from app.models import Person, Relationship
 search_bp = Blueprint("search", __name__, url_prefix="/api/search")
 
 
-@search_bp.route("/", methods=["POST"])
+@search_bp.route("/person-info/", methods=["POST"])
 def search():  # thong tin tu thuy to
-    body = request.get_json()
-    id = body.get("id")
+    id = request.get_json()
     max_generation = count_generation(id)
-    count = count_person(id)
-    return jsonify(
-        {
-            "max_generation": max_generation,
-            "count": count,
-        }
-    )
+    person_lineage_info = get_person_lineage_info(id)
+    person_lineage_info["max_generation"] = max_generation
+    return jsonify(person_lineage_info)
