@@ -538,7 +538,7 @@ function buildDataFromForm() {
     hometown: form.hometown,
     current_address: form.currentAddress,
     userId: userId.value,
-    avatar: form.gender == "M" ? "male.png" : "female.png"
+    avatar: "",
   };
   attachYears(personData);
   return personData;
