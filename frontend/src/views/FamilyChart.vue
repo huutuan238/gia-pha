@@ -379,7 +379,9 @@ function initChart() {
   f3Card.setOnCardClick((e, d) => {
     f3Chart.updateMainId(d.data.id);
     f3Chart.updateTree({ tree_position: "inherit" });
-    openEditPanel(d.data);
+    if (userId.value) {
+      openEditPanel(d.data);
+    }
   });
 
   // Focus main person vào MAIN_PERSON_ID nếu tồn tại trong data,
@@ -591,7 +593,7 @@ function buildDataFromForm() {
     hometown: form.hometown,
     current_address: form.currentAddress,
     userId: userId.value,
-    avatar: form.gender == "M" ? "src/assets/male.png" : "src/assets/female.png"
+    avatar: form.gender == "M" ? "male.png" : "female.png"
   };
   attachYears(personData);
   return personData;

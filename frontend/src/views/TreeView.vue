@@ -16,7 +16,7 @@ import FamilyChart from "./FamilyChart.vue";
 
     <section>
       <div class="container">
-        <div class="tree-toolbar">
+        <!-- <div class="tree-toolbar">
           <div class="filters">
             <select class="select-field">
               <option>Toàn bộ chi nhánh</option>
@@ -39,7 +39,7 @@ import FamilyChart from "./FamilyChart.vue";
           <a href="them-thanh-vien.html" class="btn btn-primary btn-sm"
             >+ Thêm thành viên</a
           >
-        </div>
+        </div> -->
 
         <div class="tree-wrap">
           <div class="tree">

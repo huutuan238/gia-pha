@@ -24,7 +24,7 @@
         <span class="eyebrow">Từ đường trực tuyến</span>
         <h1>Gìn giữ cội nguồn,<br />nối tiếp truyền thống.</h1>
         <p class="lede">
-          Nơi lưu giữ gia phả, hình ảnh và sự kiện của Họ Nguyễn qua các đời —
+          Nơi lưu giữ gia phả, hình ảnh và sự kiện của Họ Nguyễn Hữu qua các đời —
           để con cháu dù ở đâu cũng tìm về được gốc rễ của mình.
         </p>
         <div class="hero-actions">

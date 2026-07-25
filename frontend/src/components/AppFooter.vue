@@ -2,7 +2,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <p>
-        © 2026 Gia Phả Họ Nguyễn — Gìn giữ cội nguồn, nối tiếp truyền thống.
+        © 2026 Gia Phả Họ Nguyễn Hữu — Gìn giữ cội nguồn, nối tiếp truyền thống.
       </p>
       <span class="footer-seal">
         <svg viewBox="0 0 40 40" style="color: var(--gold)">
