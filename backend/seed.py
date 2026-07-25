@@ -12,7 +12,6 @@ app = create_app()
 
 def seed_gia_pha():
     with app.app_context():
-
         file_path = Path(__file__).parent / "data" / "gia_pha.json"
 
         with open(file_path, encoding="utf-8") as f:
@@ -48,18 +47,14 @@ def seed_gia_pha():
             # đảm bảo tất cả Person đã có trong DB
             db.session.flush()
 
-
             # 2. Seed relationships
             for body in persons:
                 rels = body.get("rels", {})
                 person_id = body["id"]
 
                 for parent_id in rels.get("parents", []):
-
                     if not db.session.get(Person, parent_id):
-                        raise Exception(
-                            f"Parent {parent_id} not found"
-                        )
+                        raise Exception(f"Parent {parent_id} not found")
 
                     db.session.add(
                         Relationship(
@@ -70,13 +65,9 @@ def seed_gia_pha():
                         )
                     )
 
-
                 for spouse_id in rels.get("spouses", []):
-
                     if not db.session.get(Person, spouse_id):
-                        raise Exception(
-                            f"Spouse {spouse_id} not found"
-                        )
+                        raise Exception(f"Spouse {spouse_id} not found")
 
                     db.session.add(
                         Relationship(
@@ -86,7 +77,6 @@ def seed_gia_pha():
                             relation_type="SPOUSE",
                         )
                     )
-
 
             db.session.commit()
 

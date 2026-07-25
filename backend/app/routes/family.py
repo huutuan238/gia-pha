@@ -14,6 +14,7 @@ qua http://localhost:5000, cần bật CORS:
     from flask_cors import CORS
     CORS(app)  # hoặc CORS(app, origins=["http://localhost:5173"])
 """
+
 import uuid
 
 from flask import Blueprint, jsonify, request

@@ -73,10 +73,12 @@ def get_persons():
             else:
                 data["search_label"] = f"{person.full_name}"
 
-        result.append({
-            "id": person.id,
-            "data": data,
-            "rels": rel_map[person.id],
-        })
+        result.append(
+            {
+                "id": person.id,
+                "data": data,
+                "rels": rel_map[person.id],
+            }
+        )
 
     return jsonify(result)

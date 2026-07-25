@@ -48,6 +48,7 @@ def _upload_folder():
 # Albums
 # ---------------------------------------------------------------------------
 
+
 @album_bp.route("/albums", methods=["GET"])
 def get_albums():
     albums = Album.query.order_by(Album.created_at.desc()).all()
@@ -113,6 +114,7 @@ def delete_album(album_id):
 # Photos
 # ---------------------------------------------------------------------------
 
+
 @album_bp.route("/albums/<album_id>/photos", methods=["POST"])
 def upload_photo(album_id):
     album = Album.query.get(album_id)
@@ -124,7 +126,9 @@ def upload_photo(album_id):
 
     file = request.files["file"]
     if file.filename == "" or not _allowed_file(file.filename):
-        return jsonify({"message": "File không hợp lệ (chỉ nhận png/jpg/jpeg/gif/webp)"}), 400
+        return jsonify(
+            {"message": "File không hợp lệ (chỉ nhận png/jpg/jpeg/gif/webp)"}
+        ), 400
 
     ext = file.filename.rsplit(".", 1)[1].lower()
     stored_name = f"{uuid.uuid4()}.{ext}"

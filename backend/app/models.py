@@ -2,6 +2,7 @@ import uuid
 from .extensions import db
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
 class Person(db.Model):
     __tablename__ = "persons"
 
@@ -18,15 +19,11 @@ class Person(db.Model):
     education = db.Column(db.String(255))
     notes = db.Column(db.Text)
     sibling_index = db.Column(db.Integer)
-    created_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now(),
-        onupdate=db.func.now()
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -75,60 +72,31 @@ class Family(db.Model):
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-class Event(db.Model):
 
+class Event(db.Model):
     __tablename__ = "events"
 
-    id = db.Column(
-        db.String(36),
-        primary_key=True
-    )
-    family_id = db.Column(
-        db.String(36),
-        db.ForeignKey("families.id"),
-        nullable=False
-    )
-    event_datetime = db.Column(
-        db.DateTime,
-        nullable=False
-    )
-    event_type = db.Column(
-        db.String(50),
-        nullable=False
-    )
-    title = db.Column(
-        db.String(255),
-        nullable=False
-    )
-    location = db.Column(
-        db.String(255)
-    )
-    description = db.Column(
-        db.Text
-    )
-    notified = db.Column(
-        db.Boolean,
-        default=False,
-        nullable=False
-    )
-    recipient_count = db.Column(
-        db.Integer,
-        default=0
-    )
-    created_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-    )
+    id = db.Column(db.String(36), primary_key=True)
+    family_id = db.Column(db.String(36), db.ForeignKey("families.id"), nullable=False)
+    event_datetime = db.Column(db.DateTime, nullable=False)
+    event_type = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    location = db.Column(db.String(255))
+    description = db.Column(db.Text)
+    notified = db.Column(db.Boolean, default=False, nullable=False)
+    recipient_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now(),
-        onupdate=db.func.now()
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
+
     def to_dict(self):
         return {
             "id": self.id,
             "family_id": self.family_id,
-            "datetime": self.event_datetime.isoformat(sep=" ") if self.event_datetime else None,
+            "datetime": self.event_datetime.isoformat(sep=" ")
+            if self.event_datetime
+            else None,
             "type": self.event_type,
             "title": self.title,
             "location": self.location,
@@ -137,34 +105,30 @@ class Event(db.Model):
             "recipients": self.recipient_count,
         }
 
+
 def _gen_uuid():
     return str(uuid.uuid4())
- 
- 
+
+
 class Album(db.Model):
     __tablename__ = "albums"
- 
+
     id = db.Column(db.String(36), primary_key=True, default=_gen_uuid)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
     cover_photo_url = db.Column(db.String(500), nullable=True)
-    created_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-        )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now(),
-        onupdate=db.func.now()
+        db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
- 
+
     photos = db.relationship(
         "Photo",
         backref="album",
         cascade="all, delete-orphan",  # xoá album -> tự xoá hết ảnh trong album
         order_by="Photo.uploaded_at.desc()",
     )
- 
+
     def to_dict(self, include_photos=False):
         data = {
             "id": self.id,
@@ -177,11 +141,11 @@ class Album(db.Model):
         if include_photos:
             data["photos"] = [p.to_dict() for p in self.photos]
         return data
- 
- 
+
+
 class Photo(db.Model):
     __tablename__ = "photos"
- 
+
     id = db.Column(db.String(36), primary_key=True, default=_gen_uuid)
     album_id = db.Column(
         db.String(36),
@@ -191,10 +155,7 @@ class Photo(db.Model):
     url = db.Column(db.String(500), nullable=False)
     caption = db.Column(db.String(500), nullable=True)
     taken_date = db.Column(db.Date, nullable=True)
-    uploaded_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-        )
+    uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
 
     def to_dict(self):
         return {
@@ -205,23 +166,24 @@ class Photo(db.Model):
             "takenDate": self.taken_date.isoformat() if self.taken_date else None,
             "uploadedAt": self.uploaded_at.isoformat() if self.uploaded_at else None,
         }
-    
+
+
 class User(db.Model):
     __tablename__ = "users"
- 
+
     id = db.Column(db.String(36), primary_key=True, default=_gen_uuid)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default="member", nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
- 
+
     def set_password(self, raw_password):
         self.password_hash = generate_password_hash(raw_password)
- 
+
     def check_password(self, raw_password):
         return check_password_hash(self.password_hash, raw_password)
- 
+
     def to_dict(self):
         return {
             "id": self.id,

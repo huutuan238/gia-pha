@@ -16,6 +16,7 @@ Cài đặt:
 Trước khi dùng, nhớ đã gộp class User (xem models_user_addon.py) vào
 app/models.py, và đã chạy migration để tạo bảng "users".
 """
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
@@ -66,7 +67,9 @@ def login():
     password = payload.get("password") or ""
 
     if not identifier or not password:
-        return jsonify({"error": "Vui lòng nhập đầy đủ tên đăng nhập/email và mật khẩu."}), 400
+        return jsonify(
+            {"error": "Vui lòng nhập đầy đủ tên đăng nhập/email và mật khẩu."}
+        ), 400
 
     user = User.query.filter(
         (User.username == identifier) | (User.email == identifier.lower())

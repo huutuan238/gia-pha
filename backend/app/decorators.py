@@ -14,6 +14,7 @@ Lưu ý: role được nhúng vào token lúc login/register
 trong routes/auth.py) — nếu role của user đổi sau khi đăng nhập,
 họ cần đăng nhập lại để token có role mới.
 """
+
 from functools import wraps
 
 from flask import jsonify
@@ -26,6 +27,7 @@ def admin_required(fn):
         verify_jwt_in_request()  # báo lỗi 401 nếu thiếu/token không hợp lệ
         claims = get_jwt()
         if claims.get("role") != "admin":
-            return jsonify({"error": f'{claims}'}), 403
+            return jsonify({"error": f"{claims}"}), 403
         return fn(*args, **kwargs)
+
     return wrapper

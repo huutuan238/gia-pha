@@ -6,7 +6,6 @@ from config import Config
 
 
 def create_app():
-
     app = Flask(__name__)
 
     # Load config
@@ -33,6 +32,7 @@ def create_app():
     from app.routes.search import search_bp
 
     from flask_jwt_extended import JWTManager
+
     app.config["JWT_SECRET_KEY"] = "đổi-thành-chuỗi-bí-mật-thật-dài"
     JWTManager(app)
     app.register_blueprint(auth_bp)

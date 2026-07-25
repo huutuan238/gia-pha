@@ -11,14 +11,14 @@ search_bp = Blueprint("search", __name__, url_prefix="/api/search")
 
 
 @search_bp.route("/", methods=["POST"])
-def search(): # thong tin tu thuy to
+def search():  # thong tin tu thuy to
     body = request.get_json()
     id = body.get("id")
     max_generation = count_generation(id)
     count = count_person(id)
     return jsonify(
         {
-            'max_generation': max_generation,
-            'count': count,
+            "max_generation": max_generation,
+            "count": count,
         }
     )
