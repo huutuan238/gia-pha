@@ -29,9 +29,7 @@ def seed_gia_pha():
                     full_name=data.get("fullName", ""),
                     birthday=data.get("birthday") or None,
                     avatar=(
-                        "src/assets/male.png"
-                        if data.get("gender") == "M"
-                        else "src/assets/female.png"
+                        "/male.png" if data.get("gender") == "M" else "/female.png"
                     ),
                     gender=data.get("gender", ""),
                     hometown=data.get("hometown", ""),

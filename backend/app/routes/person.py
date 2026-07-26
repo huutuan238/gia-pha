@@ -25,17 +25,25 @@ def add_person():
     person = Person(
         id=body["id"],
         family_id="8b6c4f0e-7f3a-4d8e-9a61-2e7b5c9d1f20",
-        user_id=data.get("userId", ""),
+        user_id=data.get("userId") or None,
         full_name=data.get("fullName", ""),
-        birthday=data.get("birthday", ""),
-        avatar="",
+        avatar=data.get("avatar", ""),
         gender=data.get("gender", ""),
         hometown=data.get("hometown", ""),
-        current_address=data.get("currentAddress", ""),
-        death_date=data.get("deathDate") or None,
+        current_address=data.get("current_address", ""),
         education=data.get("education", ""),
         notes=data.get("notes", ""),
-        sibling_index=data.get("siblingIndex", ""),
+        sibling_index=data.get("siblingIndex") or None,
+        # ================== NGÀY SINH ==================
+        birth_day=data.get("birthDay") or None,
+        birth_month=data.get("birthMonth") or None,
+        birth_year=data.get("birthYear") or None,
+        birth_is_lunar=bool(data.get("birthIsLunar", False)),
+        # ================== NGÀY MẤT / NGÀY GIỖ ==================
+        death_day=data.get("deathDay") or None,
+        death_month=data.get("deathMonth") or None,
+        death_year=data.get("deathYear") or None,
+        death_is_lunar=bool(data.get("deathIsLunar", False)),
     )
 
     try:
@@ -91,15 +99,25 @@ def update_person(person_id):
     data = body.get("data", {})
     try:
         person.full_name = data.get("fullName", "")
-        person.birthday = data.get("birthday", "")
         person.avatar = data.get("avatar", "")
         person.gender = data.get("gender", "")
         person.hometown = data.get("hometown", "")
-        person.current_address = data.get("currentAddress", "")
-        person.death_date = data.get("deathDate") or None
+        person.current_address = data.get("current_address", "")
         person.education = data.get("education", "")
         person.notes = data.get("notes", "")
-        person.sibling_index = data.get("siblingIndex", "")
+        person.sibling_index = data.get("siblingIndex") or None
+
+        # ================== NGÀY SINH ==================
+        person.birth_day = data.get("birthDay") or None
+        person.birth_month = data.get("birthMonth") or None
+        person.birth_year = data.get("birthYear") or None
+        person.birth_is_lunar = bool(data.get("birthIsLunar", False))
+
+        # ================== NGÀY MẤT / NGÀY GIỖ ==================
+        person.death_day = data.get("deathDay") or None
+        person.death_month = data.get("deathMonth") or None
+        person.death_year = data.get("deathYear") or None
+        person.death_is_lunar = bool(data.get("deathIsLunar", False))
 
         db.session.commit()
 
