@@ -77,7 +77,26 @@
         </div>
       </div>
     </section>
-
+    <section>
+      <div class="container">
+        <span class="eyebrow">Giới thiệu</span>
+        <h2>Video giới thiệu dòng họ</h2>
+        <p class="lede" style="max-width: 60ch">
+          Vài nét về lịch sử và truyền thống của dòng họ qua video giới thiệu.
+        </p>
+  
+        <div class="video-wrap paper">
+          <iframe
+            :src="`https://www.youtube.com/embed/rf-zO7gcZUY`"
+            title="Video giới thiệu dòng họ"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
     <section id="dieu-huong">
       <div class="container">
         <div class="section-head">
@@ -162,5 +181,23 @@ export default {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+.video-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 24px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  /* tỉ lệ 16:9 */
+  aspect-ratio: 16 / 9;
+}
+.video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 </style>
