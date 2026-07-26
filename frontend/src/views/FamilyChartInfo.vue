@@ -186,7 +186,7 @@ async function fetchPersonStats(personId, fallbackName) {
           </div>
         </div>
 
-        <div class="legend">
+        <div class="legend" v-show="false">
           <span
             ><span class="dot" style="background: var(--lacquer)"></span>Thành
             viên gốc của nhánh</span
