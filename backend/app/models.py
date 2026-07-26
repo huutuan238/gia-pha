@@ -3,6 +3,9 @@ from .extensions import db
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+from sqlalchemy import CheckConstraint
+
+
 class Person(db.Model):
     __tablename__ = "persons"
 
@@ -10,10 +13,22 @@ class Person(db.Model):
     family_id = db.Column(db.String(36), db.ForeignKey("families.id"), nullable=True)
     user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=True)
     full_name = db.Column(db.String(100), nullable=True)
-    birthday = db.Column(db.Date)
+
+    # ================== NGÀY SINH (có thể chỉ biết 1 phần: năm, hoặc ngày/tháng, hoặc không rõ gì) ==================
+    birth_day = db.Column(db.SmallInteger, nullable=True)
+    birth_month = db.Column(db.SmallInteger, nullable=True)
+    birth_year = db.Column(db.SmallInteger, nullable=True)
+    birth_is_lunar = db.Column(db.Boolean, nullable=False, server_default="false")
+
     hometown = db.Column(db.String(255))
     current_address = db.Column(db.String(255))
-    death_date = db.Column(db.Date)
+
+    # ================== NGÀY MẤT / NGÀY GIỖ (tương tự, có thể chỉ rõ 1 phần) ==================
+    death_day = db.Column(db.SmallInteger, nullable=True)
+    death_month = db.Column(db.SmallInteger, nullable=True)
+    death_year = db.Column(db.SmallInteger, nullable=True)
+    death_is_lunar = db.Column(db.Boolean, nullable=False, server_default="false")
+
     avatar = db.Column(db.Text)
     gender = db.Column(db.String(1))
     education = db.Column(db.String(255))
@@ -24,14 +39,37 @@ class Person(db.Model):
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
 
+    __table_args__ = (
+        CheckConstraint(
+            "birth_day IS NULL OR birth_day BETWEEN 1 AND 31", name="chk_birth_day"
+        ),
+        CheckConstraint(
+            "birth_month IS NULL OR birth_month BETWEEN 1 AND 12",
+            name="chk_birth_month",
+        ),
+        CheckConstraint(
+            "death_day IS NULL OR death_day BETWEEN 1 AND 31", name="chk_death_day"
+        ),
+        CheckConstraint(
+            "death_month IS NULL OR death_month BETWEEN 1 AND 12",
+            name="chk_death_month",
+        ),
+    )
+
     def to_dict(self):
         return {
             "id": self.id,
             "family_id": self.family_id,
             "userId": self.user_id,
             "fullName": self.full_name,
-            "birthday": self.birthday.isoformat() if self.birthday else None,
-            "death_date": self.death_date.isoformat() if self.death_date else None,
+            "birthDay": self.birth_day,
+            "birthMonth": self.birth_month,
+            "birthYear": self.birth_year,
+            "birthIsLunar": self.birth_is_lunar,
+            "deathDay": self.death_day,
+            "deathMonth": self.death_month,
+            "deathYear": self.death_year,
+            "deathIsLunar": self.death_is_lunar,
             "avatar": self.avatar,
             "hometown": self.hometown,
             "currentAddress": self.current_address,

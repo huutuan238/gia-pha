@@ -56,7 +56,7 @@
           v-for="opt in filteredSearchOptions"
           :key="opt.value"
           class="search-option"
-          @click="selectSearchPerson(opt.value)"
+          @mousedown.prevent="selectSearchPerson(opt.value)"
         >
           {{ opt.label }}
         </div>
@@ -107,14 +107,33 @@
               <option value="F">  Nữ</option>
             </select>
           </div>
-
-          <!-- Ngày sinh + checkbox âm/dương lịch -->
           <div class="field full">
             <label>Ngày sinh</label>
             <div class="birthday-row">
-              <input v-model="form.birthday" type="date" required />
+              <input
+                v-model.number="form.birthDay"
+                type="number"
+                min="1"
+                max="31"
+                placeholder="Ngày"
+                class="date-part-input date-part-input-day"
+              />
+              <input
+                v-model.number="form.birthMonth"
+                type="number"
+                min="1"
+                max="12"
+                placeholder="Tháng"
+                class="date-part-input"
+              />
+              <input
+                v-model.number="form.birthYear"
+                type="number"
+                placeholder="Năm"
+                class="date-part-input date-part-input-year"
+              />
               <label class="lunar-checkbox">
-                <input type="checkbox" v-model="form.isLunar" />
+                <input type="checkbox" v-model="form.birthIsLunar" />
                 Âm lịch
               </label>
             </div>
@@ -132,7 +151,7 @@
 
           <div class="field full">
             <label>Quê quán</label>
-            <input v-model="form.hometown" type="text" required />
+            <input v-model="form.hometown" type="text" />
           </div>
           <div class="field full">
             <label> Nơi thường trú</label>
@@ -158,8 +177,35 @@
             </label>
           </div>
           <div class="field full" v-if="form.isDeceased">
-            <label>Ngày mất(Ghi ngày giỗ(AL))</label>
-            <input v-model="form.deathDate" type="date" />
+            <label>Ngày mất / Ngày giỗ</label>
+            <div class="birthday-row">
+              <input
+                v-model.number="form.deathDay"
+                type="number"
+                min="1"
+                max="31"
+                placeholder="Ngày"
+                class="date-part-input date-part-input-day"
+              />
+              <input
+                v-model.number="form.deathMonth"
+                type="number"
+                min="1"
+                max="12"
+                placeholder="Tháng"
+                class="date-part-input"
+              />
+              <input
+                v-model.number="form.deathYear"
+                type="number"
+                placeholder="Năm"
+                class="date-part-input date-part-input-year"
+              />
+              <label class="lunar-checkbox">
+                <input type="checkbox" v-model="form.deathIsLunar"/>
+                Âm lịch
+              </label>
+            </div>
           </div>
           <div class="field full">
             <label>Ghi chú</label>
@@ -203,7 +249,16 @@
 </template>
 
 <style scoped>
-
+.date-part-input {
+  width: 85px !important;
+  flex: 0 0 auto;
+}
+.date-part-input-day {
+  width: 65px !important;
+}
+.date-part-input-year {
+  width: 80px !important;
+}
 </style>
 
 <script setup>
@@ -461,10 +516,15 @@ const panel = reactive({
 const form = reactive({
   fullName: "",
   gender: "M",
-  birthday: "",
-  isLunar: false,
+  birthDay: null,
+  birthMonth: null,
+  birthYear: null,
+  birthIsLunar: false,
   isDeceased: false,
-  deathDate: "",
+  deathDay: null,
+  deathMonth: null,
+  deathYear: null,
+  deathIsLunar: true,
   notes: "",
   education: "",
   hometown: "",
@@ -478,11 +538,48 @@ function personName(id) {
   return `${person.data["fullName"] || ""}`.trim();
 }
 
+// Ghép ngày/tháng/năm (có thể thiếu 1 hoặc nhiều phần) thành chuỗi hiển thị.
+// Ví dụ: "15/03 (ÂL)", "~1870", "Tháng 3/1990", hoặc "" nếu trống hết.
+function formatPartialDate(day, month, year, isLunar) {
+  if (!day && !month && !year) return "";
+
+  const dm =
+    day && month
+      ? `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}`
+      : month
+      ? `Tháng ${month}`
+      : "";
+
+  const parts = [dm, year ? String(year) : (dm ? "?" : "")].filter(Boolean);
+  const label = parts.join("/");
+  return isLunar ? `${label} (ÂL)` : label;
+}
+
 function attachYears(personData) {
-  personData.years = buildYearsLabel(
-    personData.birthday,
-    personData.death_date,
+  const birthLabel = formatPartialDate(
+    personData.birthDay,
+    personData.birthMonth,
+    personData.birthYear,
+    personData.birthIsLunar,
   );
+  const deathLabel = formatPartialDate(
+    personData.deathDay,
+    personData.deathMonth,
+    personData.deathYear,
+    personData.deathIsLunar,
+  );
+
+  if (!birthLabel && !deathLabel) {
+    personData.years = "";
+  }else if (deathLabel && !birthLabel) {
+    personData.years = `${deathLabel}`;
+  } else if (personData.birthYear && personData.deathYear) {
+    personData.years = `${personData.birthYear} - ${personData.deathYear}`;
+  } else if (deathLabel) {
+    personData.years = `${birthLabel || "?"} – ${deathLabel}`;
+  } else {
+    personData.years = birthLabel; // còn sống (hoặc không rõ năm mất)
+  }
   return personData;
 }
 
@@ -498,10 +595,15 @@ const panelSubtitle = computed(() => {
 function resetForm() {
   form.fullName = "";
   form.gender = panel.mode == "add-spouse" && panel.gender == "M" ? "F" : "M";
-  form.birthday = "";
-  form.isLunar = false;
+  form.birthDay = null;
+  form.birthMonth = null;
+  form.birthYear = null;
+  form.birthIsLunar = false;
   form.isDeceased = false;
-  form.deathDate = "";
+  form.deathDay = null;
+  form.deathMonth = null;
+  form.deathYear = null;
+  form.deathIsLunar = true;
   form.notes = "";
   form.education = "";
   form.hometown = "";
@@ -513,10 +615,15 @@ function fillForm(person) {
   const d = person.data || {};
   form.fullName = d.fullName || "";
   form.gender = d.gender || "M";
-  form.birthday = d.birthday || "";
-  form.isLunar = !!d.is_lunar;
-  form.isDeceased = !!d.death_date;
-  form.deathDate = d.death_date || "";
+  form.birthDay = d.birthDay ?? null;
+  form.birthMonth = d.birthMonth ?? null;
+  form.birthYear = d.birthYear ?? null;
+  form.birthIsLunar = !!d.birthIsLunar;
+  form.isDeceased = !!(d.deathDay || d.deathMonth || d.deathYear);
+  form.deathDay = d.deathDay ?? null;
+  form.deathMonth = d.deathMonth ?? null;
+  form.deathYear = d.deathYear ?? null;
+  form.deathIsLunar = !!d.deathIsLunar || true;
   form.notes = d.notes || "";
   form.education = d.education || "";
   form.hometown = d.hometown || "";
@@ -566,33 +673,25 @@ function closePanel() {
   panel.open = false;
 }
 
-// Trên thẻ chỉ hiện năm, không hiện ngày/tháng đầy đủ:
-// - Còn sống: "1998 –"
-// - Đã mất:   "1928 – 2005"
-function yearOf(dateStr) {
-  return dateStr ? dateStr.slice(0, 4) : "";
-}
-
-function buildYearsLabel(birthday, deathday) {
-  const by = yearOf(birthday);
-  if (!!deathday) return `${by} – ${yearOf(deathday)}`;
-  return by;
-}
-
 function buildDataFromForm() {
   const personData = {
     fullName: form.fullName,
     gender: form.gender,
-    birthday: form.birthday,
-    is_lunar: form.isLunar,
+    birthDay: form.birthDay || null,
+    birthMonth: form.birthMonth || null,
+    birthYear: form.birthYear || null,
+    birthIsLunar: form.birthIsLunar,
     siblingIndex: form.siblingIndex === "" ? null : Number(form.siblingIndex),
-    deathDate: form.isDeceased ? form.deathDate : null,
+    deathDay: form.isDeceased ? form.deathDay || null : null,
+    deathMonth: form.isDeceased ? form.deathMonth || null : null,
+    deathYear: form.isDeceased ? form.deathYear || null : null,
+    deathIsLunar: form.isDeceased ? form.deathIsLunar : false,
     notes: form.notes,
     education: form.education,
     hometown: form.hometown,
     current_address: form.currentAddress,
     userId: userId.value,
-    avatar: "",
+    avatar: form.gender == "M" ? "/male.png" : "/female.png",
   };
   attachYears(personData);
   return personData;
