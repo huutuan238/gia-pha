@@ -13,7 +13,7 @@ family_tree = Blueprint("tree", __name__, url_prefix="/api/family-tree")
 
 @family_tree.route("/info/<string:family_id>", methods=["GET"])
 def get_info(family_id):
-    person_id = "u_nguyenhuuhuan_195"
+    person_id = "anc_tientohuuthong"
     result = get_family_info(family_id, person_id)
     return jsonify(result)
 
@@ -70,7 +70,10 @@ def get_persons():
             spouses = rel_map[person.id]["spouses"]
             if len(spouses):
                 spouse = person_map[spouses[0]]
-                spouse_last_name = spouse.full_name.split()[-1]
+                try:
+                    spouse_last_name = spouse.full_name.split()[-1]
+                except Exception:
+                    pass
                 data["search_label"] = f"{person.full_name}({spouse_last_name})"
             else:
                 data["search_label"] = f"{person.full_name}"
