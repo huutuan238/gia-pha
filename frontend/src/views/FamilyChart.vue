@@ -158,7 +158,7 @@
             <input v-model="form.currentAddress" type="text" />
           </div>
           <div class="field full">
-            <label>Học vấn</label>
+            <label>Học vấn, trình độ(nghề nghiệp)</label>
             <input v-model="form.education" type="text" />
           </div>
 
@@ -291,7 +291,7 @@ let f3Chart = null;
 let f3Card = null;
 
 // id của người muốn focus làm main person khi mở cây (thuỷ tổ)
-const MAIN_PERSON_ID = "1";
+const MAIN_PERSON_ID = "n7_1_1_5_1";
 
 /* ================== DỮ LIỆU (lấy từ backend) ================== */
 const data = reactive([]);
