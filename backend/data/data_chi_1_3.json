@@ -1,0 +1,3726 @@
+[
+    {
+      "id": "anc_tientohuuthong_vo1",
+      "data": {
+        "fullName": "Tổ tỷ Nguyễn Thị Liên",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_tientohuuthong"
+        ],
+        "children": [
+          "anc_huuthien",
+          "anc_huuduc",
+          "anc_huuthanh",
+          "u_nguyenhuuhuan_195"
+        ]
+      }
+    },
+    {
+      "id": "anc_tientohuuthong",
+      "data": {
+        "fullName": "Tiên tổ: Hữu Thông",
+        "last name": "",
+        "gender": "M",
+        "notes": "Nhà thờ tại: Hạ Lô, Mỹ Thành"
+      },
+      "rels": {
+        "spouses": [
+          "anc_tientohuuthong_vo1"
+        ],
+        "children": [
+          "anc_huuthien",
+          "anc_huuduc",
+          "anc_huuthanh",
+          "u_nguyenhuuhuan_195"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthien_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Bàng",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthien"
+        ],
+        "children": [
+          "anc_caolinhdieutranguytuongcong",
+          "anc_nguyentuongcong",
+          "anc_khongro",
+          "anc_huuluu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthien",
+      "data": {
+        "fullName": "Hữu Thiên",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 1",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthien_vo1"
+        ],
+        "children": [
+          "anc_caolinhdieutranguytuongcong",
+          "anc_nguyentuongcong",
+          "anc_khongro",
+          "anc_huuluu"
+        ],
+        "parents": [
+          "anc_tientohuuthong",
+          "anc_tientohuuthong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_caolinhdieutranguytuongcong",
+      "data": {
+        "fullName": "Cao lĩnh diệu tráng uy tướng công",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 1.1",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthien",
+          "anc_huuthien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_nguyentuongcong",
+      "data": {
+        "fullName": "Nguyễn tướng công",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 1.2; tham gia quân đội được phong chức, hy sinh",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthien",
+          "anc_huuthien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_khongro",
+      "data": {
+        "fullName": "Không rõ",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 1.3; bị thất lạc",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthien",
+          "anc_huuthien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuluu",
+      "data": {
+        "fullName": "Hữu Lưu",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 1.4",
+        "sibling_index": 3
+      },
+      "rels": {
+        "children": [
+          "anc_huulan",
+          "anc_huunghien"
+        ],
+        "parents": [
+          "anc_huuthien",
+          "anc_huuthien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huulan_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Yên",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huulan"
+        ],
+        "children": [
+          "anc_huuho",
+          "anc_huudo",
+          "anc_nguyenthixuan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huulan",
+      "data": {
+        "fullName": "Hữu Lân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huulan_vo1"
+        ],
+        "children": [
+          "anc_huuho",
+          "anc_huudo",
+          "anc_nguyenthixuan"
+        ],
+        "parents": [
+          "anc_huuluu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuho",
+      "data": {
+        "fullName": "Hữu Hộ",
+        "last name": "",
+        "gender": "M",
+        "notes": "mất khi nhỏ",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huulan",
+          "anc_huulan_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudo_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Đương",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huudo"
+        ],
+        "children": [
+          "anc_huulo",
+          "anc_huuhai",
+          "anc_thiba",
+          "anc_thibon"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudo",
+      "data": {
+        "fullName": "Hữu Đô",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huudo_vo1"
+        ],
+        "children": [
+          "anc_huulo",
+          "anc_huuhai",
+          "anc_thiba",
+          "anc_thibon"
+        ],
+        "parents": [
+          "anc_huulan",
+          "anc_huulan_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huulo",
+      "data": {
+        "fullName": "Hữu Lô",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuyen2",
+          "anc_thioanh",
+          "anc_huudanh",
+          "anc_thiloi",
+          "anc_huunghia"
+        ],
+        "parents": [
+          "anc_huudo",
+          "anc_huudo_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuyen2",
+      "data": {
+        "fullName": "Hữu Yến",
+        "last name": "",
+        "gender": "M",
+        "notes": "(mất khi nhỏ)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huulo"
+        ]
+      }
+    },
+    {
+      "id": "anc_thioanh",
+      "data": {
+        "fullName": "Thị Oanh",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huulo"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudanh",
+      "data": {
+        "fullName": "Hữu Danh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huulo"
+        ]
+      }
+    },
+    {
+      "id": "anc_thiloi",
+      "data": {
+        "fullName": "Thị Lợi",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huulo"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunghia",
+      "data": {
+        "fullName": "Hữu Nghĩa",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "parents": [
+          "anc_huulo"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhai_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Nga",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhai"
+        ],
+        "children": []
+      }
+    },
+    {
+      "id": "anc_huuhai",
+      "data": {
+        "fullName": "Hữu Hai",
+        "last name": "",
+        "gender": "M",
+        "notes": "Liệt sỹ chống Mỹ",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhai_vo1"
+        ],
+        "parents": [
+          "anc_huudo",
+          "anc_huudo_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thiba",
+      "data": {
+        "fullName": "Thị Ba",
+        "last name": "",
+        "gender": "F",
+        "notes": "Lấy chồng họ Hồ ; xóm Giáp Quán",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huudo",
+          "anc_huudo_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thibon",
+      "data": {
+        "fullName": "Thị Bốn",
+        "last name": "",
+        "gender": "F",
+        "notes": "Lấy chồng ở Vinh",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huudo",
+          "anc_huudo_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_nguyenthixuan",
+      "data": {
+        "fullName": "Nguyễn Thị xuân",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huulan",
+          "anc_huulan_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunghien_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Đuyền",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huunghien"
+        ],
+        "children": [
+          "anc_huuvien"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunghien",
+      "data": {
+        "fullName": "Hữu Nghiên",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huunghien_vo1"
+        ],
+        "children": [
+          "anc_huuvien"
+        ],
+        "parents": [
+          "anc_huuluu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuvien_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Năm",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuvien"
+        ],
+        "children": [
+          "anc_huuyen",
+          "anc_huuthai",
+          "anc_huubinh",
+          "anc_huuthang",
+          "anc_huuhung"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuvien",
+      "data": {
+        "fullName": "Hữu Viên",
+        "last name": "",
+        "gender": "M",
+        "notes": "xã Thịnh thành",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuvien_vo1"
+        ],
+        "children": [
+          "anc_huuyen",
+          "anc_huuthai",
+          "anc_huubinh",
+          "anc_huuthang",
+          "anc_huuhung"
+        ],
+        "parents": [
+          "anc_huunghien",
+          "anc_huunghien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuyen",
+      "data": {
+        "fullName": "Hữu Yên",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_contrai",
+          "anc_thihuyen",
+          "anc_thithao",
+          "anc_thiha",
+          "anc_thihieu"
+        ],
+        "parents": [
+          "anc_huuvien",
+          "anc_huuvien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_contrai",
+      "data": {
+        "fullName": "Con trai",
+        "last name": "",
+        "gender": "M",
+        "notes": "(tảo)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuyen"
+        ]
+      }
+    },
+    {
+      "id": "anc_thihuyen",
+      "data": {
+        "fullName": "Thị Huyển",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuyen"
+        ]
+      }
+    },
+    {
+      "id": "anc_thithao",
+      "data": {
+        "fullName": "Thị Thảo",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuyen"
+        ]
+      }
+    },
+    {
+      "id": "anc_thiha",
+      "data": {
+        "fullName": "Thị Hà",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huuyen"
+        ]
+      }
+    },
+    {
+      "id": "anc_thihieu",
+      "data": {
+        "fullName": "Thị Hiếu",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "parents": [
+          "anc_huuyen"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthai",
+      "data": {
+        "fullName": "Hữu Thái",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "children": [
+          "anc_huuthan",
+          "anc_thithanh",
+          "anc_huuthao"
+        ],
+        "parents": [
+          "anc_huuvien",
+          "anc_huuvien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthan",
+      "data": {
+        "fullName": "Hữu Thân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthai"
+        ]
+      }
+    },
+    {
+      "id": "anc_thithanh",
+      "data": {
+        "fullName": "Thị Thanh",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthai"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthao",
+      "data": {
+        "fullName": "Hữu Thảo",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthai"
+        ]
+      }
+    },
+    {
+      "id": "anc_huubinh",
+      "data": {
+        "fullName": "Hữu Bình",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "children": [
+          "anc_huuvo",
+          "anc_huusy"
+        ],
+        "parents": [
+          "anc_huuvien",
+          "anc_huuvien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuvo",
+      "data": {
+        "fullName": "Hữu Võ",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huubinh"
+        ]
+      }
+    },
+    {
+      "id": "anc_huusy",
+      "data": {
+        "fullName": "Hữu Sỹ",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huubinh"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthang",
+      "data": {
+        "fullName": "Hữu Thắng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huuvien",
+          "anc_huuvien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung",
+      "data": {
+        "fullName": "Hữu Hùng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "parents": [
+          "anc_huuvien",
+          "anc_huuvien_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuduc",
+      "data": {
+        "fullName": "Hữu Đức",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 2",
+        "sibling_index": 1
+      },
+      "rels": {
+        "children": [
+          "anc_huuhuong",
+          "anc_huu",
+          "anc_thi"
+        ],
+        "parents": [
+          "anc_tientohuuthong",
+          "anc_tientohuuthong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhuong",
+      "data": {
+        "fullName": "Hữu Hưởng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuhoi",
+          "anc_huuhop",
+          "anc_huuloan"
+        ],
+        "parents": [
+          "anc_huuduc"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhoi",
+      "data": {
+        "fullName": "Hữu Hội",
+        "last name": "",
+        "gender": "M",
+        "notes": "(Mất sớm)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhuong"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhop_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Lan",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhop"
+        ],
+        "children": [
+          "anc_huunghi"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhop",
+      "data": {
+        "fullName": "Hữu Hợp",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhop_vo1"
+        ],
+        "children": [
+          "anc_huunghi"
+        ],
+        "parents": [
+          "anc_huuhuong"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunghi_vo1",
+      "data": {
+        "fullName": "Bùi Thị Quỳnh",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huunghi"
+        ],
+        "children": [
+          "anc_huuluan",
+          "anc_huutruyen"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunghi",
+      "data": {
+        "fullName": "Hữu Nghị",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huunghi_vo1"
+        ],
+        "children": [
+          "anc_huuluan",
+          "anc_huutruyen"
+        ],
+        "parents": [
+          "anc_huuhop",
+          "anc_huuhop_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuluan_vo1",
+      "data": {
+        "fullName": "Thái Thị Sức",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuluan"
+        ],
+        "children": [
+          "anc_huuchan",
+          "anc_huucan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuluan_vo2",
+      "data": {
+        "fullName": "Nguyễn Thị Lạp",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuluan"
+        ],
+        "children": []
+      }
+    },
+    {
+      "id": "anc_huuluan",
+      "data": {
+        "fullName": "Hữu Luận",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuluan_vo1",
+          "anc_huuluan_vo2"
+        ],
+        "children": [
+          "anc_huuchan",
+          "anc_huucan"
+        ],
+        "parents": [
+          "anc_huunghi",
+          "anc_huunghi_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuchan",
+      "data": {
+        "fullName": "Hữu Chân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuchi",
+          "anc_huuxin"
+        ],
+        "parents": [
+          "anc_huuluan",
+          "anc_huuluan_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuchi",
+      "data": {
+        "fullName": "Hữu Chỉ",
+        "last name": "",
+        "gender": "M",
+        "notes": "(Mất sớm)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuchan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuxin_vo1",
+      "data": {
+        "fullName": "Phạm Thị Hải",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuxin"
+        ],
+        "children": [
+          "anc_huuduong",
+          "anc_thihuong",
+          "anc_thitram"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuxin",
+      "data": {
+        "fullName": "Hữu Xin",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuxin_vo1"
+        ],
+        "children": [
+          "anc_huuduong",
+          "anc_thihuong",
+          "anc_thitram"
+        ],
+        "parents": [
+          "anc_huuchan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuduong",
+      "data": {
+        "fullName": "Hữu Dương",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuanhquang"
+        ],
+        "parents": [
+          "anc_huuxin",
+          "anc_huuxin_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuanhquang",
+      "data": {
+        "fullName": "Hữu Anh Quang",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuduong"
+        ]
+      }
+    },
+    {
+      "id": "anc_thihuong",
+      "data": {
+        "fullName": "Thị Hương",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuxin",
+          "anc_huuxin_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thitram",
+      "data": {
+        "fullName": "Thị Trâm",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuxin",
+          "anc_huuxin_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huucan",
+      "data": {
+        "fullName": "Hữu Căn",
+        "last name": "",
+        "gender": "M",
+        "notes": "(Mất)",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuluan",
+          "anc_huuluan_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutruyen_vo1",
+      "data": {
+        "fullName": "Trần Thị Tợu",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutruyen"
+        ],
+        "children": [
+          "anc_huumay",
+          "anc_huuthao2",
+          "anc_thi2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutruyen",
+      "data": {
+        "fullName": "Hữu Truyện",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutruyen_vo1"
+        ],
+        "children": [
+          "anc_huumay",
+          "anc_huuthao2",
+          "anc_thi2"
+        ],
+        "parents": [
+          "anc_huunghi",
+          "anc_huunghi_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huumay_vo1",
+      "data": {
+        "fullName": "Thị Cần",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huumay"
+        ],
+        "children": [
+          "anc_huuhue",
+          "anc_huutao",
+          "anc_huuphung",
+          "anc_huuphuong",
+          "anc_huuque",
+          "anc_huuthanh2",
+          "anc_huunhan",
+          "anc_thi3"
+        ]
+      }
+    },
+    {
+      "id": "anc_huumay",
+      "data": {
+        "fullName": "Hữu Mày",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huumay_vo1"
+        ],
+        "children": [
+          "anc_huuhue",
+          "anc_huutao",
+          "anc_huuphung",
+          "anc_huuphuong",
+          "anc_huuque",
+          "anc_huuthanh2",
+          "anc_huunhan",
+          "anc_thi3"
+        ],
+        "parents": [
+          "anc_huutruyen",
+          "anc_huutruyen_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhue_vo1",
+      "data": {
+        "fullName": "Thị Ba",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhue"
+        ],
+        "children": [
+          "anc_huukhanh",
+          "anc_huugiang",
+          "anc_huuson"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhue_vo2",
+      "data": {
+        "fullName": "Thiều Thị Hường",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhue"
+        ],
+        "children": []
+      }
+    },
+    {
+      "id": "anc_huuhue",
+      "data": {
+        "fullName": "Hữu Huệ",
+        "last name": "",
+        "gender": "M",
+        "notes": "Sinh được 3 trai, 2 gái",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhue_vo1",
+          "anc_huuhue_vo2"
+        ],
+        "children": [
+          "anc_huukhanh",
+          "anc_huugiang",
+          "anc_huuson"
+        ],
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huukhanh_vo1",
+      "data": {
+        "fullName": "Phan T. Quỳnh",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huukhanh"
+        ],
+        "children": [
+          "anc_huuquyen",
+          "anc_huuvu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huukhanh",
+      "data": {
+        "fullName": "Hữu Khánh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huukhanh_vo1"
+        ],
+        "children": [
+          "anc_huuquyen",
+          "anc_huuvu"
+        ],
+        "parents": [
+          "anc_huuhue",
+          "anc_huuhue_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuquyen",
+      "data": {
+        "fullName": "Hữu Quyền",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huukhanh",
+          "anc_huukhanh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuvu",
+      "data": {
+        "fullName": "Hữu Vũ",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huukhanh",
+          "anc_huukhanh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huugiang",
+      "data": {
+        "fullName": "Hữu Giang",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhue",
+          "anc_huuhue_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuson",
+      "data": {
+        "fullName": "Hữu Sơn",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhue",
+          "anc_huuhue_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutao_vo1",
+      "data": {
+        "fullName": "Phạm thị Đương",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutao"
+        ],
+        "children": [
+          "anc_huugiap",
+          "anc_huuy"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutao",
+      "data": {
+        "fullName": "Hữu Tao",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutao_vo1"
+        ],
+        "children": [
+          "anc_huugiap",
+          "anc_huuy"
+        ],
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huugiap_vo1",
+      "data": {
+        "fullName": "Thị Tâm",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huugiap"
+        ],
+        "children": [
+          "anc_diepchi",
+          "anc_huyenmy"
+        ]
+      }
+    },
+    {
+      "id": "anc_huugiap",
+      "data": {
+        "fullName": "Hữu Giáp",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huugiap_vo1"
+        ],
+        "children": [
+          "anc_diepchi",
+          "anc_huyenmy"
+        ],
+        "parents": [
+          "anc_huutao",
+          "anc_huutao_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_diepchi",
+      "data": {
+        "fullName": "Diệp Chi",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huugiap",
+          "anc_huugiap_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huyenmy",
+      "data": {
+        "fullName": "Huyền Mỹ",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huugiap",
+          "anc_huugiap_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuy_vo1",
+      "data": {
+        "fullName": "Phan T. Giang",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuy"
+        ],
+        "children": [
+          "anc_huuthiennhan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuy",
+      "data": {
+        "fullName": "Hữu Ý",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuy_vo1"
+        ],
+        "children": [
+          "anc_huuthiennhan"
+        ],
+        "parents": [
+          "anc_huutao",
+          "anc_huutao_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthiennhan",
+      "data": {
+        "fullName": "Hữu Thiện Nhân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuy",
+          "anc_huuy_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphung",
+      "data": {
+        "fullName": "Hữu Phùng",
+        "last name": "",
+        "gender": "M",
+        "notes": "(Mất sơm)",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphuong_vo1",
+      "data": {
+        "fullName": "Phạm T. Quang",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuphuong"
+        ],
+        "children": [
+          "anc_huuhoang",
+          "anc_huuhung2",
+          "anc_huudung"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphuong",
+      "data": {
+        "fullName": "Hữu Phượng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuphuong_vo1"
+        ],
+        "children": [
+          "anc_huuhoang",
+          "anc_huuhung2",
+          "anc_huudung"
+        ],
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhoang",
+      "data": {
+        "fullName": "Hữu Hoàng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuphuong",
+          "anc_huuphuong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung2",
+      "data": {
+        "fullName": "Hữu Hùng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuphuong",
+          "anc_huuphuong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudung",
+      "data": {
+        "fullName": "Hữu Dũng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuphuong",
+          "anc_huuphuong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuque_vo1",
+      "data": {
+        "fullName": "Lê Thị Thúy",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuque"
+        ],
+        "children": [
+          "anc_huudat",
+          "anc_thitam"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuque",
+      "data": {
+        "fullName": "Hữu Quế",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuque_vo1"
+        ],
+        "children": [
+          "anc_huudat",
+          "anc_thitam"
+        ],
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudat",
+      "data": {
+        "fullName": "Hữu Đạt",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuque",
+          "anc_huuque_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thitam",
+      "data": {
+        "fullName": "Thị Tâm",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuque",
+          "anc_huuque_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthanh2_vo1",
+      "data": {
+        "fullName": "Phan Thị Lý",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthanh2"
+        ],
+        "children": [
+          "anc_huucuong",
+          "anc_huuchuong"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthanh2",
+      "data": {
+        "fullName": "Hữu Thanh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 5
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthanh2_vo1"
+        ],
+        "children": [
+          "anc_huucuong",
+          "anc_huuchuong"
+        ],
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huucuong",
+      "data": {
+        "fullName": "Hữu Cương",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthanh2",
+          "anc_huuthanh2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuchuong",
+      "data": {
+        "fullName": "Hữu Chương",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthanh2",
+          "anc_huuthanh2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunhan",
+      "data": {
+        "fullName": "Hữu Nhàn",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 6
+      },
+      "rels": {
+        "children": [
+          "anc_huuhieu",
+          "anc_huutrung"
+        ],
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhieu",
+      "data": {
+        "fullName": "Hữu Hiếu",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huunhan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutrung",
+      "data": {
+        "fullName": "Hữu Trung",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huunhan"
+        ]
+      }
+    },
+    {
+      "id": "anc_thi3",
+      "data": {
+        "fullName": "Thị..",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 7
+      },
+      "rels": {
+        "parents": [
+          "anc_huumay",
+          "anc_huumay_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthao2",
+      "data": {
+        "fullName": "Hữu Thảo",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huutruyen",
+          "anc_huutruyen_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thi2",
+      "data": {
+        "fullName": "Thị ...",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huutruyen",
+          "anc_huutruyen_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuloan",
+      "data": {
+        "fullName": "Hữu Loan",
+        "last name": "",
+        "gender": "M",
+        "notes": "Mất sớm; (Loạn)",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhuong"
+        ]
+      }
+    },
+    {
+      "id": "anc_huu",
+      "data": {
+        "fullName": "Hữu ...",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuduc"
+        ]
+      }
+    },
+    {
+      "id": "anc_thi",
+      "data": {
+        "fullName": "Thị ...",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuduc"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthanh",
+      "data": {
+        "fullName": "Hữu Thành",
+        "last name": "",
+        "gender": "M",
+        "notes": "Số thứ tự: 3",
+        "sibling_index": 2
+      },
+      "rels": {
+        "children": [
+          "anc_huuloc",
+          "anc_huunhuong",
+          "anc_thi4"
+        ],
+        "parents": [
+          "anc_tientohuuthong",
+          "anc_tientohuuthong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuloc",
+      "data": {
+        "fullName": "Hữu Lộc",
+        "last name": "",
+        "gender": "M",
+        "notes": "(vợ không rõ tên)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuban"
+        ],
+        "parents": [
+          "anc_huuthanh"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuban",
+      "data": {
+        "fullName": "Hữu Ban",
+        "last name": "",
+        "gender": "M",
+        "notes": "(Hi sinh)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuloc"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunhuong",
+      "data": {
+        "fullName": "Hữu Nhưởng",
+        "last name": "",
+        "gender": "M",
+        "notes": "(vợ không rõ tên)",
+        "sibling_index": 1
+      },
+      "rels": {
+        "children": [
+          "anc_huutoc"
+        ],
+        "parents": [
+          "anc_huuthanh"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutoc",
+      "data": {
+        "fullName": "Hữu Tớc",
+        "last name": "",
+        "gender": "M",
+        "notes": "(vợ không rõ tên)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huukhanh2",
+          "anc_huuban2",
+          "anc_huutiep"
+        ],
+        "parents": [
+          "anc_huunhuong"
+        ]
+      }
+    },
+    {
+      "id": "anc_huukhanh2",
+      "data": {
+        "fullName": "Hữu Khánh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huutoc"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuban2",
+      "data": {
+        "fullName": "Hữu Ban",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huutoc"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutiep",
+      "data": {
+        "fullName": "Hữu Tiệp",
+        "last name": "",
+        "gender": "M",
+        "notes": "(vợ không rõ tên)",
+        "sibling_index": 2
+      },
+      "rels": {
+        "children": [
+          "anc_huuminh",
+          "anc_huuhinh",
+          "anc_huuhuong2"
+        ],
+        "parents": [
+          "anc_huutoc"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuminh_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Tường",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuminh"
+        ],
+        "children": [
+          "anc_huuthuong",
+          "anc_huuduong2",
+          "anc_huuchinh",
+          "anc_huutinh"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuminh_vo2",
+      "data": {
+        "fullName": "Nguyễn Thị Bơn",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuminh"
+        ],
+        "children": []
+      }
+    },
+    {
+      "id": "anc_huuminh",
+      "data": {
+        "fullName": "Hữu Minh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuminh_vo1",
+          "anc_huuminh_vo2"
+        ],
+        "children": [
+          "anc_huuthuong",
+          "anc_huuduong2",
+          "anc_huuchinh",
+          "anc_huutinh"
+        ],
+        "parents": [
+          "anc_huutiep"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthuong_vo1",
+      "data": {
+        "fullName": "Thị Kế",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthuong"
+        ],
+        "children": [
+          "anc_huucuong2",
+          "anc_huu2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthuong",
+      "data": {
+        "fullName": "Hữu Thường",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthuong_vo1"
+        ],
+        "children": [
+          "anc_huucuong2",
+          "anc_huu2"
+        ],
+        "parents": [
+          "anc_huuminh",
+          "anc_huuminh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huucuong2_vo1",
+      "data": {
+        "fullName": "Thị Quyên",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huucuong2"
+        ],
+        "children": [
+          "anc_huuhung3",
+          "anc_huudung2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huucuong2",
+      "data": {
+        "fullName": "Hữu Cường",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huucuong2_vo1"
+        ],
+        "children": [
+          "anc_huuhung3",
+          "anc_huudung2"
+        ],
+        "parents": [
+          "anc_huuthuong",
+          "anc_huuthuong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung3_vo1",
+      "data": {
+        "fullName": "Thị Vân",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhung3"
+        ],
+        "children": [
+          "anc_huuphi",
+          "anc_huuhung4"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung3",
+      "data": {
+        "fullName": "Hữu Hùng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhung3_vo1"
+        ],
+        "children": [
+          "anc_huuphi",
+          "anc_huuhung4"
+        ],
+        "parents": [
+          "anc_huucuong2",
+          "anc_huucuong2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphi",
+      "data": {
+        "fullName": "Hữu Phi",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhung3",
+          "anc_huuhung3_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung4",
+      "data": {
+        "fullName": "Hữu Hưng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhung3",
+          "anc_huuhung3_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudung2",
+      "data": {
+        "fullName": "Hữu Dũng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huucuong2",
+          "anc_huucuong2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huu2",
+      "data": {
+        "fullName": "Hữu ...",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthuong",
+          "anc_huuthuong_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuduong2",
+      "data": {
+        "fullName": "Hữu Đường",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "children": [
+          "anc_huuhoa",
+          "anc_huutuat"
+        ],
+        "parents": [
+          "anc_huuminh",
+          "anc_huuminh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhoa_vo1",
+      "data": {
+        "fullName": "Thị Lộc",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhoa"
+        ],
+        "children": [
+          "anc_huuxuan",
+          "anc_huuthuan"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhoa",
+      "data": {
+        "fullName": "Hữu Hoa",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhoa_vo1"
+        ],
+        "children": [
+          "anc_huuxuan",
+          "anc_huuthuan"
+        ],
+        "parents": [
+          "anc_huuduong2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuxuan",
+      "data": {
+        "fullName": "Hữu Xuân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhoa",
+          "anc_huuhoa_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthuan",
+      "data": {
+        "fullName": "Hữu Thuận",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhoa",
+          "anc_huuhoa_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutuat_vo1",
+      "data": {
+        "fullName": "Thị Thủy",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutuat"
+        ],
+        "children": [
+          "anc_huuviet",
+          "anc_huutrung2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutuat",
+      "data": {
+        "fullName": "Hữu Tuất",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutuat_vo1"
+        ],
+        "children": [
+          "anc_huuviet",
+          "anc_huutrung2"
+        ],
+        "parents": [
+          "anc_huuduong2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuviet",
+      "data": {
+        "fullName": "Hữu Việt",
+        "last name": "",
+        "gender": "M",
+        "notes": "(mất)",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huutuat",
+          "anc_huutuat_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutrung2",
+      "data": {
+        "fullName": "Hữu Trung",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huutuat",
+          "anc_huutuat_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuchinh",
+      "data": {
+        "fullName": "Hữu Chinh",
+        "last name": "",
+        "gender": "M",
+        "notes": "(sinh 3 con gái)",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuminh",
+          "anc_huuminh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutinh_vo1",
+      "data": {
+        "fullName": "Thị Thược",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutinh"
+        ],
+        "children": [
+          "anc_huuhoi2",
+          "anc_huudeu",
+          "anc_huudan",
+          "anc_huucou",
+          "anc_huuchin"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutinh",
+      "data": {
+        "fullName": "Hữu Tịnh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "spouses": [
+          "anc_huutinh_vo1"
+        ],
+        "children": [
+          "anc_huuhoi2",
+          "anc_huudeu",
+          "anc_huudan",
+          "anc_huucou",
+          "anc_huuchin"
+        ],
+        "parents": [
+          "anc_huuminh",
+          "anc_huuminh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhoi2",
+      "data": {
+        "fullName": "Hữu Hợi",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huutinh",
+          "anc_huutinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudeu",
+      "data": {
+        "fullName": "Hữu Đều",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huutinh",
+          "anc_huutinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudan",
+      "data": {
+        "fullName": "Hữu Đặn",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huutinh",
+          "anc_huutinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huucou",
+      "data": {
+        "fullName": "Hữu Cơu",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huutinh",
+          "anc_huutinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuchin",
+      "data": {
+        "fullName": "Hữu Chín",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "parents": [
+          "anc_huutinh",
+          "anc_huutinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhinh_vo1",
+      "data": {
+        "fullName": "Nguyễn Thị Thế",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhinh"
+        ],
+        "children": [
+          "anc_huusam",
+          "anc_huuchu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhinh",
+      "data": {
+        "fullName": "Hữu Hinh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhinh_vo1"
+        ],
+        "children": [
+          "anc_huusam",
+          "anc_huuchu"
+        ],
+        "parents": [
+          "anc_huutiep"
+        ]
+      }
+    },
+    {
+      "id": "anc_huusam_vo1",
+      "data": {
+        "fullName": "Thị Kiền",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huusam"
+        ],
+        "children": [
+          "anc_huulien",
+          "anc_huuhung5",
+          "anc_huuvinh"
+        ]
+      }
+    },
+    {
+      "id": "anc_huusam",
+      "data": {
+        "fullName": "Hữu Sâm",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huusam_vo1"
+        ],
+        "children": [
+          "anc_huulien",
+          "anc_huuhung5",
+          "anc_huuvinh"
+        ],
+        "parents": [
+          "anc_huuhinh",
+          "anc_huuhinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huulien",
+      "data": {
+        "fullName": "Hữu Liên",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huudan2",
+          "anc_huudanh2",
+          "anc_huuthao3",
+          "anc_huudung3"
+        ],
+        "parents": [
+          "anc_huusam",
+          "anc_huusam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudan2",
+      "data": {
+        "fullName": "Hữu Dân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huulien"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudanh2",
+      "data": {
+        "fullName": "Hữu Danh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huulien"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthao3",
+      "data": {
+        "fullName": "Hữu Thảo",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huulien"
+        ]
+      }
+    },
+    {
+      "id": "anc_huudung3",
+      "data": {
+        "fullName": "Hữu Dũng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huulien"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung5_vo1",
+      "data": {
+        "fullName": "Thị Mai",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhung5"
+        ],
+        "children": [
+          "anc_huuhung6"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung5",
+      "data": {
+        "fullName": "Hữu Hùng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhung5_vo1"
+        ],
+        "children": [
+          "anc_huuhung6"
+        ],
+        "parents": [
+          "anc_huusam",
+          "anc_huusam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhung6",
+      "data": {
+        "fullName": "Hữu Hưng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhung5",
+          "anc_huuhung5_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuvinh",
+      "data": {
+        "fullName": "Hữu Vinh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huusam",
+          "anc_huusam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuchu",
+      "data": {
+        "fullName": "Hữu Chư",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "children": [
+          "anc_huuthan2",
+          "anc_huuhoi3",
+          "anc_huumao"
+        ],
+        "parents": [
+          "anc_huuhinh",
+          "anc_huuhinh_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthan2_vo1",
+      "data": {
+        "fullName": "Thị Hoa",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthan2"
+        ],
+        "children": [
+          "anc_huucong"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuthan2",
+      "data": {
+        "fullName": "Hữu Thân",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuthan2_vo1"
+        ],
+        "children": [
+          "anc_huucong"
+        ],
+        "parents": [
+          "anc_huuchu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huucong",
+      "data": {
+        "fullName": "Hữu Công",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthan2",
+          "anc_huuthan2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhoi3",
+      "data": {
+        "fullName": "Hữu Hợi",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuchu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huumao",
+      "data": {
+        "fullName": "Hữu Mão",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuchu"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhuong2",
+      "data": {
+        "fullName": "Hữu Hương",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "children": [
+          "anc_huuhon",
+          "anc_huuhai2"
+        ],
+        "parents": [
+          "anc_huutiep"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhon",
+      "data": {
+        "fullName": "Hữu Hớn",
+        "last name": "",
+        "gender": "M",
+        "notes": "sinh 1 gái",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhuong2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhai2_vo1",
+      "data": {
+        "fullName": "Thị Thiền",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhai2"
+        ],
+        "children": [
+          "anc_huuhai3",
+          "anc_huuhai4",
+          "anc_huuba",
+          "anc_huutu",
+          "anc_huunam",
+          "anc_huusau",
+          "anc_huutam"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhai2",
+      "data": {
+        "fullName": "Hữu Hài",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhai2_vo1"
+        ],
+        "children": [
+          "anc_huuhai3",
+          "anc_huuhai4",
+          "anc_huuba",
+          "anc_huutu",
+          "anc_huunam",
+          "anc_huusau",
+          "anc_huutam"
+        ],
+        "parents": [
+          "anc_huuhuong2"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhai3",
+      "data": {
+        "fullName": "Hữu Hải",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuphuoc"
+        ],
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphuoc_vo1",
+      "data": {
+        "fullName": "Thị Hạnh",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuphuoc"
+        ],
+        "children": []
+      }
+    },
+    {
+      "id": "anc_huuphuoc",
+      "data": {
+        "fullName": "Hữu Phước",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuphuoc_vo1"
+        ],
+        "parents": [
+          "anc_huuhai3"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhai4_vo1",
+      "data": {
+        "fullName": "Thị Hoa",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhai4"
+        ],
+        "children": [
+          "anc_huugiap2",
+          "anc_huuba2",
+          "anc_huugiap3"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuhai4",
+      "data": {
+        "fullName": "Hữu Hai",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuhai4_vo1"
+        ],
+        "children": [
+          "anc_huugiap2",
+          "anc_huuba2",
+          "anc_huugiap3"
+        ],
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huugiap2",
+      "data": {
+        "fullName": "Hữu Giáp",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhai4",
+          "anc_huuhai4_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuba2",
+      "data": {
+        "fullName": "Hữu ba",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhai4",
+          "anc_huuhai4_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huugiap3_vo1",
+      "data": {
+        "fullName": "Thị Hoa",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huugiap3"
+        ],
+        "children": [
+          "anc_huukhoi",
+          "anc_huuloi"
+        ]
+      }
+    },
+    {
+      "id": "anc_huugiap3",
+      "data": {
+        "fullName": "Hữu Giáp",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "spouses": [
+          "anc_huugiap3_vo1"
+        ],
+        "children": [
+          "anc_huukhoi",
+          "anc_huuloi"
+        ],
+        "parents": [
+          "anc_huuhai4",
+          "anc_huuhai4_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huukhoi",
+      "data": {
+        "fullName": "Hữu Khôi",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huugiap3",
+          "anc_huugiap3_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuloi_vo1",
+      "data": {
+        "fullName": "Thị Liên",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuloi"
+        ],
+        "children": [
+          "anc_huutri",
+          "anc_huutai"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuloi",
+      "data": {
+        "fullName": "Hữu Lợi",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuloi_vo1"
+        ],
+        "children": [
+          "anc_huutri",
+          "anc_huutai"
+        ],
+        "parents": [
+          "anc_huugiap3",
+          "anc_huugiap3_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutri",
+      "data": {
+        "fullName": "Hữu trí",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuloi",
+          "anc_huuloi_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutai",
+      "data": {
+        "fullName": "Hữu Tài",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuloi",
+          "anc_huuloi_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuba",
+      "data": {
+        "fullName": "Hữu Ba",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "children": [
+          "anc_huuvinh2",
+          "anc_thingoc"
+        ],
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuvinh2",
+      "data": {
+        "fullName": "Hữu Vinh",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuba"
+        ]
+      }
+    },
+    {
+      "id": "anc_thingoc",
+      "data": {
+        "fullName": "Thị Ngọc",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuba"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutu",
+      "data": {
+        "fullName": "Hữu tư",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunam_vo1",
+      "data": {
+        "fullName": "Thị Thu",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huunam"
+        ],
+        "children": [
+          "anc_huuoai",
+          "anc_huukhang",
+          "anc_huubao",
+          "anc_thitam2",
+          "anc_huuoai2",
+          "anc_huubao2",
+          "anc_thitam3"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunam",
+      "data": {
+        "fullName": "Hữu Năm",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "spouses": [
+          "anc_huunam_vo1"
+        ],
+        "children": [
+          "anc_huuoai",
+          "anc_huukhang",
+          "anc_huubao",
+          "anc_thitam2",
+          "anc_huuoai2",
+          "anc_huubao2",
+          "anc_thitam3"
+        ],
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuoai",
+      "data": {
+        "fullName": "Hữu Oai",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "children": [
+          "anc_huuphuong2"
+        ],
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphuong2",
+      "data": {
+        "fullName": "Hữu Phương",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuoai"
+        ]
+      }
+    },
+    {
+      "id": "anc_huukhang",
+      "data": {
+        "fullName": "Hữu Khang",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huubao",
+      "data": {
+        "fullName": "Hữu Bảo",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thitam2",
+      "data": {
+        "fullName": "Thị Tâm",
+        "last name": "",
+        "gender": "F",
+        "notes": "lấy chồng về Thái Bình",
+        "sibling_index": 3
+      },
+      "rels": {
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuoai2_vo1",
+      "data": {
+        "fullName": "Thị Hoài",
+        "last name": "",
+        "gender": "F",
+        "notes": ""
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuoai2"
+        ],
+        "children": [
+          "anc_huuphuong3",
+          "anc_huukhang2",
+          "anc_khanhbang"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuoai2",
+      "data": {
+        "fullName": "Hữu Oai",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 4
+      },
+      "rels": {
+        "spouses": [
+          "anc_huuoai2_vo1"
+        ],
+        "children": [
+          "anc_huuphuong3",
+          "anc_huukhang2",
+          "anc_khanhbang"
+        ],
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huuphuong3",
+      "data": {
+        "fullName": "Hữu Phương",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huuoai2",
+          "anc_huuoai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huukhang2",
+      "data": {
+        "fullName": "Hữu Khang",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huuoai2",
+          "anc_huuoai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_khanhbang",
+      "data": {
+        "fullName": "Khánh Băng",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuoai2",
+          "anc_huuoai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huubao2",
+      "data": {
+        "fullName": "Hữu Bảo",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 5
+      },
+      "rels": {
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_thitam3",
+      "data": {
+        "fullName": "Thị Tâm",
+        "last name": "",
+        "gender": "F",
+        "notes": "lấy chồng về Thái Bình",
+        "sibling_index": 6
+      },
+      "rels": {
+        "parents": [
+          "anc_huunam",
+          "anc_huunam_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huusau",
+      "data": {
+        "fullName": "Hữu Sáu",
+        "last name": "",
+        "gender": "M",
+        "notes": "(chết)",
+        "sibling_index": 5
+      },
+      "rels": {
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huutam",
+      "data": {
+        "fullName": "Hữu Tám",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 6
+      },
+      "rels": {
+        "children": [
+          "anc_huunhu",
+          "anc_thibichlaychongvephutho"
+        ],
+        "parents": [
+          "anc_huuhai2",
+          "anc_huuhai2_vo1"
+        ]
+      }
+    },
+    {
+      "id": "anc_huunhu",
+      "data": {
+        "fullName": "Hữu Nhu",
+        "last name": "",
+        "gender": "M",
+        "notes": "",
+        "sibling_index": 0
+      },
+      "rels": {
+        "parents": [
+          "anc_huutam"
+        ]
+      }
+    },
+    {
+      "id": "anc_thibichlaychongvephutho",
+      "data": {
+        "fullName": "Thị Bích lấy chồng về Phú Thọ",
+        "last name": "",
+        "gender": "F",
+        "notes": "",
+        "sibling_index": 1
+      },
+      "rels": {
+        "parents": [
+          "anc_huutam"
+        ]
+      }
+    },
+    {
+      "id": "anc_thi4",
+      "data": {
+        "fullName": "Thị ...",
+        "last name": "",
+        "gender": "F",
+        "notes": "(Mất sớm)",
+        "sibling_index": 2
+      },
+      "rels": {
+        "parents": [
+          "anc_huuthanh"
+        ]
+      }
+    }
+  ]

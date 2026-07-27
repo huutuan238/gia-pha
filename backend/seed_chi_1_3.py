@@ -12,11 +12,10 @@ app = create_app()
 
 def seed_gia_pha():
     with app.app_context():
-        file_path = Path(__file__).parent / "data" / "gia_pha.json"
+        file_path = Path(__file__).parent / "data" / "data_chi_1_3.json"
 
         with open(file_path, encoding="utf-8") as f:
             persons = json.load(f)
-
         try:
             # 1. Seed persons
             for body in persons:
@@ -49,6 +48,17 @@ def seed_gia_pha():
             for body in persons:
                 rels = body.get("rels", {})
                 person_id = body["id"]
+
+                # add parent for u_nguyenhuuhuan_195
+                if person_id in ['anc_tientohuuthong', 'anc_tientohuuthong_vo1']:
+                    db.session.add(
+                        Relationship(
+                            id=str(uuid.uuid4()),
+                            person_id=person_id,
+                            related_person_id='u_nguyenhuuhuan_195',
+                            relation_type="PARENT",
+                        )
+                    )
 
                 for parent_id in rels.get("parents", []):
                     if not db.session.get(Person, parent_id):
