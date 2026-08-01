@@ -201,7 +201,7 @@
                 placeholder="Năm"
                 class="date-part-input date-part-input-year"
               />
-              <label class="lunar-checkbox">
+              <label class="lunar-checkbox" v-show="false">
                 <input type="checkbox" v-model="form.deathIsLunar"/>
                 Âm lịch
               </label>
@@ -552,7 +552,7 @@ function formatPartialDate(day, month, year, isLunar) {
 
   const parts = [dm, year ? String(year) : (dm ? "?" : "")].filter(Boolean);
   const label = parts.join("/");
-  return isLunar ? `${label} (ÂL)` : label;
+  return label;
 }
 
 function attachYears(personData) {
