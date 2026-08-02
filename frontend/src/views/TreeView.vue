@@ -47,18 +47,16 @@ import FamilyChart from "./FamilyChart.vue";
           </div>
         </div>
 
-        <div class="legend" v-show="false">
+        <div class="legend">
           <span
-            ><span class="dot" style="background: var(--lacquer)"></span>Thành
-            viên gốc của nhánh</span
+          ><span class="dot" style="background: rgb(120, 159, 172)"></span>Nam</span
           >
           <span
-            ><span class="dot" style="background: #cfc6b3"></span>Đã mất</span
+            ><span class="dot" style="background: rgb(196, 138, 146)"></span>Nữ</span
           >
           <span
-            ><span class="dot" style="background: var(--gold-soft)"></span>Còn
-            sống</span
-          >
+          ><span class="dot" style="background: darkgray"></span>Đã mất</span
+        >
         </div>
       </div>
     </section>
