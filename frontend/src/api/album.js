@@ -37,11 +37,7 @@ export const deletePhoto = (photoId) => {
   return apiClient.delete(`/photos/${photoId}`);
 };
 
-// Backend trả url ảnh dạng đường dẫn tương đối ("/static/uploads/albums/xxx.jpg"),
-// cần ghép với gốc domain backend (khác domain frontend khi dev qua Vite).
-// TODO: đổi lại cho khớp biến env thật của bạn nếu tên khác.
-const BACKEND_ORIGIN =
-  import.meta.env.VITE_API_ORIGIN || "http://localhost:5001";
+const BACKEND_ORIGIN = import.meta.env.VITE_API_ORIGIN
 
 export const resolvePhotoUrl = (url) => {
   if (!url) return "";
