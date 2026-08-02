@@ -58,9 +58,19 @@
   
         <!-- ================= KẾT QUẢ ================= -->
         <div v-if="hasSearched" style="margin-top: 28px;">
-          <p class="result-count">
-            Tìm thấy <strong>{{ results.length }}</strong> người thoả điều kiện.
-          </p>
+          <div class="result-header">
+            <p class="result-count">
+              Tìm thấy <strong>{{ results.length }}</strong> người thoả điều kiện.
+            </p>
+            <button
+              type="button"
+              class=""
+              :disabled="!results.length || exporting"
+              @click="exportToExcel"
+            >
+              {{ exporting ? "Đang xuất..." : "⬇ Xuất Excel" }}
+            </button>
+          </div>
   
           <div class="paper" style="overflow-x: auto;">
             <table class="user-table">
@@ -69,18 +79,16 @@
                   <th>Họ tên</th>
                   <th>Tên bố</th>
                   <th>Giới tính</th>
-                  <th>Chi</th>
                   <th>Năm sinh</th>
                   <th>Tuổi</th>
                   <th>Đã có vợ/chồng</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="p in results" :key="p.id">
+                <tr v-for="p in paginatedResults" :key="p.id">
                   <td>{{ p.fullName }}</td>
                   <td>{{ p.parent }}</td>
                   <td>{{ p.gender === 'M' ? 'Nam' : 'Nữ' }}</td>
-                  <td>{{ p.chi || '—' }}</td>
                   <td>{{ p.birthYear || '—' }}</td>
                   <td>{{ p.birthYear ? CURRENT_YEAR - p.birthYear : '—' }}</td>
                   <td>{{ p.hasSpouse ? 'Có' : 'Chưa' }}</td>
@@ -90,6 +98,31 @@
             <p v-if="!results.length" style="color: var(--color-ink-soft); padding: 16px;">
               Không có ai thoả điều kiện đang chọn.
             </p>
+
+            <!-- ================= PHÂN TRANG (20 người/trang) ================= -->
+            <div v-if="results.length" class="pagination-bar">
+              <span class="pagination-info">
+                Trang {{ currentPage }} / {{ totalPages }}
+                ({{ (currentPage - 1) * PAGE_SIZE + 1 }}–{{ Math.min(currentPage * PAGE_SIZE, results.length) }}
+                trong {{ results.length }})
+              </span>
+              <div class="pagination-controls">
+                <button
+                  class="btn btn-outline"
+                  :disabled="currentPage === 1"
+                  @click="currentPage--"
+                >
+                  ‹ Trước
+                </button>
+                <button
+                  class="btn btn-outline"
+                  :disabled="currentPage === totalPages"
+                  @click="currentPage++"
+                >
+                  Sau ›
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </template>
@@ -97,12 +130,12 @@
   </template>
   
   <script setup>
-  import { ref, reactive, onMounted } from "vue";
+  import { ref, reactive, computed, watch, onMounted } from "vue";
+  import * as XLSX from "xlsx";
   import { getAllPerson, searchPersons } from "../api/person.js";
   
   const CURRENT_YEAR = new Date().getFullYear();
   
-  const persons = ref([]);
   const loading = ref(false);
   const loadError = ref("");
   const usingMockData = ref(false);
@@ -117,6 +150,24 @@
   const results = ref([]);
   const hasSearched = ref(false);
   const availableChis = ref([]);
+
+  /* ================== PHÂN TRANG ================== */
+  const PAGE_SIZE = 20;
+  const currentPage = ref(1);
+
+  const totalPages = computed(() =>
+    Math.max(1, Math.ceil(results.value.length / PAGE_SIZE))
+  );
+
+  const paginatedResults = computed(() => {
+    const start = (currentPage.value - 1) * PAGE_SIZE;
+    return results.value.slice(start, start + PAGE_SIZE);
+  });
+
+  // Mỗi khi có kết quả tìm kiếm mới thì quay lại trang 1
+  watch(results, () => {
+    currentPage.value = 1;
+  });
   
   async function fetchPersons() {
     availableChis.value = {
@@ -136,25 +187,16 @@
     filters.ageTo = null;
     hasSearched.value = false;
     results.value = [];
+    currentPage.value = 1;
   }
   
-  // ============================================================
-  // ĐỊNH NGHĨA MẶC ĐỊNH (chỉnh lại nếu cách tính khác ý):
-  // - "Số đinh"      -> chỉ nam giới, không xét đã có vợ hay chưa
-  // - "Số hộ"        -> chỉ nam giới VÀ đã có vợ
-  // - "Tất cả"       -> không lọc theo giới tính/hôn nhân
-  // - Độ tuổi: tính theo năm hiện tại - birthYear. Người chưa rõ năm sinh
-  //   sẽ BỊ LOẠI nếu bạn có nhập "Từ tuổi" hoặc "Đến tuổi" (vì không thể
-  //   xác định có thoả điều kiện hay không); nếu để trống cả 2 ô tuổi thì
-  //   vẫn hiển thị bình thường.
-  // ============================================================
   async function runSearch() {
     try {
         const { data } = await searchPersons({
-        chi: filters.chi,
-        metric: filters.metric,
-        age_from: filters.ageFrom,
-        age_to: filters.ageTo,
+            chi: filters.chi,
+            metric: filters.metric,
+            age_from: filters.ageFrom,
+            age_to: filters.ageTo,
         });
 
         results.value = data;
@@ -162,31 +204,69 @@
     } catch (err) {
         console.error(err);
     }
-    // const alive = persons.value.filter((p) => !p.isDeceased);
-  
-    // const chiFiltered =
-    //   filters.chi === "all" ? alive : alive.filter((p) => p.chi === filters.chi);
-  
-    // const metricFiltered = chiFiltered.filter((p) => {
-    //   if (filters.metric === "dinh") return p.gender === "M";
-    //   if (filters.metric === "ho") return p.gender === "M" && p.hasSpouse;
-    //   return true; // 'all'
-    // });
-  
-    // const hasAgeFilter = filters.ageFrom != null || filters.ageTo != null;
-  
-    // const ageFiltered = metricFiltered.filter((p) => {
-    //   if (!hasAgeFilter) return true;
-    //   if (!p.birthYear) return false; // không rõ năm sinh -> loại khi có lọc tuổi
-  
-    //   const age = CURRENT_YEAR - p.birthYear;
-    //   if (filters.ageFrom != null && age < filters.ageFrom) return false;
-    //   if (filters.ageTo != null && age > filters.ageTo) return false;
-    //   return true;
-    // });
-  
-    // results.value = ageFiltered;
-    // hasSearched.value = true;
+  }
+
+  /* ================== XUẤT EXCEL ================== */
+  const exporting = ref(false);
+
+  function genderLabel(g) {
+    return g === "M" ? "Nam" : "Nữ";
+  }
+
+  const METRIC_LABELS = {
+    dinh: "Số đinh (nam giới)",
+    ho: "Số hộ (nam đã có vợ)",
+    all: "Tất cả",
+  };
+
+  function exportToExcel() {
+    if (!results.value.length) return;
+
+    exporting.value = true;
+    try {
+      // Xuất TOÀN BỘ kết quả đã lọc (không chỉ trang đang xem)
+      const rows = results.value.map((p) => ({
+        "Họ tên": p.fullName || "",
+        "Tên bố": p.parent || "",
+        "Giới tính": genderLabel(p.gender),
+        "Năm sinh": p.birthYear || "",
+        "Tuổi": p.birthYear ? CURRENT_YEAR - p.birthYear : "",
+        "Đã có vợ/chồng": p.hasSpouse ? "Có" : "Chưa",
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      // Auto-size cột cho dễ đọc thay vì mặc định quá hẹp
+      worksheet["!cols"] = [
+        { wch: 24 }, // Họ tên
+        { wch: 24 }, // Tên bố
+        { wch: 10 }, // Giới tính
+        { wch: 10 }, // Năm sinh
+        { wch: 8 },  // Tuổi
+        { wch: 16 }, // Đã có vợ/chồng
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Danh sách");
+
+      const chiLabel =
+        filters.chi === "all"
+          ? "tat-ca-cac-chi"
+          : Object.keys(availableChis.value).find(
+              (k) => availableChis.value[k] === filters.chi
+            ) || "chi";
+      const metricLabel = METRIC_LABELS[filters.metric] || filters.metric;
+      const fileName = `danh-sach-${chiLabel}-${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
+
+      XLSX.writeFile(workbook, fileName);
+    } catch (err) {
+      console.error("Xuất Excel thất bại:", err);
+      loadError.value = "Không thể xuất file Excel. Vui lòng thử lại.";
+    } finally {
+      exporting.value = false;
+    }
   }
   </script>
   
@@ -231,10 +311,23 @@
     border-color: var(--color-paper-line);
   }
   
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
   .result-count {
     color: var(--color-cream-dim);
     font-size: 14px;
-    margin-bottom: 16px;
+    margin: 0;
+  }
+  .export-btn {
+    color: var(--color-ink);
+    border-color: var(--color-paper-line);
+    white-space: nowrap;
   }
   
   .user-table {
@@ -255,6 +348,31 @@
     padding: 14px 18px;
     font-size: 14px;
     border-bottom: 1px solid var(--color-paper-line);
+  }
+
+  /* ---- Phân trang ---- */
+  .pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pagination-info {
+    font-size: 13px;
+    color: var(--color-ink-soft);
+  }
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pagination-controls .btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--color-ink);
+    border-color: var(--color-paper-line);
   }
   
   .alert-error {
