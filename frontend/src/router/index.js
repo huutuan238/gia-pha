@@ -11,6 +11,7 @@ import AlbumDetail from "../views/AlbumDetail.vue";
 import FamilyView from "../views/FamilyView.vue";
 import AdminDashBoard from "../views/AdminDashBoard.vue";
 import FamilyChartInfo from "../views/FamilyChartInfo.vue";
+import ChiStarView from "../views/ChiStarView.vue";
 import { authStore } from "../stores/auth.js";
 
 const router = createRouter({

@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 
 from sqlalchemy import CheckConstraint
-
+from sqlalchemy import select
 
 class Person(db.Model):
     __tablename__ = "persons"
@@ -39,6 +39,18 @@ class Person(db.Model):
         db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
     )
 
+    parent_relations = db.relationship(
+        "Relationship",
+        foreign_keys="Relationship.related_person_id",
+        lazy="select",
+    )
+
+    child_relations = db.relationship(
+        "Relationship",
+        foreign_keys="Relationship.person_id",
+        lazy="select",
+    )
+
     __table_args__ = (
         CheckConstraint(
             "birth_day IS NULL OR birth_day BETWEEN 1 AND 31", name="chk_birth_day"
@@ -55,6 +67,16 @@ class Person(db.Model):
             name="chk_death_month",
         ),
     )
+    @property
+    def parents(self):
+        return db.session.scalars(
+            select(Person)
+            .join(Relationship, Relationship.person_id == Person.id)
+            .where(
+                Relationship.related_person_id == self.id,
+                Relationship.relation_type == "PARENT",
+            )
+        ).all()
 
     def to_dict(self):
         return {
