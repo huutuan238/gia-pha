@@ -1,27 +1,9 @@
-"""
-API cho tính năng Album ảnh.
-
-Endpoints:
-  GET    /api/albums                -> danh sách album (không kèm full photos, chỉ cover + count)
-  GET    /api/albums/<album_id>     -> chi tiết 1 album kèm toàn bộ ảnh
-  POST   /api/albums                -> tạo album mới          body: { title, description }
-  PUT    /api/albums/<album_id>     -> sửa thông tin album     body: { title, description }
-  DELETE /api/albums/<album_id>     -> xoá album (cascade xoá luôn ảnh trong album)
-
-  POST   /api/albums/<album_id>/photos  -> upload ảnh vào album (multipart/form-data, field "file")
-  DELETE /api/photos/<photo_id>         -> xoá 1 ảnh
-
-Giả định:
-- Flask app đã có `db = SQLAlchemy()` khởi tạo trong extensions.py (đổi lại cho khớp project bạn).
-- Đăng ký blueprint này trong app chính: app.register_blueprint(album_bp)
-- Ảnh được lưu trực tiếp trên server (thư mục UPLOAD_FOLDER), phục vụ qua route static.
-  Nếu bạn dùng cloud storage (S3, Cloudinary...) thay vì lưu local, báo mình viết lại phần upload_photo.
-"""
-
 import os
 import uuid
 from datetime import datetime
 
+import boto3
+from botocore.exceptions import ClientError, BotoCoreError
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 
@@ -31,17 +13,40 @@ from app.models import Album, Photo
 album_bp = Blueprint("albums", __name__, url_prefix="/api")
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
-UPLOAD_SUBDIR = "uploads/albums"  # nằm trong thư mục static/
+S3_KEY_PREFIX = "albums"  # tương đương UPLOAD_SUBDIR cũ, nhưng là "thư mục ảo" trong bucket
 
 
 def _allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def _upload_folder():
-    folder = os.path.join(current_app.static_folder, UPLOAD_SUBDIR)
-    os.makedirs(folder, exist_ok=True)
-    return folder
+def _s3_client():
+    return boto3.client(
+        "s3",
+        region_name=current_app.config["AWS_REGION"],
+        aws_access_key_id=current_app.config.get("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=current_app.config.get("AWS_SECRET_ACCESS_KEY"),
+    )
+
+
+def _bucket_name():
+    return current_app.config["S3_BUCKET_NAME"]
+
+
+def _build_public_url(key):
+    """Ưu tiên dùng CDN (CloudFront) nếu có cấu hình, không thì dùng URL S3 mặc định."""
+    base = current_app.config.get("S3_PUBLIC_BASE_URL")  # ví dụ: https://cdn.giapha.com
+    if base:
+        return f"{base.rstrip('/')}/{key}"
+    region = current_app.config["AWS_REGION"]
+    return f"https://{_bucket_name()}.s3.{region}.amazonaws.com/{key}"
+
+
+def _extract_s3_key(photo_url):
+    """Lấy lại object key trong bucket từ URL đã lưu, để phục vụ xoá."""
+    if not photo_url or f"/{S3_KEY_PREFIX}/" not in photo_url:
+        return None
+    return f"{S3_KEY_PREFIX}/{photo_url.split(f'/{S3_KEY_PREFIX}/', 1)[1]}"
 
 
 # ---------------------------------------------------------------------------
@@ -101,7 +106,7 @@ def delete_album(album_id):
     if not album:
         return jsonify({"message": "Không tìm thấy album"}), 404
 
-    # Xoá luôn file ảnh vật lý trên disk trước khi xoá record
+    # Xoá luôn object trên S3 trước khi xoá record
     for photo in album.photos:
         _delete_photo_file(photo.url)
 
@@ -131,10 +136,21 @@ def upload_photo(album_id):
         ), 400
 
     ext = file.filename.rsplit(".", 1)[1].lower()
-    stored_name = f"{uuid.uuid4()}.{ext}"
-    file.save(os.path.join(_upload_folder(), secure_filename(stored_name)))
+    stored_name = secure_filename(f"{uuid.uuid4()}.{ext}")
+    s3_key = f"{S3_KEY_PREFIX}/{stored_name}"
 
-    photo_url = f"/static/{UPLOAD_SUBDIR}/{stored_name}"
+    try:
+        _s3_client().upload_fileobj(
+            file,
+            _bucket_name(),
+            s3_key,
+            ExtraArgs={"ContentType": file.mimetype or "application/octet-stream"},
+        )
+    except (ClientError, BotoCoreError) as e:
+        current_app.logger.error(f"Upload S3 thất bại: {e}")
+        return jsonify({"message": "Không thể tải ảnh lên. Vui lòng thử lại."}), 500
+
+    photo_url = _build_public_url(s3_key)
 
     photo = Photo(
         album_id=album.id,
@@ -185,13 +201,11 @@ def delete_photo(photo_id):
 
 
 def _delete_photo_file(photo_url):
-    """Xoá file vật lý trên disk tương ứng với photo_url (bỏ qua nếu không tìm thấy)."""
-    if not photo_url or not photo_url.startswith(f"/static/{UPLOAD_SUBDIR}/"):
+    """Xoá object trên S3 tương ứng với photo_url (bỏ qua nếu không parse được key)."""
+    key = _extract_s3_key(photo_url)
+    if not key:
         return
-    filename = photo_url.rsplit("/", 1)[-1]
-    filepath = os.path.join(_upload_folder(), filename)
-    if os.path.exists(filepath):
-        try:
-            os.remove(filepath)
-        except OSError:
-            pass
+    try:
+        _s3_client().delete_object(Bucket=_bucket_name(), Key=key)
+    except (ClientError, BotoCoreError) as e:
+        current_app.logger.warning(f"Xoá S3 object thất bại ({key}): {e}")
