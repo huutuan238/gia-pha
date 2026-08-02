@@ -83,7 +83,7 @@
             <p class="family-meta" v-if="family.branchNumber">{{ family.branchNumber }} chi nhánh</p>
             <div class="family-actions">
               <button class="btn btn-outline" style="color:var(--color-ink); border-color:var(--color-paper-line);" @click="openFamilyPanel(family)">Sửa</button>
-              <button class="btn btn-outline" style="color:var(--color-seal); border-color:var(--color-seal);" @click="removeFamily(family)">Xoá</button>
+              <button v-show="false" class="btn btn-outline" style="color:var(--color-seal); border-color:var(--color-seal);" @click="removeFamily(family)">Xoá</button>
             </div>
           </div>
           <p v-if="!families.length" style="color:var(--color-cream-dim);">Chưa có dòng họ nào.</p>
