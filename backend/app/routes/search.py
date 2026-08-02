@@ -39,12 +39,11 @@ def get_descendant_ids(root_id):
     return result
 
 
+from collections import deque
+
+
 def _is_deceased(p):
-    return bool(
-        getattr(p, "death_day", None)
-        or getattr(p, "death_month", None)
-        or getattr(p, "death_year", None)
-    )
+    return bool(p.death_day or p.death_month or p.death_year)
 
 
 @search_bp.route("/person", methods=["GET"])
@@ -55,65 +54,86 @@ def search_persons():
     age_from = request.args.get("age_from", type=int)
     age_to = request.args.get("age_to", type=int)
 
-    query = Person.query
+    # ================== 1 QUERY DUY NHẤT CHO TOÀN BỘ QUAN HỆ CẦN DÙNG ==================
+    relationships = Relationship.query.filter(
+        Relationship.relation_type.in_(["PARENT", "SPOUSE"])
+    ).all()
 
-    # ---- Lọc theo chi (con cháu của 1 person_id gốc) ----
+    children_map = {}   # parent_id -> [child_id, ...] (dùng để duyệt chi)
+    parent_of = {}       # child_id -> [parent_id, ...] (dùng để lấy tên bố/mẹ, tránh N+1)
+    married_ids = set()
+
+    for rel in relationships:
+        if rel.relation_type == "PARENT":
+            children_map.setdefault(rel.person_id, []).append(rel.related_person_id)
+            parent_of.setdefault(rel.related_person_id, []).append(rel.person_id)
+        elif rel.relation_type == "SPOUSE":
+            married_ids.add(rel.person_id)
+            married_ids.add(rel.related_person_id)
+
+    # ================== LỌC THEO CHI (BFS trong bộ nhớ, không query thêm) ==================
     if chi_person_id and chi_person_id != "all":
-        root_person = Person.query.get(chi_person_id)
-        if not root_person:
+        if not Person.query.get(chi_person_id):
             return jsonify({"error": f"Không tìm thấy người gốc chi '{chi_person_id}'."}), 404
 
-        descendant_ids = get_descendant_ids(chi_person_id)
-        descendant_ids.add(chi_person_id)  # tính luôn người gốc chi
-        query = query.filter(Person.id.in_(descendant_ids))
+        descendant_ids = {chi_person_id}
+        queue = deque([chi_person_id])
+        while queue:
+            current_id = queue.popleft()
+            for child_id in children_map.get(current_id, []):
+                if child_id not in descendant_ids:
+                    descendant_ids.add(child_id)
+                    queue.append(child_id)
 
-    persons = query.all()
+        persons = Person.query.filter(Person.id.in_(descendant_ids)).all()
+    else:
+        persons = Person.query.all()
 
-    # ---- Chỉ tính người còn sống ----
-    alive = [p for p in persons if not _is_deceased(p)]
+    # ================== BATCH TRUY VẤN TÊN BỐ/MẸ (thay vì query từng người) ==================
+    needed_parent_ids = {
+        parent_of[p.id][0] for p in persons if parent_of.get(p.id)
+    }
+    parent_names = {}
+    if needed_parent_ids:
+        parent_names = {
+            pp.id: pp.full_name
+            for pp in Person.query.filter(Person.id.in_(needed_parent_ids)).all()
+        }
 
-    # ---- Tính sẵn tập id đã có vợ/chồng (dùng cho metric "ho" và cột hasSpouse) ----
-    spouse_relations = Relationship.query.filter_by(relation_type="SPOUSE").all()
-    married_ids = set()
-    for rel in spouse_relations:
-        married_ids.add(rel.person_id)
-        married_ids.add(rel.related_person_id)
-
-    # ---- Lọc theo metric (đinh / hộ / tất cả) ----
-    if metric == "dinh":
-        alive = [p for p in alive if p.gender == "M"]
-    elif metric == "ho":
-        alive = [p for p in alive if p.gender == "M" and p.id in married_ids]
-    # metric == "all" -> không lọc thêm
-
-    # ---- Lọc theo độ tuổi (dựa vào birth_year) ----
+    # ================== LỌC ĐIỀU KIỆN + DỰNG KẾT QUẢ TRONG 1 VÒNG LẶP ==================
     current_year = datetime.now().year
 
     def matches_age(p):
         if age_from is None and age_to is None:
             return True
-        birth_year = getattr(p, "birth_year", None)
-        if not birth_year:
-            return False  # không rõ năm sinh -> loại khi có lọc tuổi
-        age = current_year - birth_year
+        if not p.birth_year:
+            return False
+        age = current_year - p.birth_year
         if age_from is not None and age < age_from:
             return False
         if age_to is not None and age > age_to:
             return False
         return True
 
-    filtered = [p for p in alive if matches_age(p)]
+    result = []
+    for p in persons:
+        if _is_deceased(p):
+            continue
+        if metric == "dinh" and p.gender != "M":
+            continue
+        if metric == "ho" and not (p.gender == "M" and p.id in married_ids):
+            continue
+        if not matches_age(p):
+            continue
 
-    result = [
-        {
+        first_parent_id = parent_of.get(p.id, [None])[0]
+        result.append({
             "id": p.id,
             "fullName": p.full_name,
             "gender": p.gender,
-            "birthYear": getattr(p, "birth_year", None),
+            "birthYear": p.birth_year,
             "hasSpouse": p.id in married_ids,
-            "parent": p.parents[0].full_name if len(p.parents) else '',
-        }
-        for p in filtered
-    ]
+            "parent": parent_names.get(first_parent_id, ""),
+        })
 
     return jsonify(result), 200
