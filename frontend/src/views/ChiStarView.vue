@@ -118,66 +118,13 @@
   const hasSearched = ref(false);
   const availableChis = ref([]);
   
-  // Dữ liệu mẫu để demo/thuyết trình trước khi backend có route
-  // GET /api/persons/ thật (xem person_stats_merge_guide.py). Cùng shape
-  // với API thật sẽ trả về: { id, fullName, gender, chi, birthYear,
-  // isDeceased, hasSpouse }. Xoá hàm này khi backend đã sẵn sàng.
-  function generateMockPersons() {
-    const byAge = (age) => CURRENT_YEAR - age;
-  
-    return [
-      // ---- Chi 1 ----
-      { id: "m1", fullName: "Nguyễn Hữu Thắng", gender: "M", chi: "Chi 1", birthYear: byAge(45), isDeceased: false, hasSpouse: true },
-      { id: "m2", fullName: "Trần Thị Lan", gender: "F", chi: "Chi 1", birthYear: byAge(43), isDeceased: false, hasSpouse: true },
-      { id: "m3", fullName: "Nguyễn Hữu Nam", gender: "M", chi: "Chi 1", birthYear: byAge(20), isDeceased: false, hasSpouse: false },
-      { id: "m4", fullName: "Nguyễn Hữu Long", gender: "M", chi: "Chi 1", birthYear: byAge(78), isDeceased: false, hasSpouse: true },
-      { id: "m5", fullName: "Lê Thị Hoa", gender: "F", chi: "Chi 1", birthYear: byAge(75), isDeceased: false, hasSpouse: true },
-      { id: "m6", fullName: "Nguyễn Hữu Đức", gender: "M", chi: "Chi 1", birthYear: byAge(90), isDeceased: true, hasSpouse: false },
-      { id: "m7", fullName: "Nguyễn Hữu An", gender: "M", chi: "Chi 1", birthYear: byAge(8), isDeceased: false, hasSpouse: false },
-  
-      // ---- Chi 2 ----
-      { id: "m8", fullName: "Nguyễn Hữu Bình", gender: "M", chi: "Chi 2", birthYear: byAge(55), isDeceased: false, hasSpouse: true },
-      { id: "m9", fullName: "Phạm Thị Mai", gender: "F", chi: "Chi 2", birthYear: byAge(52), isDeceased: false, hasSpouse: true },
-      { id: "m10", fullName: "Nguyễn Hữu Cường", gender: "M", chi: "Chi 2", birthYear: byAge(30), isDeceased: false, hasSpouse: true },
-      { id: "m11", fullName: "Đỗ Thị Yến", gender: "F", chi: "Chi 2", birthYear: byAge(28), isDeceased: false, hasSpouse: true },
-      { id: "m12", fullName: "Nguyễn Hữu Sơn", gender: "M", chi: "Chi 2", birthYear: byAge(72), isDeceased: false, hasSpouse: true },
-      { id: "m13", fullName: "Nguyễn Hữu Kiên", gender: "M", chi: "Chi 2", birthYear: null, isDeceased: false, hasSpouse: false },
-  
-      // ---- Chi 3 ----
-      { id: "m14", fullName: "Nguyễn Hữu Hùng", gender: "M", chi: "Chi 3", birthYear: byAge(60), isDeceased: false, hasSpouse: false },
-      { id: "m15", fullName: "Nguyễn Hữu Việt", gender: "M", chi: "Chi 3", birthYear: byAge(35), isDeceased: false, hasSpouse: true },
-      { id: "m16", fullName: "Vũ Thị Ngọc", gender: "F", chi: "Chi 3", birthYear: byAge(33), isDeceased: false, hasSpouse: true },
-      { id: "m17", fullName: "Nguyễn Hữu Phát", gender: "M", chi: "Chi 3", birthYear: byAge(15), isDeceased: false, hasSpouse: false },
-      { id: "m18", fullName: "Nguyễn Hữu Minh", gender: "M", chi: "Chi 3", birthYear: byAge(82), isDeceased: false, hasSpouse: true },
-      { id: "m19", fullName: "Trần Thị Sáu", gender: "F", chi: "Chi 3", birthYear: byAge(80), isDeceased: false, hasSpouse: true },
-      { id: "m20", fullName: "Nguyễn Hữu Tài", gender: "M", chi: "Chi 3", birthYear: byAge(50), isDeceased: true, hasSpouse: true },
-    ];
-  }
-  
   async function fetchPersons() {
-    loading.value = true;
-    loadError.value = "";
-    usingMockData.value = false;
-    try {
-      const { data } = await getAllPerson();
-      persons.value = data;
-    } catch (err) {
-      console.warn("Không gọi được API thật, dùng dữ liệu mẫu để demo:", err.message);
-      persons.value = generateMockPersons();
-      usingMockData.value = true;
-    } finally {
-      loading.value = false;
-      const set = new Set();
-      persons.value.forEach((p) => {
-        if (p.chi) set.add(p.chi);
-      });
-      availableChis.value = {
-        "chi 1": "1",
-        "chi 2": "2",
-        "chi 3": "3",
-        "chi 4": "n7_1_1_5_1",
+    availableChis.value = {
+        "Chi 1": "anc_huuthien",
+        "Chi 2": "anc_huuduc",
+        "Chi 3": "anc_huuthanh",
+        "Chi 4": "u_nguyenhuuhuan_195",
       };
-    }
   }
   
   onMounted(fetchPersons);
