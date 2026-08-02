@@ -201,7 +201,7 @@
                 placeholder="Năm"
                 class="date-part-input date-part-input-year"
               />
-              <label class="lunar-checkbox">
+              <label class="lunar-checkbox" v-show="false">
                 <input type="checkbox" v-model="form.deathIsLunar"/>
                 Âm lịch
               </label>
@@ -322,10 +322,45 @@ const filteredSearchOptions = computed(() => {
   );
 });
 
+// Tô nền xám cho thẻ của người đã mất (dựa vào deathDay/deathMonth/deathYear).
+// LƯU Ý: family-chart không có khái niệm "đã mất" tích hợp sẵn, nên đây là
+// cách can thiệp DOM trực tiếp sau mỗi lần vẽ cây — giả định thẻ card render
+// ra có `id` trùng với person.id (quy ước phổ biến của thư viện D3 dạng
+// này, nhưng CHƯA có tài liệu chính thức xác nhận). Nếu chạy xong vẫn không
+// đổi màu, bấm F12 -> Inspect vào 1 thẻ bất kỳ, xem thẻ đó (hoặc cha của nó)
+// có đúng attribute id="<person.id>" không, rồi báo lại để chỉnh selector.
+function applyDeceasedStyling() {
+  if (!chartEl.value) return;
+  data.forEach((p) => {
+    const d = p.data || {};
+    const isDeceased = !!(d.deathDay || d.deathMonth || d.deathYear);
+    const wrapperEl = chartEl.value.querySelector(`[data-id="${p.id}"]`);
+    if (!wrapperEl) return;
+    const cardEl = wrapperEl.querySelector(".card") || wrapperEl;
+    if (isDeceased) {
+      cardEl.style.backgroundColor = "darkgray";
+      cardEl.style.opacity = "0.9";
+    } else {
+      cardEl.style.backgroundColor = "";
+      cardEl.style.opacity = "";
+    }
+  });
+}
+
+// Vì initChart() dùng setTransitionTime(1000) (có animation khi vẽ lại),
+// đợi thêm 1 nhịp sau nextTick để chắc chắn DOM đã render/ổn định trước
+// khi query — nếu vẫn thấy tô muộn/nhấp nháy, có thể tăng thời gian chờ.
+function scheduleApplyDeceasedStyling() {
+  nextTick(() => {
+    setTimeout(applyDeceasedStyling, 50);
+  });
+}
+
 function selectSearchPerson(personId) {
   if (!f3Chart) return;
   f3Chart.updateMainId(personId);
   f3Chart.updateTree({ initial: true });
+  scheduleApplyDeceasedStyling();
   searchDropdownOpen.value = false;
   searchQuery.value = "";
 }
@@ -334,6 +369,7 @@ function resetToRoot() {
   if (!f3Chart) return;
   f3Chart.updateMainId(MAIN_PERSON_ID);
   f3Chart.updateTree({ initial: true });
+  scheduleApplyDeceasedStyling();
   searchDropdownOpen.value = false;
   searchQuery.value = "";
 }
@@ -406,6 +442,7 @@ function initChart() {
   f3Card.setOnCardClick((e, d) => {
     f3Chart.updateMainId(d.data.id);
     f3Chart.updateTree({ tree_position: "inherit" });
+    scheduleApplyDeceasedStyling();
     emit("person-click", d.data);
 
     if (!props.isSearch && userId.value) {
@@ -421,6 +458,7 @@ function initChart() {
   }
 
   f3Chart.updateTree({ initial: true });
+  scheduleApplyDeceasedStyling();
 }
 
 // Xuất toàn bộ cây gia phả hiện tại ra file PDF
@@ -485,6 +523,7 @@ onMounted(async () => {
 function refreshChartLocal() {
   f3Chart.updateData(data);
   f3Chart.updateTree({ tree_position: "inherit" });
+  scheduleApplyDeceasedStyling();
 }
 
 // Bản tải lại từ server — CHỈ dùng riêng cho trường hợp "biến node ADD ảo
@@ -497,6 +536,7 @@ async function refreshChartFromServer() {
   await loadFamilyData();
   f3Chart.updateData(data);
   f3Chart.updateTree({ tree_position: "inherit" });
+  scheduleApplyDeceasedStyling();
 }
 
 /* ================== STATE PANEL ================== */
@@ -552,7 +592,7 @@ function formatPartialDate(day, month, year, isLunar) {
 
   const parts = [dm, year ? String(year) : (dm ? "?" : "")].filter(Boolean);
   const label = parts.join("/");
-  return isLunar ? `${label} (ÂL)` : label;
+  return label;
 }
 
 function attachYears(personData) {
