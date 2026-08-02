@@ -37,6 +37,10 @@ export const renamePhoto = (photoId, caption) => {
   return apiClient.put(`/photos/${photoId}`, { caption });
 };
 
+export const getPhotoDownloadUrl = (photoId, caption) => {
+  return apiClient.put(`/photos/${photoId}`, { caption });
+};
+
 export const deletePhoto = (photoId) => {
   return apiClient.delete(`/photos/${photoId}`);
 };

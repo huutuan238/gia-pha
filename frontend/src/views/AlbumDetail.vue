@@ -59,7 +59,7 @@
       </div>
       <p v-if="uploadError" class="modal-error">{{ uploadError }}</p>
 
-      <!-- LƯỚI ẢNH -->
+      <!-- LƯỚI ẢNH KIỂU GOOGLE DRIVE -->
       <div class="photo-grid" style="margin-top: 24px">
         <p v-if="album.photos.length === 0" class="tree-status">
           Album chưa có ảnh nào.
@@ -67,11 +67,10 @@
 
         <div
           class="photo-tile"
-          v-for="photo in album.photos"
+          v-for="(photo, index) in album.photos"
           :key="photo.id"
-          @click="closeMenuIfOutside($event, photo.id)"
         >
-          <div class="photo-thumb">
+          <div class="photo-thumb" @click="openViewer(index)">
             <img
               :src="resolvePhotoUrl(photo.url)"
               :alt="photo.caption || album.title"
@@ -127,6 +126,70 @@
         </div>
       </div>
     </template>
+
+    <!-- MODAL XEM CHI TIẾT ẢNH -->
+    <transition name="fade">
+      <div
+        v-if="viewerPhoto"
+        class="photo-viewer-backdrop"
+        @click.self="closeViewer"
+        @keydown.esc="closeViewer"
+      >
+        <button class="photo-viewer-close" @click="closeViewer" title="Đóng">
+          ✕
+        </button>
+
+        <button
+          v-if="album.photos.length > 1"
+          class="photo-viewer-nav photo-viewer-nav-prev"
+          @click.stop="prevPhoto"
+          title="Ảnh trước"
+        >
+          ‹
+        </button>
+
+        <div class="photo-viewer" @click.stop>
+          <img
+            :src="resolvePhotoUrl(viewerPhoto.url)"
+            :alt="viewerPhoto.caption || album.title"
+            class="photo-viewer-image"
+          />
+          <div class="photo-viewer-footer">
+            <span class="photo-viewer-caption">
+              {{ viewerPhoto.caption || "Ảnh chưa có tên" }}
+            </span>
+            <div class="photo-viewer-actions">
+              <span class="photo-viewer-index">
+                {{ viewerIndex + 1 }} / {{ album.photos.length }}
+              </span>
+              <button
+                class="photo-viewer-action-btn"
+                @click="onDownloadPhoto(viewerPhoto)"
+                title="Tải xuống"
+              >
+                ⬇
+              </button>
+              <button
+                class="photo-viewer-action-btn photo-viewer-action-btn-danger"
+                @click="onDeletePhotoFromViewer(viewerPhoto.id)"
+                title="Xoá ảnh"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          v-if="album.photos.length > 1"
+          class="photo-viewer-nav photo-viewer-nav-next"
+          @click.stop="nextPhoto"
+          title="Ảnh sau"
+        >
+          ›
+        </button>
+      </div>
+    </transition>
   </main>
 </template>
 
@@ -137,7 +200,8 @@ import {
   uploadPhoto,
   deletePhoto,
   resolvePhotoUrl,
-  renamePhoto, // TODO: thêm hàm này trong ../api/album (xem gợi ý cuối file chat)
+  renamePhoto, 
+  getPhotoDownloadUrl, // TODO: thêm hàm này trong ../api/album — gọi backend lấy presigned URL S3
 } from "../api/album";
 
 export default {
@@ -155,16 +219,27 @@ export default {
       openMenuId: null,
       renamingId: null,
       renameValue: "",
+
+      viewerIndex: -1,
     };
+  },
+
+  computed: {
+    viewerPhoto() {
+      if (!this.album || this.viewerIndex < 0) return null;
+      return this.album.photos[this.viewerIndex] || null;
+    },
   },
 
   mounted() {
     this.getAlbumDetail();
     document.addEventListener("click", this.onGlobalClick);
+    document.addEventListener("keydown", this.onViewerKeydown);
   },
 
   beforeUnmount() {
     document.removeEventListener("click", this.onGlobalClick);
+    document.removeEventListener("keydown", this.onViewerKeydown);
   },
 
   methods: {
@@ -259,10 +334,6 @@ export default {
       }
     },
 
-    closeMenuIfOutside() {
-      // giữ chỗ nếu sau này cần logic riêng theo từng tile
-    },
-
     // ----- ĐỔI TÊN -----
     startRename(photo) {
       this.openMenuId = null;
@@ -297,25 +368,68 @@ export default {
     },
 
     // ----- TẢI XUỐNG -----
+    // Ảnh lưu trên S3: xin backend một presigned URL có sẵn header
+    // "Content-Disposition: attachment; filename=..." rồi điều hướng tới đó.
+    // Cách này KHÔNG cần fetch/blob nên không bị chặn bởi CORS của bucket S3.
     async onDownloadPhoto(photo) {
       this.openMenuId = null;
-      const url = resolvePhotoUrl(photo.url);
-      const filename = photo.caption || `photo-${photo.id}`;
-
       try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        const blobUrl = URL.createObjectURL(blob);
+        const res = await getPhotoDownloadUrl(photo.id);
+        const downloadUrl = res.data.url;
+
         const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = filename;
+        a.href = downloadUrl;
+        a.rel = "noopener";
         document.body.appendChild(a);
         a.click();
         a.remove();
-        URL.revokeObjectURL(blobUrl);
       } catch (error) {
-        console.error("Tải ảnh thất bại, mở tab mới:", error);
-        window.open(url, "_blank");
+        console.error("Tải ảnh thất bại:", error);
+        alert("Không thể tải ảnh. Vui lòng thử lại.");
+      }
+    },
+
+    // ----- XEM CHI TIẾT ẢNH -----
+    openViewer(index) {
+      this.viewerIndex = index;
+    },
+
+    closeViewer() {
+      this.viewerIndex = -1;
+    },
+
+    prevPhoto() {
+      if (!this.album || this.album.photos.length === 0) return;
+      const total = this.album.photos.length;
+      this.viewerIndex = (this.viewerIndex - 1 + total) % total;
+    },
+
+    nextPhoto() {
+      if (!this.album || this.album.photos.length === 0) return;
+      const total = this.album.photos.length;
+      this.viewerIndex = (this.viewerIndex + 1) % total;
+    },
+
+    onViewerKeydown(e) {
+      if (this.viewerIndex < 0) return;
+      if (e.key === "Escape") this.closeViewer();
+      else if (e.key === "ArrowLeft") this.prevPhoto();
+      else if (e.key === "ArrowRight") this.nextPhoto();
+    },
+
+    async onDeletePhotoFromViewer(photoId) {
+      if (!confirm("Xoá ảnh này?")) return;
+      try {
+        await deletePhoto(photoId);
+        this.album.photos = this.album.photos.filter((p) => p.id !== photoId);
+        if (this.album.photos.length === 0) {
+          this.closeViewer();
+        } else {
+          this.viewerIndex = Math.min(this.viewerIndex, this.album.photos.length - 1);
+        }
+      } catch (error) {
+        console.error("Xoá ảnh thất bại:", error);
+        alert("Không thể xoá ảnh. Vui lòng thử lại.");
       }
     },
 
@@ -325,3 +439,297 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.back-btn {
+  margin-bottom: var(--space-3);
+  padding-left: 0;
+}
+
+.upload-drop {
+  cursor: pointer;
+  margin-top: var(--space-3);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.upload-drop.is-dragover {
+  border-color: var(--gold);
+  background: rgba(168, 130, 59, 0.06);
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.photo-tile {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.photo-thumb {
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  cursor: pointer;
+}
+.photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--line);
+}
+
+.photo-name {
+  flex: 1;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rename-input {
+  flex: 1;
+  font-size: 0.8rem;
+  padding: 2px 4px;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  background: var(--paper);
+}
+
+.photo-menu-wrap {
+  position: relative;
+}
+
+.photo-menu-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: inherit;
+}
+.photo-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.photo-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 10;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  min-width: 140px;
+  overflow: hidden;
+}
+
+.photo-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+.photo-menu-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.photo-menu-item-danger {
+  color: var(--lacquer);
+}
+
+.delete-btn {
+  padding: 0.75rem 1.4rem;
+  background: transparent;
+  border: 1px solid var(--lacquer);
+  color: var(--lacquer);
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  background: rgba(156, 43, 32, 0.08);
+}
+.delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-error {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--lacquer);
+}
+
+/* ---------- Modal xem chi tiết ảnh ---------- */
+.photo-viewer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(20, 16, 12, 0.86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.photo-viewer {
+  position: relative;
+  max-width: min(880px, 92vw);
+  max-height: 88vh;
+  background: var(--paper-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-viewer-image {
+  display: block;
+  max-width: 100%;
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: #000;
+  margin: 0 auto;
+}
+
+.photo-viewer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.photo-viewer-caption {
+  font-size: 0.92rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.photo-viewer-index {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.photo-viewer-action-btn {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.photo-viewer-action-btn:hover {
+  border-color: var(--ink);
+}
+.photo-viewer-action-btn-danger {
+  border-color: var(--lacquer);
+  color: var(--lacquer);
+}
+.photo-viewer-action-btn-danger:hover {
+  background: rgba(156, 43, 32, 0.08);
+}
+
+.photo-viewer-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 210;
+}
+.photo-viewer-close:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.photo-viewer-nav {
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 210;
+}
+.photo-viewer-nav:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+.photo-viewer-nav-prev {
+  margin-right: 16px;
+}
+.photo-viewer-nav-next {
+  margin-left: 16px;
+}
+
+@media (max-width: 700px) {
+  .photo-viewer-backdrop {
+    padding: 12px;
+  }
+  .photo-viewer-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .photo-viewer-nav-prev {
+    left: 12px;
+    margin-right: 0;
+  }
+  .photo-viewer-nav-next {
+    right: 12px;
+    margin-left: 0;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
