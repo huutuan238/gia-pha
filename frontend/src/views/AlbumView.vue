@@ -5,7 +5,6 @@
         <span class="eyebrow"
           >{{ albums.length }} album · {{ totalPhotos }} ảnh</span
         >
-        <h1 style="font-size: 28px">Album ảnh gia đình</h1>
       </div>
       <button class="btn btn-primary" @click="showCreateModal = true">
         + Tạo album

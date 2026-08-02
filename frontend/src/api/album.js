@@ -33,6 +33,10 @@ export const uploadPhoto = (albumId, file, extra = {}) => {
   });
 };
 
+export const renamePhoto = (photoId, caption) => {
+  return apiClient.put(`/photos/${photoId}`, { caption });
+};
+
 export const deletePhoto = (photoId) => {
   return apiClient.delete(`/photos/${photoId}`);
 };
@@ -43,4 +47,8 @@ export const resolvePhotoUrl = (url) => {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   return `${BACKEND_ORIGIN}${url}`;
+};
+
+export const getPhotoDownloadUrl = (photoId) => {
+  return apiClient.get(`/photos/${photoId}/download`);
 };

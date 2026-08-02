@@ -59,33 +59,137 @@
       </div>
       <p v-if="uploadError" class="modal-error">{{ uploadError }}</p>
 
-      <!-- LƯỚI ẢNH -->
+      <!-- LƯỚI ẢNH KIỂU GOOGLE DRIVE -->
       <div class="photo-grid" style="margin-top: 24px">
         <p v-if="album.photos.length === 0" class="tree-status">
           Album chưa có ảnh nào.
         </p>
 
-        <div class="photo-tile" v-for="photo in album.photos" :key="photo.id">
-          <img
-            :src="resolvePhotoUrl(photo.url)"
-            :alt="photo.caption || album.title"
-            class="photo-img"
-          />
-          <div class="photo-overlay">
-            <span v-if="photo.caption" class="photo-caption">{{
-              photo.caption
-            }}</span>
-            <button
-              class="photo-delete-btn"
-              @click="onDeletePhoto(photo.id)"
-              title="Xoá ảnh"
+        <div
+          class="photo-tile"
+          v-for="(photo, index) in album.photos"
+          :key="photo.id"
+        >
+          <div class="photo-thumb" @click="openViewer(index)">
+            <img
+              :src="resolvePhotoUrl(photo.url)"
+              :alt="photo.caption || album.title"
+              class="photo-img"
+            />
+          </div>
+
+          <div class="photo-meta">
+            <template v-if="renamingId === photo.id">
+              <input
+                ref="renameInput"
+                v-model="renameValue"
+                class="rename-input"
+                @keyup.enter="confirmRename(photo)"
+                @keyup.esc="cancelRename"
+                @blur="confirmRename(photo)"
+                @click.stop
+              />
+            </template>
+            <span
+              v-else
+              class="photo-name"
+              :title="photo.caption || 'Ảnh chưa có tên'"
             >
-              ✕
-            </button>
+              {{ photo.caption || "Ảnh chưa có tên" }}
+            </span>
+
+            <div class="photo-menu-wrap">
+              <button
+                class="photo-menu-btn"
+                @click.stop="toggleMenu(photo.id)"
+                title="Tuỳ chọn"
+              >
+                ⋮
+              </button>
+
+              <div v-if="openMenuId === photo.id" class="photo-menu" @click.stop>
+                <button class="photo-menu-item" @click="startRename(photo)">
+                  ✎ Đổi tên
+                </button>
+                <button class="photo-menu-item" @click="onDownloadPhoto(photo)">
+                  ⬇ Tải xuống
+                </button>
+                <button
+                  class="photo-menu-item photo-menu-item-danger"
+                  @click="onDeletePhoto(photo.id)"
+                >
+                  ✕ Xoá
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </template>
+
+    <!-- MODAL XEM CHI TIẾT ẢNH -->
+    <transition name="fade">
+      <div
+        v-if="viewerPhoto"
+        class="photo-viewer-backdrop"
+        @click.self="closeViewer"
+        @keydown.esc="closeViewer"
+      >
+        <button class="photo-viewer-close" @click="closeViewer" title="Đóng">
+          ✕
+        </button>
+
+        <button
+          v-if="album.photos.length > 1"
+          class="photo-viewer-nav photo-viewer-nav-prev"
+          @click.stop="prevPhoto"
+          title="Ảnh trước"
+        >
+          ‹
+        </button>
+
+        <div class="photo-viewer" @click.stop>
+          <img
+            :src="resolvePhotoUrl(viewerPhoto.url)"
+            :alt="viewerPhoto.caption || album.title"
+            class="photo-viewer-image"
+          />
+          <div class="photo-viewer-footer">
+            <span class="photo-viewer-caption">
+              {{ viewerPhoto.caption || "Ảnh chưa có tên" }}
+            </span>
+            <div class="photo-viewer-actions">
+              <span class="photo-viewer-index">
+                {{ viewerIndex + 1 }} / {{ album.photos.length }}
+              </span>
+              <button
+                class="photo-viewer-action-btn"
+                @click="onDownloadPhoto(viewerPhoto)"
+                title="Tải xuống"
+              >
+                ⬇
+              </button>
+              <button
+                class="photo-viewer-action-btn photo-viewer-action-btn-danger"
+                @click="onDeletePhotoFromViewer(viewerPhoto.id)"
+                title="Xoá ảnh"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          v-if="album.photos.length > 1"
+          class="photo-viewer-nav photo-viewer-nav-next"
+          @click.stop="nextPhoto"
+          title="Ảnh sau"
+        >
+          ›
+        </button>
+      </div>
+    </transition>
   </main>
 </template>
 
@@ -96,6 +200,8 @@ import {
   uploadPhoto,
   deletePhoto,
   resolvePhotoUrl,
+  renamePhoto, 
+  getPhotoDownloadUrl,
 } from "../api/album";
 
 export default {
@@ -109,11 +215,31 @@ export default {
       uploading: false,
       uploadingCount: 0,
       uploadError: "",
+
+      openMenuId: null,
+      renamingId: null,
+      renameValue: "",
+
+      viewerIndex: -1,
     };
+  },
+
+  computed: {
+    viewerPhoto() {
+      if (!this.album || this.viewerIndex < 0) return null;
+      return this.album.photos[this.viewerIndex] || null;
+    },
   },
 
   mounted() {
     this.getAlbumDetail();
+    document.addEventListener("click", this.onGlobalClick);
+    document.addEventListener("keydown", this.onViewerKeydown);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener("click", this.onGlobalClick);
+    document.removeEventListener("keydown", this.onViewerKeydown);
   },
 
   methods: {
@@ -185,10 +311,114 @@ export default {
     },
 
     async onDeletePhoto(photoId) {
+      this.openMenuId = null;
       if (!confirm("Xoá ảnh này?")) return;
       try {
         await deletePhoto(photoId);
         this.album.photos = this.album.photos.filter((p) => p.id !== photoId);
+      } catch (error) {
+        console.error("Xoá ảnh thất bại:", error);
+        alert("Không thể xoá ảnh. Vui lòng thử lại.");
+      }
+    },
+
+    // ----- MENU BA CHẤM -----
+    toggleMenu(photoId) {
+      this.openMenuId = this.openMenuId === photoId ? null : photoId;
+    },
+
+    onGlobalClick(e) {
+      // Đóng menu nếu click ra ngoài khu vực menu/nút ba chấm
+      if (!e.target.closest(".photo-menu-wrap")) {
+        this.openMenuId = null;
+      }
+    },
+
+    // ----- ĐỔI TÊN -----
+    startRename(photo) {
+      this.openMenuId = null;
+      this.renamingId = photo.id;
+      this.renameValue = photo.caption || "";
+      this.$nextTick(() => {
+        const input = this.$refs.renameInput;
+        const el = Array.isArray(input) ? input[0] : input;
+        el && el.focus();
+      });
+    },
+
+    cancelRename() {
+      this.renamingId = null;
+      this.renameValue = "";
+    },
+
+    async confirmRename(photo) {
+      if (this.renamingId !== photo.id) return;
+      const newName = this.renameValue.trim();
+      this.renamingId = null;
+
+      if (!newName || newName === photo.caption) return;
+
+      try {
+        const res = await renamePhoto(photo.id, newName);
+        photo.caption = res?.data?.caption ?? newName;
+      } catch (error) {
+        console.error("Đổi tên ảnh thất bại:", error);
+        alert("Không thể đổi tên ảnh. Vui lòng thử lại.");
+      }
+    },
+
+    // ----- TẢI XUỐNG -----
+    // Ảnh lưu trên S3: xin backend một presigned URL có sẵn header
+    // "Content-Disposition: attachment; filename=..." rồi điều hướng tới đó.
+    // Cách này KHÔNG cần fetch/blob nên không bị chặn bởi CORS của bucket S3.
+    async onDownloadPhoto(photo) {
+      try {
+        const res = await getPhotoDownloadUrl(photo.id)
+        const downloadUrl = res.data.downloadUrl
+        window.location.href = downloadUrl // hoặc window.open(downloadUrl, '_blank')
+      } catch (err) {
+        console.error('Tải ảnh thất bại:', err)
+      }
+    },
+
+    // ----- XEM CHI TIẾT ẢNH -----
+    openViewer(index) {
+      this.viewerIndex = index;
+    },
+
+    closeViewer() {
+      this.viewerIndex = -1;
+    },
+
+    prevPhoto() {
+      if (!this.album || this.album.photos.length === 0) return;
+      const total = this.album.photos.length;
+      this.viewerIndex = (this.viewerIndex - 1 + total) % total;
+    },
+
+    nextPhoto() {
+      if (!this.album || this.album.photos.length === 0) return;
+      const total = this.album.photos.length;
+      this.viewerIndex = (this.viewerIndex + 1) % total;
+    },
+
+    onViewerKeydown(e) {
+      if (this.viewerIndex < 0) return;
+      if (e.key === "Escape") this.closeViewer();
+      else if (e.key === "ArrowLeft") this.prevPhoto();
+      else if (e.key === "ArrowRight") this.nextPhoto();
+    },
+
+    async onDeletePhotoFromViewer(photoId) {
+      if (!confirm("Xoá ảnh này?")) return;
+      try {
+        await deletePhoto(photoId);
+        this.album.photos = this.album.photos.filter((p) => p.id !== photoId);
+        if (this.album.photos.length === 0) {
+          this.closeViewer();
+        } else {
+          this.viewerIndex = Math.min(this.viewerIndex, this.album.photos.length - 1);
+        }
       } catch (error) {
         console.error("Xoá ảnh thất bại:", error);
         alert("Không thể xoá ảnh. Vui lòng thử lại.");
@@ -203,99 +433,157 @@ export default {
 </script>
 
 <style scoped>
-.back-btn {
-  margin-bottom: var(--space-3);
-  padding-left: 0;
-}
-
-.upload-drop {
-  cursor: pointer;
-  margin-top: var(--space-3);
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
-}
-.upload-drop.is-dragover {
-  border-color: var(--gold);
-  background: rgba(168, 130, 59, 0.06);
-}
-
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
-}
-
-.photo-tile {
-  position: relative;
-  aspect-ratio: 1/1;
-  overflow: hidden;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: var(--paper-deep);
-}
-.photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.photo-overlay {
-  position: absolute;
+/* ---------- Modal xem chi tiết ảnh ---------- */
+.photo-viewer-backdrop {
+  position: fixed;
   inset: 0;
+  z-index: 200;
+  background: rgba(20, 16, 12, 0.86);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.photo-viewer {
+  position: relative;
+  max-width: min(880px, 92vw);
+  max-height: 88vh;
+  background: var(--paper-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-viewer-image {
+  display: block;
+  max-width: 100%;
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: #000;
+  margin: 0 auto;
+}
+
+.photo-viewer-footer {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 8px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 50%);
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-.photo-tile:hover .photo-overlay {
-  opacity: 1;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
 }
 
-.photo-caption {
-  color: #fff;
-  font-size: 0.78rem;
+.photo-viewer-caption {
+  font-size: 0.92rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.photo-delete-btn {
-  margin-left: auto;
-  background: rgba(0, 0, 0, 0.5);
+.photo-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.photo-viewer-index {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.photo-viewer-action-btn {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.photo-viewer-action-btn:hover {
+  border-color: var(--ink);
+}
+.photo-viewer-action-btn-danger {
+  border-color: var(--lacquer);
+  color: var(--lacquer);
+}
+.photo-viewer-action-btn-danger:hover {
+  background: rgba(156, 43, 32, 0.08);
+}
+
+.photo-viewer-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.35);
   color: #fff;
   border: none;
   border-radius: 50%;
-  width: 26px;
-  height: 26px;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 13px;
+  z-index: 210;
 }
-.photo-delete-btn:hover {
-  background: var(--lacquer);
+.photo-viewer-close:hover {
+  background: rgba(0, 0, 0, 0.55);
 }
 
-.delete-btn {
-  padding: 0.75rem 1.4rem;
-  background: transparent;
-  border: 1px solid var(--lacquer);
-  color: var(--lacquer);
-  border-radius: var(--radius);
-  font-weight: 600;
+.photo-viewer-nav {
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
   cursor: pointer;
+  flex-shrink: 0;
+  z-index: 210;
 }
-.delete-btn:hover {
-  background: rgba(156, 43, 32, 0.08);
+.photo-viewer-nav:hover {
+  background: rgba(0, 0, 0, 0.55);
 }
-.delete-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.photo-viewer-nav-prev {
+  margin-right: 16px;
+}
+.photo-viewer-nav-next {
+  margin-left: 16px;
 }
 
-.modal-error {
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--lacquer);
+@media (max-width: 700px) {
+  .photo-viewer-backdrop {
+    padding: 12px;
+  }
+  .photo-viewer-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .photo-viewer-nav-prev {
+    left: 12px;
+    margin-right: 0;
+  }
+  .photo-viewer-nav-next {
+    right: 12px;
+    margin-left: 0;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
