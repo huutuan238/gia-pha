@@ -151,11 +151,15 @@ def upload_photo(album_id):
         return jsonify({"message": "Không thể tải ảnh lên. Vui lòng thử lại."}), 500
 
     photo_url = _build_public_url(s3_key)
+    if len(file.filename) > 20:
+        caption = file.filename[:15] + datetime.now().strftime("%d%m%Y")
+    else:
+        caption = file.filename
 
     photo = Photo(
         album_id=album.id,
         url=photo_url,
-        caption=request.form.get("caption"),
+        caption=caption,
     )
     taken_date_str = request.form.get("takenDate")
     if taken_date_str:
