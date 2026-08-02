@@ -173,6 +173,17 @@ def upload_photo(album_id):
     db.session.commit()
     return jsonify(photo.to_dict()), 201
 
+@album_bp.route("/photos/<photo_id>", methods=["PUT"])
+def update_photo(photo_id):
+    photo = Photo.query.get(photo_id)
+    if not photo:
+        return jsonify({"message": "Không tìm thấy ảnh"}), 404
+
+    payload = request.get_json(silent=True) or {}
+    photo.caption = payload.get("caption")
+
+    db.session.commit()
+    return jsonify(photo.to_dict()), 200
 
 @album_bp.route("/photos/<photo_id>", methods=["DELETE"])
 def delete_photo(photo_id):

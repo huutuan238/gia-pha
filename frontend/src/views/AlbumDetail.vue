@@ -65,23 +65,64 @@
           Album chưa có ảnh nào.
         </p>
 
-        <div class="photo-tile" v-for="photo in album.photos" :key="photo.id">
-          <img
-            :src="resolvePhotoUrl(photo.url)"
-            :alt="photo.caption || album.title"
-            class="photo-img"
-          />
-          <div class="photo-overlay">
-            <span v-if="photo.caption" class="photo-caption">{{
-              photo.caption
-            }}</span>
-            <button
-              class="photo-delete-btn"
-              @click="onDeletePhoto(photo.id)"
-              title="Xoá ảnh"
+        <div
+          class="photo-tile"
+          v-for="photo in album.photos"
+          :key="photo.id"
+          @click="closeMenuIfOutside($event, photo.id)"
+        >
+          <div class="photo-thumb">
+            <img
+              :src="resolvePhotoUrl(photo.url)"
+              :alt="photo.caption || album.title"
+              class="photo-img"
+            />
+          </div>
+
+          <div class="photo-meta">
+            <template v-if="renamingId === photo.id">
+              <input
+                ref="renameInput"
+                v-model="renameValue"
+                class="rename-input"
+                @keyup.enter="confirmRename(photo)"
+                @keyup.esc="cancelRename"
+                @blur="confirmRename(photo)"
+                @click.stop
+              />
+            </template>
+            <span
+              v-else
+              class="photo-name"
+              :title="photo.caption || 'Ảnh chưa có tên'"
             >
-              ✕
-            </button>
+              {{ photo.caption || "Ảnh chưa có tên" }}
+            </span>
+
+            <div class="photo-menu-wrap">
+              <button
+                class="photo-menu-btn"
+                @click.stop="toggleMenu(photo.id)"
+                title="Tuỳ chọn"
+              >
+                ⋮
+              </button>
+
+              <div v-if="openMenuId === photo.id" class="photo-menu" @click.stop>
+                <button class="photo-menu-item" @click="startRename(photo)">
+                  ✎ Đổi tên
+                </button>
+                <button class="photo-menu-item" @click="onDownloadPhoto(photo)">
+                  ⬇ Tải xuống
+                </button>
+                <button
+                  class="photo-menu-item photo-menu-item-danger"
+                  @click="onDeletePhoto(photo.id)"
+                >
+                  ✕ Xoá
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -96,6 +137,7 @@ import {
   uploadPhoto,
   deletePhoto,
   resolvePhotoUrl,
+  renamePhoto, // TODO: thêm hàm này trong ../api/album (xem gợi ý cuối file chat)
 } from "../api/album";
 
 export default {
@@ -109,11 +151,20 @@ export default {
       uploading: false,
       uploadingCount: 0,
       uploadError: "",
+
+      openMenuId: null,
+      renamingId: null,
+      renameValue: "",
     };
   },
 
   mounted() {
     this.getAlbumDetail();
+    document.addEventListener("click", this.onGlobalClick);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener("click", this.onGlobalClick);
   },
 
   methods: {
@@ -185,6 +236,7 @@ export default {
     },
 
     async onDeletePhoto(photoId) {
+      this.openMenuId = null;
       if (!confirm("Xoá ảnh này?")) return;
       try {
         await deletePhoto(photoId);
@@ -195,107 +247,81 @@ export default {
       }
     },
 
+    // ----- MENU BA CHẤM -----
+    toggleMenu(photoId) {
+      this.openMenuId = this.openMenuId === photoId ? null : photoId;
+    },
+
+    onGlobalClick(e) {
+      // Đóng menu nếu click ra ngoài khu vực menu/nút ba chấm
+      if (!e.target.closest(".photo-menu-wrap")) {
+        this.openMenuId = null;
+      }
+    },
+
+    closeMenuIfOutside() {
+      // giữ chỗ nếu sau này cần logic riêng theo từng tile
+    },
+
+    // ----- ĐỔI TÊN -----
+    startRename(photo) {
+      this.openMenuId = null;
+      this.renamingId = photo.id;
+      this.renameValue = photo.caption || "";
+      this.$nextTick(() => {
+        const input = this.$refs.renameInput;
+        const el = Array.isArray(input) ? input[0] : input;
+        el && el.focus();
+      });
+    },
+
+    cancelRename() {
+      this.renamingId = null;
+      this.renameValue = "";
+    },
+
+    async confirmRename(photo) {
+      if (this.renamingId !== photo.id) return;
+      const newName = this.renameValue.trim();
+      this.renamingId = null;
+
+      if (!newName || newName === photo.caption) return;
+
+      try {
+        const res = await renamePhoto(photo.id, newName);
+        photo.caption = res?.data?.caption ?? newName;
+      } catch (error) {
+        console.error("Đổi tên ảnh thất bại:", error);
+        alert("Không thể đổi tên ảnh. Vui lòng thử lại.");
+      }
+    },
+
+    // ----- TẢI XUỐNG -----
+    async onDownloadPhoto(photo) {
+      this.openMenuId = null;
+      const url = resolvePhotoUrl(photo.url);
+      const filename = photo.caption || `photo-${photo.id}`;
+
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(blobUrl);
+      } catch (error) {
+        console.error("Tải ảnh thất bại, mở tab mới:", error);
+        window.open(url, "_blank");
+      }
+    },
+
     goBack() {
       this.$router.push("/albums");
     },
   },
 };
 </script>
-
-<style scoped>
-.back-btn {
-  margin-bottom: var(--space-3);
-  padding-left: 0;
-}
-
-.upload-drop {
-  cursor: pointer;
-  margin-top: var(--space-3);
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
-}
-.upload-drop.is-dragover {
-  border-color: var(--gold);
-  background: rgba(168, 130, 59, 0.06);
-}
-
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
-}
-
-.photo-tile {
-  position: relative;
-  aspect-ratio: 1/1;
-  overflow: hidden;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: var(--paper-deep);
-}
-.photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.photo-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 8px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 50%);
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-.photo-tile:hover .photo-overlay {
-  opacity: 1;
-}
-
-.photo-caption {
-  color: #fff;
-  font-size: 0.78rem;
-}
-
-.photo-delete-btn {
-  margin-left: auto;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  cursor: pointer;
-  font-size: 13px;
-}
-.photo-delete-btn:hover {
-  background: var(--lacquer);
-}
-
-.delete-btn {
-  padding: 0.75rem 1.4rem;
-  background: transparent;
-  border: 1px solid var(--lacquer);
-  color: var(--lacquer);
-  border-radius: var(--radius);
-  font-weight: 600;
-  cursor: pointer;
-}
-.delete-btn:hover {
-  background: rgba(156, 43, 32, 0.08);
-}
-.delete-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.modal-error {
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--lacquer);
-}
-</style>
