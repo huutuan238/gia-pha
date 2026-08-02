@@ -27,7 +27,6 @@ const router = createRouter({
     { path: "/register", component: RegisterView },
     { path: "/events/:id", component: EventDetailView },
     { path: "/albums/:id", component: AlbumDetail },
-    { path: "/chi", component: ChiStarView },
     {
       path: "/admin",
       component: AdminDashBoard,

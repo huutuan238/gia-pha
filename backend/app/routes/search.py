@@ -1,6 +1,7 @@
 import uuid
 
 from app.services.family_tree_service import count_generation, get_person_lineage_info
+from app.decorators import admin_required
 from flask import Blueprint, jsonify, request
 
 from app.extensions import db
@@ -47,6 +48,7 @@ def _is_deceased(p):
 
 
 @search_bp.route("/person", methods=["GET"])
+@admin_required
 def search_persons():
     chi_person_id = request.args.get("chi")
     metric = request.args.get("metric", "all")
