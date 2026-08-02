@@ -224,3 +224,33 @@ def _delete_photo_file(photo_url):
         _s3_client().delete_object(Bucket=_bucket_name(), Key=key)
     except (ClientError, BotoCoreError) as e:
         current_app.logger.warning(f"Xoá S3 object thất bại ({key}): {e}")
+
+@album_bp.route("/photos/<photo_id>/download", methods=["GET"])
+def download_photo(photo_id):
+    photo = Photo.query.get(photo_id)
+    if not photo:
+        return jsonify({"message": "Không tìm thấy ảnh"}), 404
+
+    key = _extract_s3_key(photo.url)
+    if not key:
+        return jsonify({"message": "Không xác định được vị trí ảnh trên S3"}), 400
+
+    filename = key.rsplit("/", 1)[-1]
+
+    try:
+        download_url = _s3_client().generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": _bucket_name(),
+                "Key": key,
+                # Header này chỉ áp dụng cho đúng request có chữ ký (presigned),
+                # không ảnh hưởng tới URL public bình thường dùng để hiển thị ảnh.
+                "ResponseContentDisposition": f'attachment; filename="{filename}"',
+            },
+            ExpiresIn=300,  # link tải chỉ có hiệu lực 5 phút
+        )
+    except (ClientError, BotoCoreError) as e:
+        current_app.logger.error(f"Tạo link tải ảnh thất bại: {e}")
+        return jsonify({"message": "Không thể tạo link tải ảnh."}), 500
+
+    return jsonify({"downloadUrl": download_url}), 200

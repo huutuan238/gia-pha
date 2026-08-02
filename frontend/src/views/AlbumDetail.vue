@@ -201,7 +201,7 @@ import {
   deletePhoto,
   resolvePhotoUrl,
   renamePhoto, 
-  getPhotoDownloadUrl, // TODO: thêm hàm này trong ../api/album — gọi backend lấy presigned URL S3
+  getPhotoDownloadUrl,
 } from "../api/album";
 
 export default {
@@ -372,20 +372,12 @@ export default {
     // "Content-Disposition: attachment; filename=..." rồi điều hướng tới đó.
     // Cách này KHÔNG cần fetch/blob nên không bị chặn bởi CORS của bucket S3.
     async onDownloadPhoto(photo) {
-      this.openMenuId = null;
       try {
-        const res = await getPhotoDownloadUrl(photo.id);
-        const downloadUrl = res.data.url;
-
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.rel = "noopener";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } catch (error) {
-        console.error("Tải ảnh thất bại:", error);
-        alert("Không thể tải ảnh. Vui lòng thử lại.");
+        const res = await getPhotoDownloadUrl(photo.id)
+        const downloadUrl = res.data.downloadUrl
+        window.location.href = downloadUrl // hoặc window.open(downloadUrl, '_blank')
+      } catch (err) {
+        console.error('Tải ảnh thất bại:', err)
       }
     },
 
