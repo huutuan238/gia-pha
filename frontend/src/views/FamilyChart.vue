@@ -295,7 +295,7 @@ let f3Chart = null;
 let f3Card = null;
 
 // id của người muốn focus làm main person khi mở cây (thuỷ tổ)
-const MAIN_PERSON_ID = "n7_1_1_5_1";
+const MAIN_PERSON_ID = "538d86e8-67f3-4a4c-8da2-46d94a41dd22";
 
 /* ================== DỮ LIỆU (lấy từ backend) ================== */
 const data = reactive([]);
