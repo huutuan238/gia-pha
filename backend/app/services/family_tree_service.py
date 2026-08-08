@@ -50,7 +50,7 @@ def get_person_lineage_info(root_id: str) -> dict:
     relationships = Relationship.query.filter(
         Relationship.relation_type.in_(["PARENT", "SPOUSE"])
     ).all()
-
+ 
     # parent_id -> [child_id, ...]
     children_map = {}
     # child_id -> [parent_id, ...]  (thường có 2: cha + mẹ)
@@ -58,7 +58,7 @@ def get_person_lineage_info(root_id: str) -> dict:
     # person_id -> [spouse_id, ...] (2 chiều, vì Relationship SPOUSE không phân
     # biệt ai là person_id/related_person_id)
     spouses_map = {}
-
+ 
     for rel in relationships:
         if rel.relation_type == "PARENT":
             children_map.setdefault(rel.person_id, []).append(rel.related_person_id)
@@ -66,23 +66,23 @@ def get_person_lineage_info(root_id: str) -> dict:
         elif rel.relation_type == "SPOUSE":
             spouses_map.setdefault(rel.person_id, []).append(rel.related_person_id)
             spouses_map.setdefault(rel.related_person_id, []).append(rel.person_id)
-
+ 
     # ================== SỐ CON / CHÁU / CHẮT (BFS xuôi xuống) ==================
     children_count = 0
     grandchildren_count = 0
     great_grandchildren_count = 0
-
+ 
     visited = {root_id}
     queue = deque([(root_id, 0)])
-
+ 
     while queue:
         person_id, depth = queue.popleft()
-
+ 
         for child_id in children_map.get(person_id, []):
             if child_id in visited:
                 continue
             visited.add(child_id)
-
+ 
             child_depth = depth + 1
             if child_depth == 1:
                 children_count += 1
@@ -90,23 +90,39 @@ def get_person_lineage_info(root_id: str) -> dict:
                 grandchildren_count += 1
             else:  # gộp chung chắt/chút/chít... từ đời thứ 4 trở đi
                 great_grandchildren_count += 1
-
+ 
             queue.append((child_id, child_depth))
-
+ 
     # ================== SỐ ĐỜI (đi ngược lên theo cha/mẹ) ==================
     generation = 1
     current_id = root_id
     ancestors_visited = {root_id}
+ 
+    while True:
+        candidates = parents_map.get(current_id)
+        if not candidates:
+            break
 
-    while parents_map.get(current_id):
-        current_id = parents_map[current_id][
-            0
-        ]  # đi theo 1 nhánh là đủ, cha/mẹ luôn cùng đời
-        if current_id in ancestors_visited:
+        next_id = None
+        for candidate_id in candidates:
+            if candidate_id in ancestors_visited:
+                continue
+            if parents_map.get(candidate_id):  # nhánh này còn đi tiếp được
+                next_id = candidate_id
+                break
+ 
+        if next_id is None:
+            # Không ứng viên nào còn ancestry phía trên -> lấy tạm ứng viên
+            # đầu tiên chưa thăm (dù cụt, vẫn tăng đúng 1 đời trước khi dừng)
+            next_id = next((c for c in candidates if c not in ancestors_visited), None)
+ 
+        if next_id is None:
             break  # tránh vòng lặp vô hạn nếu dữ liệu quan hệ bị lỗi
+ 
+        current_id = next_id
         ancestors_visited.add(current_id)
         generation += 1
-
+ 
     # ================== BỐ / MẸ / VỢ (CHỒNG) ==================
     def person_summary(person):
         if not person:
@@ -116,15 +132,15 @@ def get_person_lineage_info(root_id: str) -> dict:
             "full_name": person.full_name,
             "gender": person.gender,
         }
-
+ 
     parent_ids = parents_map.get(root_id, [])
     parents = Person.query.filter(Person.id.in_(parent_ids)).all() if parent_ids else []
     father = next((p for p in parents if p.gender == "M"), None)
     mother = next((p for p in parents if p.gender == "F"), None)
-
+ 
     spouse_ids = spouses_map.get(root_id, [])
     spouses = Person.query.filter(Person.id.in_(spouse_ids)).all() if spouse_ids else []
-
+ 
     return {
         "full_name": search_person_info.full_name,
         "generation": generation,
