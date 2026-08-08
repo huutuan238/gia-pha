@@ -31,7 +31,7 @@ function handleSearchFocusOut() {
 function selectPerson(personId, label) {
   chartRef.value?.focusPerson(personId);
   searchDropdownOpen.value = false;
-  searchQuery.value = "";
+  searchQuery.value = label;
   selectedPersonId.value = personId;
   resetRelationState();
   fetchPersonStats(personId, label);
@@ -109,9 +109,9 @@ watch(findRelationshipMode, (enabled) => {
   if (!enabled) resetRelationState();
 });
 
-async function selectRelationPerson(personId) {
+async function selectRelationPerson(personId, label) {
   relationDropdownOpen.value = false;
-  relationQuery.value = "";
+  relationQuery.value = label;
   relationError.value = "";
   relationResult.value = null;
 
@@ -209,7 +209,7 @@ async function selectRelationPerson(personId) {
                     v-for="opt in filteredRelationOptions"
                     :key="opt.value"
                     class="search-option"
-                    @click="selectRelationPerson(opt.value)"
+                    @click="selectRelationPerson(opt.value, opt.label)"
                   >
                     {{ opt.label }}
                   </div>
@@ -284,7 +284,7 @@ async function selectRelationPerson(personId) {
             <template v-else>
               <div class="relation-chip">
                 <span class="relation-label">
-                  Quan hệ giữa {{ personStats?.full_name }} và {{ relationResult.senior?.fullName || relationResult.elder?.fullName }} là:
+                  Quan hệ giữa {{ personStats?.full_name }} và {{ relationQuery }} là:
                 </span>
                 <span class="relation-value">{{ relationResult.person2CallsPerson1 }} - {{ relationResult.person1CallsPerson2 }}</span>
               </div>
