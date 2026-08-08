@@ -24,11 +24,13 @@
         <span class="eyebrow">Từ đường trực tuyến</span>
         <h1>Gìn giữ cội nguồn,<br />nối tiếp truyền thống.</h1>
         <p class="lede">
-          Nơi lưu giữ gia phả, hình ảnh và sự kiện của Họ Nguyễn Hữu qua các đời —
-          để con cháu dù ở đâu cũng tìm về được gốc rễ của mình.
+          Nơi lưu giữ gia phả, hình ảnh và sự kiện của Họ Nguyễn Hữu qua các đời
+          — để con cháu dù ở đâu cũng tìm về được gốc rễ của mình.
         </p>
         <div class="hero-actions">
-          <RouterLink to="/gia-pha" class="btn btn-primary">Xem cây gia phả</RouterLink>
+          <RouterLink to="/gia-pha" class="btn btn-primary"
+            >Xem cây gia phả</RouterLink
+          >
         </div>
       </div>
     </section>
@@ -84,13 +86,21 @@
         <p class="lede" style="max-width: 60ch">
           Vài nét về lịch sử và truyền thống của dòng họ qua video giới thiệu.
         </p>
-  
+
         <div class="video-wrap paper">
           <iframe
             :src="`https://www.youtube.com/embed/rf-zO7gcZUY`"
             title="Video giới thiệu dòng họ"
             frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+              web-share;
+            "
             referrerpolicy="strict-origin-when-cross-origin"
             allowfullscreen
           ></iframe>

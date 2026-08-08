@@ -107,7 +107,11 @@
                 ⋮
               </button>
 
-              <div v-if="openMenuId === photo.id" class="photo-menu" @click.stop>
+              <div
+                v-if="openMenuId === photo.id"
+                class="photo-menu"
+                @click.stop
+              >
                 <button class="photo-menu-item" @click="startRename(photo)">
                   ✎ Đổi tên
                 </button>
@@ -200,7 +204,7 @@ import {
   uploadPhoto,
   deletePhoto,
   resolvePhotoUrl,
-  renamePhoto, 
+  renamePhoto,
   getPhotoDownloadUrl,
 } from "../api/album";
 
@@ -373,11 +377,11 @@ export default {
     // Cách này KHÔNG cần fetch/blob nên không bị chặn bởi CORS của bucket S3.
     async onDownloadPhoto(photo) {
       try {
-        const res = await getPhotoDownloadUrl(photo.id)
-        const downloadUrl = res.data.downloadUrl
-        window.location.href = downloadUrl // hoặc window.open(downloadUrl, '_blank')
+        const res = await getPhotoDownloadUrl(photo.id);
+        const downloadUrl = res.data.downloadUrl;
+        window.location.href = downloadUrl; // hoặc window.open(downloadUrl, '_blank')
       } catch (err) {
-        console.error('Tải ảnh thất bại:', err)
+        console.error("Tải ảnh thất bại:", err);
       }
     },
 
@@ -417,7 +421,10 @@ export default {
         if (this.album.photos.length === 0) {
           this.closeViewer();
         } else {
-          this.viewerIndex = Math.min(this.viewerIndex, this.album.photos.length - 1);
+          this.viewerIndex = Math.min(
+            this.viewerIndex,
+            this.album.photos.length - 1,
+          );
         }
       } catch (error) {
         console.error("Xoá ảnh thất bại:", error);

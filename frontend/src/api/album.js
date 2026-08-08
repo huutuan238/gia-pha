@@ -41,7 +41,7 @@ export const deletePhoto = (photoId) => {
   return apiClient.delete(`/photos/${photoId}`);
 };
 
-const BACKEND_ORIGIN = import.meta.env.VITE_API_ORIGIN
+const BACKEND_ORIGIN = import.meta.env.VITE_API_ORIGIN;
 
 export const resolvePhotoUrl = (url) => {
   if (!url) return "";

@@ -101,10 +101,10 @@
             <input v-model="form.fullName" type="text" required />
           </div>
           <div class="field-radio-group" style="margin-bottom: 20px">
-            <label style="display: flex;">Giới tính</label>
+            <label style="display: flex">Giới tính</label>
             <select class="select-field" v-model="form.gender">
-              <option value="M"> Nam</option>
-              <option value="F">  Nữ</option>
+              <option value="M">Nam</option>
+              <option value="F">Nữ</option>
             </select>
           </div>
           <div class="field full">
@@ -202,7 +202,7 @@
                 class="date-part-input date-part-input-year"
               />
               <label class="lunar-checkbox" v-show="false">
-                <input type="checkbox" v-model="form.deathIsLunar"/>
+                <input type="checkbox" v-model="form.deathIsLunar" />
                 Âm lịch
               </label>
             </div>
@@ -234,7 +234,11 @@
         </form>
 
         <!-- Chỉ hiện khi đang SỬA 1 người đã tồn tại -->
-        <template v-if="panel.mode === 'edit' && (isAdmin || panel.createUserId == userId)">
+        <template
+          v-if="
+            panel.mode === 'edit' && (isAdmin || panel.createUserId == userId)
+          "
+        >
           <button
             class="delete-btn"
             @click="deleteCurrentPerson"
@@ -267,7 +271,7 @@ import * as f3 from "family-chart";
 import "family-chart/styles/family-chart.css";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { authStore } from '../stores/auth.js'
+import { authStore } from "../stores/auth.js";
 import {
   getFamilyTree,
   addPerson,
@@ -291,7 +295,7 @@ let f3Chart = null;
 let f3Card = null;
 
 // id của người muốn focus làm main person khi mở cây (thuỷ tổ)
-const MAIN_PERSON_ID = "n7_1_1_5_1";
+const MAIN_PERSON_ID = "538d86e8-67f3-4a4c-8da2-46d94a41dd22";
 
 /* ================== DỮ LIỆU (lấy từ backend) ================== */
 const data = reactive([]);
@@ -302,8 +306,8 @@ const exporting = ref(false);
 /* ================== SEARCH STATE (chỉ dùng khi !isSearch) ================== */
 const searchQuery = ref("");
 const searchDropdownOpen = ref(false);
-const isAdmin = computed(() => authStore.isAdmin())
-const userId = computed(() => authStore.state.user?.id)
+const isAdmin = computed(() => authStore.isAdmin());
+const userId = computed(() => authStore.state.user?.id);
 const allSearchOptions = computed(() => {
   const seen = new Set();
   const options = [];
@@ -428,8 +432,8 @@ function initChart() {
   f3Chart = f3
     .createChart(chartEl.value, data)
     .setTransitionTime(1000)
-    .setAncestryDepth(3)         // chỉ hiện tối đa 3 đời ông bà lên trên
-    .setProgenyDepth(3)          // chỉ hiện tối đa 3 đời con cháu xuống dưới
+    .setAncestryDepth(3) // chỉ hiện tối đa 3 đời ông bà lên trên
+    .setProgenyDepth(3) // chỉ hiện tối đa 3 đời con cháu xuống dưới
     .setCardXSpacing(350)
     .setCardYSpacing(250)
     .setShowSiblingsOfMain(true); // hiện đầy đủ anh/chị/em ruột của main person
@@ -550,7 +554,7 @@ const panel = reactive({
   relativeOfId: null,
   submitting: false,
   error: "",
-  createUserId: null
+  createUserId: null,
 });
 
 const form = reactive({
@@ -587,10 +591,10 @@ function formatPartialDate(day, month, year, isLunar) {
     day && month
       ? `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}`
       : month
-      ? `Tháng ${month}`
-      : "";
+        ? `Tháng ${month}`
+        : "";
 
-  const parts = [dm, year ? String(year) : (dm ? "?" : "")].filter(Boolean);
+  const parts = [dm, year ? String(year) : dm ? "?" : ""].filter(Boolean);
   const label = parts.join("/");
   return label;
 }
@@ -611,7 +615,7 @@ function attachYears(personData) {
 
   if (!birthLabel && !deathLabel) {
     personData.years = "";
-  }else if (deathLabel && !birthLabel) {
+  } else if (deathLabel && !birthLabel) {
     personData.years = `${deathLabel}`;
   } else if (personData.birthYear && personData.deathYear) {
     personData.years = `${personData.birthYear} - ${personData.deathYear}`;
@@ -813,7 +817,8 @@ async function submitPanel() {
       // gán cho node đó (lưu từ lúc click, xem openEditPanel), coi như
       // "update/hiện thực hoá" node ảo này thành 1 Person thật. Ngược lại
       // (bấm "+ Thêm vợ/chồng" thủ công từ panel Sửa) -> sinh id mới.
-      const newId = panel.isADD && panel.addNodeId ? panel.addNodeId : generateId();
+      const newId =
+        panel.isADD && panel.addNodeId ? panel.addNodeId : generateId();
       const children = person.rels?.children || [];
 
       // Chỉ khi person đã CÓ SẴN CON mới cần refresh từ server. Trường hợp

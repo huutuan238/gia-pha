@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import CheckConstraint
 from sqlalchemy import select
 
+
 class Person(db.Model):
     __tablename__ = "persons"
 
@@ -67,6 +68,7 @@ class Person(db.Model):
             name="chk_death_month",
         ),
     )
+
     @property
     def parents(self):
         return db.session.scalars(

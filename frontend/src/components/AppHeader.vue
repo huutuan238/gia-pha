@@ -33,7 +33,9 @@
         <RouterLink to="/tra-cuu" active-class="is-active">Tra cứu</RouterLink>
         <RouterLink to="/events" active-class="is-active">Sự kiện</RouterLink>
         <RouterLink to="/albums" active-class="is-active">Album ảnh</RouterLink>
-        <RouterLink v-if="isAdmin" to="/admin" active-class="is-active">Quản trị</RouterLink>
+        <RouterLink v-if="isAdmin" to="/admin" active-class="is-active"
+          >Quản trị</RouterLink
+        >
 
         <!-- ================= KHU VỰC TÀI KHOẢN ================= -->
         <div class="account-area" ref="accountAreaRef">
@@ -74,7 +76,9 @@
               <div v-if="dropdownOpen" class="account-dropdown">
                 <div class="account-dropdown-header">
                   <span class="account-dropdown-greeting">Xin chào</span>
-                  <span class="account-dropdown-name">{{ authStore.state.user.username }}</span>
+                  <span class="account-dropdown-name">{{
+                    authStore.state.user.username
+                  }}</span>
                 </div>
                 <button
                   type="button"
@@ -103,33 +107,35 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { openAuthModal } from '../stores/ui.js'
-import { authStore } from '../stores/auth.js'
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { openAuthModal } from "../stores/ui.js";
+import { authStore } from "../stores/auth.js";
 
-const isAdmin = computed(() => authStore.state.user?.role === 'admin')
+const isAdmin = computed(() => authStore.state.user?.role === "admin");
 
-const dropdownOpen = ref(false)
-const accountAreaRef = ref(null)
+const dropdownOpen = ref(false);
+const accountAreaRef = ref(null);
 
 const userInitial = computed(() => {
-  const name = authStore.state.user?.username || ''
-  return name.trim().charAt(0).toUpperCase() || '?'
-})
+  const name = authStore.state.user?.username || "";
+  return name.trim().charAt(0).toUpperCase() || "?";
+});
 
 function handleLogout() {
-  dropdownOpen.value = false
-  authStore.logout()
+  dropdownOpen.value = false;
+  authStore.logout();
 }
 
 function handleClickOutside(e) {
   if (accountAreaRef.value && !accountAreaRef.value.contains(e.target)) {
-    dropdownOpen.value = false
+    dropdownOpen.value = false;
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
+onMounted(() => document.addEventListener("click", handleClickOutside));
+onBeforeUnmount(() =>
+  document.removeEventListener("click", handleClickOutside),
+);
 </script>
 
 <style scoped>
@@ -150,7 +156,10 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   background: transparent;
   color: var(--ink, #2c281f);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 .account-icon-btn:hover {
   background: var(--gold-soft, rgba(197, 160, 60, 0.14));
@@ -224,7 +233,9 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 .dropdown-fade-enter-active,
 .dropdown-fade-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 .dropdown-fade-enter-from,
 .dropdown-fade-leave-to {

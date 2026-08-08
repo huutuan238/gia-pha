@@ -98,12 +98,28 @@ def get_person_lineage_info(root_id: str) -> dict:
     current_id = root_id
     ancestors_visited = {root_id}
 
-    while parents_map.get(current_id):
-        current_id = parents_map[current_id][
-            0
-        ]  # đi theo 1 nhánh là đủ, cha/mẹ luôn cùng đời
-        if current_id in ancestors_visited:
+    while True:
+        candidates = parents_map.get(current_id)
+        if not candidates:
+            break
+
+        next_id = None
+        for candidate_id in candidates:
+            if candidate_id in ancestors_visited:
+                continue
+            if parents_map.get(candidate_id):  # nhánh này còn đi tiếp được
+                next_id = candidate_id
+                break
+
+        if next_id is None:
+            # Không ứng viên nào còn ancestry phía trên -> lấy tạm ứng viên
+            # đầu tiên chưa thăm (dù cụt, vẫn tăng đúng 1 đời trước khi dừng)
+            next_id = next((c for c in candidates if c not in ancestors_visited), None)
+
+        if next_id is None:
             break  # tránh vòng lặp vô hạn nếu dữ liệu quan hệ bị lỗi
+
+        current_id = next_id
         ancestors_visited.add(current_id)
         generation += 1
 

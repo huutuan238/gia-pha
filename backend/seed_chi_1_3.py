@@ -50,12 +50,12 @@ def seed_gia_pha():
                 person_id = body["id"]
 
                 # add parent for u_nguyenhuuhuan_195
-                if person_id in ['anc_tientohuuthong', 'anc_tientohuuthong_vo1']:
+                if person_id in ["anc_tientohuuthong", "anc_tientohuuthong_vo1"]:
                     db.session.add(
                         Relationship(
                             id=str(uuid.uuid4()),
                             person_id=person_id,
-                            related_person_id='u_nguyenhuuhuan_195',
+                            related_person_id="u_nguyenhuuhuan_195",
                             relation_type="PARENT",
                         )
                     )
