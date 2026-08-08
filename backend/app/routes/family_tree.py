@@ -9,12 +9,11 @@ from app.models import Person, Relationship
 
 
 family_tree = Blueprint("tree", __name__, url_prefix="/api/family-tree")
-
+MAIN_PERSON_ID = "538d86e8-67f3-4a4c-8da2-46d94a41dd22"
 
 @family_tree.route("/info/<string:family_id>", methods=["GET"])
 def get_info(family_id):
-    person_id = "anc_tientohuuthong"
-    result = get_family_info(family_id, person_id)
+    result = get_family_info(family_id, MAIN_PERSON_ID)
     return jsonify(result)
 
 

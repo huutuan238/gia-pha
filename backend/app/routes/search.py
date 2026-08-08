@@ -184,9 +184,13 @@ def _get_all_ancestors(person_id, parents_map):
 def _find_nearest_common_ancestor(ancestors1, ancestors2):
     """Chọn tổ tiên chung có tổng khoảng cách (dist1+dist2) nhỏ nhất — tức gần nhất."""
     common_ids = set(ancestors1) & set(ancestors2)
-    if not common_ids:
-        return None
-    best_id = min(common_ids, key=lambda cid: ancestors1[cid][0] + ancestors2[cid][0])
+    min_dist = min(ancestors1[cid][0] + ancestors2[cid][0] for cid in common_ids)
+    candidates = [
+        cid for cid in common_ids
+        if ancestors1[cid][0] + ancestors2[cid][0] == min_dist
+    ]
+
+    best_id = next((cid for cid in candidates if _gender(cid) == "M"), candidates[0])
     dist1, path1 = ancestors1[best_id]
     dist2, path2 = ancestors2[best_id]
     return best_id, dist1, path1, dist2, path2

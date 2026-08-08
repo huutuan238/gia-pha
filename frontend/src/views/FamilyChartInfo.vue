@@ -329,16 +329,15 @@ async function selectRelationPerson(personId, label) {
 }
 
 .search-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
 }
 
 .search-field-wrap {
   position: relative;
-  flex: 1 1 260px;
-  max-width: 320px;
+  width: 100%;
 }
 
 .search-input {
@@ -457,8 +456,7 @@ async function selectRelationPerson(personId, label) {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 0 0 auto;
-  align-self: center;
+  justify-self: center;
   white-space: nowrap;
   font-size: 14px;
   color: var(--color-ink, #2c281f);
@@ -495,13 +493,11 @@ async function selectRelationPerson(personId, label) {
 
 @media (max-width: 640px) {
   .stats-row { grid-template-columns: 1fr; }
-  .search-row { flex-direction: column; }
-  .search-field-wrap {
-    max-width: 100%;
-    flex-basis: 100%;
+  .search-row {
+    grid-template-columns: 1fr;
   }
   .relation-toggle {
-    flex-basis: 100%;
+    justify-self: start;
   }
 }
 </style>
