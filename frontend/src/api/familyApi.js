@@ -23,7 +23,7 @@ export const deletePerson = (id) => {
 export const updateRelationships = (parentId, childrens) => {
   const data = {
     parentId: parentId,
-    childrens: childrens
-  }
+    childrens: childrens,
+  };
   return apiClient.post(`/persons/update-relationships`, data);
 };

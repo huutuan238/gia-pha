@@ -28,8 +28,8 @@ const router = createRouter({
     { path: "/register", component: RegisterView },
     { path: "/events/:id", component: EventDetailView },
     { path: "/albums/:id", component: AlbumDetail },
-    { path: "/cong-duc", component:  GoldBookView},
-    { path: "/cong-duc/:id", component:  GoldBookDetailView},
+    { path: "/cong-duc", component: GoldBookView },
+    { path: "/cong-duc/:id", component: GoldBookDetailView },
     {
       path: "/admin",
       component: AdminDashBoard,

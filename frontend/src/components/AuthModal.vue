@@ -1,29 +1,45 @@
 <template>
   <Teleport to="body">
-    <div v-if="uiStore.showAuthModal" class="auth-overlay" @click.self="closeAuthModal">
+    <div
+      v-if="uiStore.showAuthModal"
+      class="auth-overlay"
+      @click.self="closeAuthModal"
+    >
       <div class="auth-card">
-        <button class="auth-close" @click="closeAuthModal" aria-label="Đóng">✕</button>
+        <button class="auth-close" @click="closeAuthModal" aria-label="Đóng">
+          ✕
+        </button>
         <div class="auth-seal">GP</div>
 
         <!-- ================= ĐĂNG NHẬP ================= -->
         <template v-if="uiStore.authModalMode === 'login'">
           <h2 class="auth-title">Đăng nhập</h2>
-          <p class="auth-subtitle">Đăng nhập để xem và cập nhật gia phả dòng họ.</p>
+          <p class="auth-subtitle">
+            Đăng nhập để xem và cập nhật gia phả dòng họ.
+          </p>
 
           <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
 
           <form @submit.prevent="submitLogin" class="auth-form">
             <div class="auth-field">
               <label>Email hoặc tên đăng nhập</label>
-              <input v-model="loginForm.identifier" type="text" autocomplete="username">
+              <input
+                v-model="loginForm.identifier"
+                type="text"
+                autocomplete="username"
+              />
             </div>
             <div class="auth-field">
               <label>Mật khẩu</label>
-              <input v-model="loginForm.password" type="password" autocomplete="current-password">
+              <input
+                v-model="loginForm.password"
+                type="password"
+                autocomplete="current-password"
+              />
             </div>
 
             <button type="submit" class="auth-submit" :disabled="loading">
-              {{ loading ? 'Đang đăng nhập…' : 'Đăng nhập' }}
+              {{ loading ? "Đang đăng nhập…" : "Đăng nhập" }}
             </button>
           </form>
 
@@ -36,31 +52,56 @@
         <!-- ================= ĐĂNG KÝ ================= -->
         <template v-else>
           <h2 class="auth-title">Đăng ký tài khoản</h2>
-          <p class="auth-subtitle">Tạo tài khoản để tham gia cập nhật gia phả dòng họ.</p>
+          <p class="auth-subtitle">
+            Tạo tài khoản để tham gia cập nhật gia phả dòng họ.
+          </p>
 
           <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
 
           <form @submit.prevent="submitRegister" class="auth-form">
             <div class="auth-field">
               <label>Tên đăng nhập</label>
-              <input v-model="registerForm.username" type="text" autocomplete="username">
+              <input
+                v-model="registerForm.username"
+                type="text"
+                autocomplete="username"
+              />
             </div>
             <div class="auth-field">
               <label>Email</label>
-              <input v-model="registerForm.email" type="email" autocomplete="email">
+              <input
+                v-model="registerForm.email"
+                type="email"
+                autocomplete="email"
+              />
             </div>
             <div class="auth-field">
               <label>Mật khẩu</label>
-              <input v-model="registerForm.password" type="password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự">
+              <input
+                v-model="registerForm.password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Tối thiểu 6 ký tự"
+              />
             </div>
             <div class="auth-field">
               <label>Xác nhận mật khẩu</label>
-              <input v-model="registerForm.confirmPassword" type="password" autocomplete="new-password">
-              <span v-if="passwordMismatch" class="auth-hint-error">Mật khẩu xác nhận chưa khớp</span>
+              <input
+                v-model="registerForm.confirmPassword"
+                type="password"
+                autocomplete="new-password"
+              />
+              <span v-if="passwordMismatch" class="auth-hint-error"
+                >Mật khẩu xác nhận chưa khớp</span
+              >
             </div>
 
-            <button type="submit" class="auth-submit" :disabled="loading || passwordMismatch">
-              {{ loading ? 'Đang đăng ký…' : 'Đăng ký' }}
+            <button
+              type="submit"
+              class="auth-submit"
+              :disabled="loading || passwordMismatch"
+            >
+              {{ loading ? "Đang đăng ký…" : "Đăng ký" }}
             </button>
           </form>
 
@@ -75,65 +116,78 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, watch } from 'vue'
-import { uiStore, closeAuthModal } from '../stores/ui.js'
-import { authStore } from '../stores/auth.js'
+import { reactive, ref, computed, watch } from "vue";
+import { uiStore, closeAuthModal } from "../stores/ui.js";
+import { authStore } from "../stores/auth.js";
 
-const loading = ref(false)
-const errorMessage = ref('')
+const loading = ref(false);
+const errorMessage = ref("");
 
-const loginForm = reactive({ identifier: '', password: '' })
-const registerForm = reactive({ username: '', email: '', password: '', confirmPassword: '' })
+const loginForm = reactive({ identifier: "", password: "" });
+const registerForm = reactive({
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
 
 const passwordMismatch = computed(
-  () => registerForm.confirmPassword.length > 0 && registerForm.password !== registerForm.confirmPassword
-)
+  () =>
+    registerForm.confirmPassword.length > 0 &&
+    registerForm.password !== registerForm.confirmPassword,
+);
 
-watch(() => uiStore.showAuthModal, (open) => {
-  if (open) {
-    errorMessage.value = ''
-    loginForm.identifier = ''
-    loginForm.password = ''
-    registerForm.username = ''
-    registerForm.email = ''
-    registerForm.password = ''
-    registerForm.confirmPassword = ''
-  }
-})
+watch(
+  () => uiStore.showAuthModal,
+  (open) => {
+    if (open) {
+      errorMessage.value = "";
+      loginForm.identifier = "";
+      loginForm.password = "";
+      registerForm.username = "";
+      registerForm.email = "";
+      registerForm.password = "";
+      registerForm.confirmPassword = "";
+    }
+  },
+);
 
 function switchMode(mode) {
-  errorMessage.value = ''
-  uiStore.authModalMode = mode
+  errorMessage.value = "";
+  uiStore.authModalMode = mode;
 }
 
 async function submitLogin() {
-  loading.value = true
-  errorMessage.value = ''
+  loading.value = true;
+  errorMessage.value = "";
   try {
-    await authStore.login({ identifier: loginForm.identifier, password: loginForm.password })
-    closeAuthModal()
+    await authStore.login({
+      identifier: loginForm.identifier,
+      password: loginForm.password,
+    });
+    closeAuthModal();
   } catch (err) {
-    errorMessage.value = err.message
+    errorMessage.value = err.message;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 async function submitRegister() {
-  if (passwordMismatch.value) return
-  loading.value = true
-  errorMessage.value = ''
+  if (passwordMismatch.value) return;
+  loading.value = true;
+  errorMessage.value = "";
   try {
     await authStore.register({
       username: registerForm.username,
       email: registerForm.email,
       password: registerForm.password,
-    })
-    closeAuthModal()
+    });
+    closeAuthModal();
   } catch (err) {
-    errorMessage.value = err.message
+    errorMessage.value = err.message;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
@@ -202,14 +256,14 @@ async function submitRegister() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Noto Serif', serif;
+  font-family: "Noto Serif", serif;
   font-weight: 700;
   font-size: 13px;
   transform: rotate(-6deg);
 }
 
 .auth-title {
-  font-family: 'Noto Serif', serif;
+  font-family: "Noto Serif", serif;
   font-size: 22px;
   font-weight: 700;
   text-align: center;
@@ -251,7 +305,7 @@ async function submitRegister() {
   color: var(--color-ink-soft, #56492f);
 }
 .auth-field input {
-  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
   font-size: 14.5px;
   padding: 11px 14px;
   border: 1px solid var(--color-paper-line, #cdb989);
@@ -259,7 +313,9 @@ async function submitRegister() {
   background: #fbf6ea;
   color: var(--color-ink, #241b12);
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .auth-field input:focus {
   border-color: var(--color-seal, #a5312b);
@@ -284,7 +340,7 @@ async function submitRegister() {
   margin-top: 6px;
   width: 100%;
   padding: 12px;
-  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: var(--color-cream, #f4ecd8);
@@ -292,7 +348,9 @@ async function submitRegister() {
   border: 1px solid var(--color-seal-dark, #7c2320);
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
 }
 .auth-submit:hover:not(:disabled) {
   background: var(--color-seal-dark, #7c2320);

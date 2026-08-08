@@ -2,10 +2,7 @@
 import { ref, computed, watch, onBeforeUnmount } from "vue";
 import FamilyChart from "./FamilyChart.vue";
 import { tree } from "d3";
-import {
-  getPersonLineageStats,
-  getRelationship
-} from "../api/search.js";
+import { getPersonLineageStats, getRelationship } from "../api/search.js";
 
 const chartRef = ref(null);
 
@@ -63,8 +60,8 @@ async function fetchPersonStats(personId, fallbackName) {
   statsLoading.value = true;
   personStats.value = null;
   try {
-    const { data } = await getPersonLineageStats(personId)
-    personStats.value = data
+    const { data } = await getPersonLineageStats(personId);
+    personStats.value = data;
   } catch (err) {
     console.error("Không tải được thông tin con cháu:", err);
     statsError.value = `Không tải được thông tin: ${err.response?.data?.error || err.message}`;
@@ -86,7 +83,9 @@ const filteredRelationOptions = computed(() => {
   if (!chartRef.value) return [];
   const q = relationQuery.value.trim().toLowerCase();
   const options = chartRef.value.getSearchOptions();
-  const filtered = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+  const filtered = q
+    ? options.filter((o) => o.label.toLowerCase().includes(q))
+    : options;
   // loại chính người đang xem (person1) ra khỏi danh sách chọn người thứ 2
   return filtered.filter((o) => o.value !== selectedPersonId.value);
 });
@@ -140,7 +139,8 @@ async function selectRelationPerson(personId, label) {
         <span class="eyebrow">Sơ đồ phả hệ</span>
         <h1>Tra cứu gia phả</h1>
         <p class="lede" style="max-width: 60ch">
-          Nhập tên một người để xem vị trí trên cây, và thông tin liên quan. Bấm vào một thành viên trên cây cũng cho kết quả tương tự.
+          Nhập tên một người để xem vị trí trên cây, và thông tin liên quan. Bấm
+          vào một thành viên trên cây cũng cho kết quả tương tự.
         </p>
       </div>
     </section>
@@ -162,7 +162,11 @@ async function selectRelationPerson(personId, label) {
                 @input="searchDropdownOpen = true"
               />
               <div
-                v-if="searchDropdownOpen && searchQuery.trim() && filteredSearchOptions.length"
+                v-if="
+                  searchDropdownOpen &&
+                  searchQuery.trim() &&
+                  filteredSearchOptions.length
+                "
                 class="search-dropdown"
               >
                 <div
@@ -228,19 +232,29 @@ async function selectRelationPerson(personId, label) {
           <div v-else-if="personStats" class="stats-result">
             <div class="stats-head">
               <span class="stats-name">{{ personStats.full_name }}</span>
-              <span class="stats-gen-badge">Đời thứ {{ personStats.generation ?? "—" }}</span>
+              <span class="stats-gen-badge"
+                >Đời thứ {{ personStats.generation ?? "—" }}</span
+              >
             </div>
             <div
-              v-if="personStats?.father || personStats.mother || personStats.spouses?.length"
+              v-if="
+                personStats?.father ||
+                personStats.mother ||
+                personStats.spouses?.length
+              "
               class="family-relations"
             >
               <div v-if="personStats.father" class="relation-chip">
                 <span class="relation-label">Bố:</span>
-                <span class="relation-value">{{ personStats.father.full_name }}</span>
+                <span class="relation-value">{{
+                  personStats.father.full_name
+                }}</span>
               </div>
               <div v-if="personStats.mother" class="relation-chip">
                 <span class="relation-label">Mẹ:</span>
-                <span class="relation-value">{{ personStats.mother.full_name }}</span>
+                <span class="relation-value">{{
+                  personStats.mother.full_name
+                }}</span>
               </div>
               <div
                 v-for="(spouse, idx) in personStats.spouses"
@@ -248,57 +262,89 @@ async function selectRelationPerson(personId, label) {
                 class="relation-chip"
               >
                 <span class="relation-label">
-                  {{ personStats.spouses.length > 1 ? `Vợ/chồng ${idx + 1}` : "Vợ/chồng:" }}
+                  {{
+                    personStats.spouses.length > 1
+                      ? `Vợ/chồng ${idx + 1}`
+                      : "Vợ/chồng:"
+                  }}
                 </span>
                 <span class="relation-value">{{ spouse.full_name }}</span>
               </div>
             </div>
             <div class="stats-row">
               <div class="stats-item">
-                <span class="stats-number">{{ personStats.children_count ?? 0 }}</span>
+                <span class="stats-number">{{
+                  personStats.children_count ?? 0
+                }}</span>
                 <span class="stats-label">Con</span>
               </div>
               <div class="stats-item">
-                <span class="stats-number">{{ personStats.grandchildren_count ?? 0 }}</span>
+                <span class="stats-number">{{
+                  personStats.grandchildren_count ?? 0
+                }}</span>
                 <span class="stats-label">Cháu</span>
               </div>
               <div class="stats-item">
-                <span class="stats-number">{{ personStats.great_grandchildren_count }}</span>
+                <span class="stats-number">{{
+                  personStats.great_grandchildren_count
+                }}</span>
                 <span class="stats-label">Chắt</span>
               </div>
             </div>
           </div>
 
           <!-- ================= KẾT QUẢ: QUAN HỆ VỚI NGƯỜI THỨ 2 ================= -->
-          <div v-if="relationLoading" class="stats-loading">Đang xác định quan hệ…</div>
-          <p v-else-if="relationError" class="alert-error stats-error">{{ relationError }}</p>
+          <div v-if="relationLoading" class="stats-loading">
+            Đang xác định quan hệ…
+          </div>
+          <p v-else-if="relationError" class="alert-error stats-error">
+            {{ relationError }}
+          </p>
           <div v-else-if="relationResult" class="relation-result">
             <template v-if="relationResult.type === 'SPOUSE'">
-              <p class="relation-result-line">Hai người là <strong>vợ chồng</strong>.</p>
+              <p class="relation-result-line">
+                Hai người là <strong>vợ chồng</strong>.
+              </p>
             </template>
             <template v-else-if="relationResult.type === 'UNRELATED'">
               <p class="relation-result-line">
-                {{ relationResult.note || "Không tìm thấy quan hệ huyết thống giữa 2 người." }}
+                {{
+                  relationResult.note ||
+                  "Không tìm thấy quan hệ huyết thống giữa 2 người."
+                }}
               </p>
             </template>
             <template v-else>
               <div class="relation-chip">
                 <span class="relation-label">
-                  Quan hệ giữa {{ personStats?.full_name }} và {{ relationQuery }} là:
+                  Quan hệ giữa {{ personStats?.full_name }} và
+                  {{ relationQuery }} là:
                 </span>
-                <span class="relation-value">{{ relationResult.person2CallsPerson1 }} - {{ relationResult.person1CallsPerson2 }}</span>
+                <span class="relation-value"
+                  >{{ relationResult.person2CallsPerson1 }} -
+                  {{ relationResult.person1CallsPerson2 }}</span
+                >
               </div>
-              <p v-if="relationResult.commonAncestor?.fullName" class="relation-note">
+              <p
+                v-if="relationResult.commonAncestor?.fullName"
+                class="relation-note"
+              >
                 Tổ tiên chung: {{ relationResult.commonAncestor.fullName }}
               </p>
-              <p v-if="relationResult.note" class="relation-note">{{ relationResult.note }}</p>
+              <p v-if="relationResult.note" class="relation-note">
+                {{ relationResult.note }}
+              </p>
             </template>
           </div>
         </div>
 
         <div class="tree-wrap">
           <div class="tree">
-            <FamilyChart ref="chartRef" is-search @person-click="onPersonClick" />
+            <FamilyChart
+              ref="chartRef"
+              is-search
+              @person-click="onPersonClick"
+            />
           </div>
         </div>
 
@@ -386,15 +432,21 @@ async function selectRelationPerson(personId, label) {
   border-bottom: 1px solid var(--color-paper-line, #e2ddce);
   color: var(--color-ink, #2c281f);
 }
-.search-option:last-child { border-bottom: none; }
-.search-option:hover { background: rgba(197, 160, 60, 0.12); }
+.search-option:last-child {
+  border-bottom: none;
+}
+.search-option:hover {
+  background: rgba(197, 160, 60, 0.12);
+}
 
 .stats-loading {
   margin-top: 18px;
   font-size: 14px;
   color: var(--color-ink-soft, #6b6455);
 }
-.stats-error { margin-top: 18px; }
+.stats-error {
+  margin-top: 18px;
+}
 
 .stats-result {
   margin-top: 20px;
@@ -492,7 +544,9 @@ async function selectRelationPerson(personId, label) {
 }
 
 @media (max-width: 640px) {
-  .stats-row { grid-template-columns: 1fr; }
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
   .search-row {
     grid-template-columns: 1fr;
   }

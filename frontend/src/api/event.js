@@ -17,5 +17,5 @@ export const addEvent = (eventInfo) => {
 };
 
 export const updateEvent = (id, eventInfo) => {
-    return apiClient.put(`/events/${id}`, eventInfo);
-  };
+  return apiClient.put(`/events/${id}`, eventInfo);
+};

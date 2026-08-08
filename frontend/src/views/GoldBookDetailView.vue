@@ -1,28 +1,40 @@
 <template>
-  <main class="section container" style="max-width: 1100px;">
-    <RouterLink to="/cong-duc" class="back-link">← Quay lại Bảng vàng</RouterLink>
+  <main class="section container" style="max-width: 1100px">
+    <RouterLink to="/cong-duc" class="back-link"
+      >← Quay lại Bảng vàng</RouterLink
+    >
 
     <p v-if="loadError" class="alert-error">{{ loadError }}</p>
-    <p v-if="loading" style="color: var(--color-cream-dim);">Đang tải…</p>
+    <p v-if="loading" style="color: var(--color-cream-dim)">Đang tải…</p>
 
     <template v-else-if="entry">
-      <div class="tree-toolbar" style="margin-top: 16px;">
+      <div class="tree-toolbar" style="margin-top: 16px">
         <div>
-          <span class="eyebrow" v-if="entry.eventDate">{{ formatDate(entry.eventDate) }}</span>
-          <h1 style="font-size: 26px;">{{ entry.title }}</h1>
-          <p v-if="entry.description" style="color: var(--color-cream-dim); margin-top: 6px;">
+          <span class="eyebrow" v-if="entry.eventDate">{{
+            formatDate(entry.eventDate)
+          }}</span>
+          <h1 style="font-size: 26px">{{ entry.title }}</h1>
+          <p
+            v-if="entry.description"
+            style="color: var(--color-cream-dim); margin-top: 6px"
+          >
             {{ entry.description }}
           </p>
         </div>
-        <a :href="entry.excelUrl" target="_blank" rel="noopener" class="btn btn-outline">
+        <a
+          :href="entry.excelUrl"
+          target="_blank"
+          rel="noopener"
+          class="btn btn-outline"
+        >
           Mở trong Google Sheets
         </a>
       </div>
 
-      <p v-if="!sheetEmbedUrl" class="alert-error" style="margin-top: 20px;">
+      <p v-if="!sheetEmbedUrl" class="alert-error" style="margin-top: 20px">
         Không nhận diện được link Google Sheet — kiểm tra lại URL (phải có dạng
-        https://docs.google.com/spreadsheets/d/&lt;ID&gt;/...), và đảm bảo sheet đã
-        chia sẻ "Anyone with the link can view".
+        https://docs.google.com/spreadsheets/d/&lt;ID&gt;/...), và đảm bảo sheet
+        đã chia sẻ "Anyone with the link can view".
       </p>
 
       <iframe

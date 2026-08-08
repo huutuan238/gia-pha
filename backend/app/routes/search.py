@@ -19,6 +19,7 @@ def search():  # thong tin tu thuy to
     person_lineage_info["max_generation"] = max_generation
     return jsonify(person_lineage_info)
 
+
 def get_descendant_ids(root_id):
     visited = set()
     queue = [root_id]
@@ -59,8 +60,8 @@ def search_persons():
         Relationship.relation_type.in_(["PARENT", "SPOUSE"])
     ).all()
 
-    children_map = {}   # parent_id -> [child_id, ...] (dùng để duyệt chi)
-    parent_of = {}       # child_id -> [parent_id, ...] (dùng để lấy tên bố/mẹ, tránh N+1)
+    children_map = {}  # parent_id -> [child_id, ...] (dùng để duyệt chi)
+    parent_of = {}  # child_id -> [parent_id, ...] (dùng để lấy tên bố/mẹ, tránh N+1)
     married_ids = set()
 
     for rel in relationships:
@@ -74,7 +75,9 @@ def search_persons():
     # ================== LỌC THEO CHI (BFS trong bộ nhớ, không query thêm) ==================
     if chi_person_id and chi_person_id != "all":
         if not Person.query.get(chi_person_id):
-            return jsonify({"error": f"Không tìm thấy người gốc chi '{chi_person_id}'."}), 404
+            return jsonify(
+                {"error": f"Không tìm thấy người gốc chi '{chi_person_id}'."}
+            ), 404
 
         descendant_ids = {chi_person_id}
         queue = deque([chi_person_id])
@@ -90,9 +93,7 @@ def search_persons():
         persons = Person.query.all()
 
     # ================== BATCH TRUY VẤN TÊN BỐ/MẸ (thay vì query từng người) ==================
-    needed_parent_ids = {
-        parent_of[p.id][0] for p in persons if parent_of.get(p.id)
-    }
+    needed_parent_ids = {parent_of[p.id][0] for p in persons if parent_of.get(p.id)}
     parent_names = {}
     if needed_parent_ids:
         parent_names = {
@@ -127,14 +128,16 @@ def search_persons():
             continue
 
         first_parent_id = parent_of.get(p.id, [None])[0]
-        result.append({
-            "id": p.id,
-            "fullName": p.full_name,
-            "gender": p.gender,
-            "birthYear": p.birth_year,
-            "hasSpouse": p.id in married_ids,
-            "parent": parent_names.get(first_parent_id, ""),
-        })
+        result.append(
+            {
+                "id": p.id,
+                "fullName": p.full_name,
+                "gender": p.gender,
+                "birthYear": p.birth_year,
+                "hasSpouse": p.id in married_ids,
+                "parent": parent_names.get(first_parent_id, ""),
+            }
+        )
 
     return jsonify(result), 200
 
@@ -143,13 +146,14 @@ def search_persons():
 # Helpers dựng map quan hệ 1 lần duy nhất (tránh N+1 query)
 # ---------------------------------------------------------------------------
 
+
 def _build_relationship_maps():
     relationships = Relationship.query.filter(
         Relationship.relation_type.in_(["PARENT", "SPOUSE"])
     ).all()
 
-    parents_map = {}   # child_id -> [parent_id, ...]
-    spouses_map = {}    # person_id -> [spouse_id, ...] (2 chiều)
+    parents_map = {}  # child_id -> [parent_id, ...]
+    spouses_map = {}  # person_id -> [spouse_id, ...] (2 chiều)
 
     for rel in relationships:
         if rel.relation_type == "PARENT":
@@ -186,8 +190,7 @@ def _find_nearest_common_ancestor(ancestors1, ancestors2):
     common_ids = set(ancestors1) & set(ancestors2)
     min_dist = min(ancestors1[cid][0] + ancestors2[cid][0] for cid in common_ids)
     candidates = [
-        cid for cid in common_ids
-        if ancestors1[cid][0] + ancestors2[cid][0] == min_dist
+        cid for cid in common_ids if ancestors1[cid][0] + ancestors2[cid][0] == min_dist
     ]
 
     best_id = next((cid for cid in candidates if _gender(cid) == "M"), candidates[0])
@@ -242,7 +245,11 @@ def _collateral_term(senior_path, junior_path, dist_senior, junior_direct_parent
 
     if parent_gender == "M":  # bên nội
         if senior_gender == "M":
-            base = "Bác" if _sibling_rank(branch_senior_id) < _sibling_rank(branch_junior_id) else "Chú"
+            base = (
+                "Bác"
+                if _sibling_rank(branch_senior_id) < _sibling_rank(branch_junior_id)
+                else "Chú"
+            )
         else:
             base = "O"
     elif parent_gender == "F":  # bên ngoại
@@ -256,12 +263,19 @@ def _collateral_term(senior_path, junior_path, dist_senior, junior_direct_parent
 def _affinal_term(blood_term, spouse_gender):
     """Vợ/chồng của 1 người họ hàng máu mủ thì gọi là gì (Thím, Mợ, Dượng...)."""
     MAP_IS_WIFE = {
-        "Chú": "Thím", "Cậu": "Mợ", "Bác": "Bác (gái)",
-        "Anh": "Chị dâu", "Em": "Em dâu", "Ông": "Bà",
+        "Chú": "Thím",
+        "Cậu": "Mợ",
+        "Bác": "Bác (gái)",
+        "Anh": "Chị dâu",
+        "Em": "Em dâu",
+        "Ông": "Bà",
     }
     MAP_IS_HUSBAND = {
-        "Cô": "Dượng", "Dì": "Dượng", "Chị": "Anh rể",
-        "Em": "Em rể", "Bà": "Ông",
+        "Cô": "Dượng",
+        "Dì": "Dượng",
+        "Chị": "Anh rể",
+        "Em": "Em rể",
+        "Bà": "Ông",
     }
     table = MAP_IS_WIFE if spouse_gender == "F" else MAP_IS_HUSBAND
     suffix = " họ" if blood_term.endswith(" họ") else ""
@@ -283,7 +297,9 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
     # ---- 1 người là tổ tiên trực hệ của người kia ----
     if dist1 == 0 or dist2 == 0:
         ancestor_id, descendant_id, gap = (
-            (person1_id, person2_id, dist2) if dist1 == 0 else (person2_id, person1_id, dist1)
+            (person1_id, person2_id, dist2)
+            if dist1 == 0
+            else (person2_id, person1_id, dist1)
         )
         ancestor_gender = _gender(ancestor_id)
         term_ladder = DIRECT_ANCESTOR_TERMS.get(gap)
@@ -292,7 +308,11 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
             term = term_ladder.get(ancestor_gender, "Tổ tiên")
         else:
             # gap >= 4 -> gộp chung "Can Ông" / "Can Bà"
-            term = "Can Ông" if ancestor_gender == "M" else ("Can Bà" if ancestor_gender == "F" else "Can")
+            term = (
+                "Can Ông"
+                if ancestor_gender == "M"
+                else ("Can Bà" if ancestor_gender == "F" else "Can")
+            )
 
         reciprocal = DIRECT_DESCENDANT_TERMS.get(gap, "Chút")  # gap >= 4 -> "Chút"
 
@@ -307,7 +327,9 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
 
     gap = abs(dist1 - dist2)
     senior_id, junior_id, dist_senior = (
-        (person1_id, person2_id, dist1) if dist1 < dist2 else (person2_id, person1_id, dist2)
+        (person1_id, person2_id, dist1)
+        if dist1 < dist2
+        else (person2_id, person1_id, dist2)
     )
     senior_path = path1 if senior_id == person1_id else path2
     junior_path = path2 if senior_id == person1_id else path1
@@ -337,22 +359,34 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
         else:
             elder_id, younger_id = person2_id, person1_id
 
-        elder_term = "Anh" if elder_id and _gender(elder_id) == "M" else ("Chị" if elder_id else None)
+        elder_term = (
+            "Anh"
+            if elder_id and _gender(elder_id) == "M"
+            else ("Chị" if elder_id else None)
+        )
 
         return {
             "type": "SAME_GENERATION",
             "closeness": "ruột" if same_parent else "họ",
             "commonAncestor": {"id": lca_id, "fullName": _full_name(lca_id)},
-            "elder": {"id": elder_id, "fullName": _full_name(elder_id)} if elder_id else None,
-            "younger": {"id": younger_id, "fullName": _full_name(younger_id)} if younger_id else None,
+            "elder": {"id": elder_id, "fullName": _full_name(elder_id)}
+            if elder_id
+            else None,
+            "younger": {"id": younger_id, "fullName": _full_name(younger_id)}
+            if younger_id
+            else None,
             "youngerCallsElder": elder_term,
             "elderCallsYounger": "Em" if elder_id else None,
         }
 
     # ---- Lệch đúng 1 đời: chú/bác/cô/cậu/dì <-> cháu ----
     if gap == 1:
-        junior_direct_parent_id = junior_path[1]  # cha/mẹ thật của junior trên đường đi này
-        term = _collateral_term(senior_path, junior_path, dist_senior, junior_direct_parent_id)
+        junior_direct_parent_id = junior_path[
+            1
+        ]  # cha/mẹ thật của junior trên đường đi này
+        term = _collateral_term(
+            senior_path, junior_path, dist_senior, junior_direct_parent_id
+        )
         return {
             "type": "DIFFERENT_GENERATION",
             "generationGap": gap,
@@ -371,7 +405,11 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
         base_term = term_ladder.get(senior_gender, "Tổ tiên")
     else:
         # gap >= 4 -> gộp chung "Can Ông" / "Can Bà"
-        base_term = "Can Ông" if senior_gender == "M" else ("Can Bà" if senior_gender == "F" else "Can")
+        base_term = (
+            "Can Ông"
+            if senior_gender == "M"
+            else ("Can Bà" if senior_gender == "F" else "Can")
+        )
 
     # dist_senior == gap nghĩa là senior chính là con ruột của commonAncestor
     # (tức là em/anh RUỘT của ông/bà/cụ/can...) -> gọi thẳng, không thêm "họ".
@@ -397,6 +435,7 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
 # API: quan hệ giữa 2 người
 # ---------------------------------------------------------------------------
 
+
 @search_bp.route("/relationship", methods=["GET"])
 def get_relationship_between():
     person1_id = request.args.get("person1_id")
@@ -416,30 +455,40 @@ def get_relationship_between():
 
     # ---- Trực tiếp là vợ chồng ----
     if person2_id in spouses_map.get(person1_id, []):
-        return jsonify({
-            "type": "SPOUSE",
-            "person1CallsPerson2": "Chồng" if person2.gender == "M" else "Vợ",
-            "person2CallsPerson1": "Chồng" if person1.gender == "M" else "Vợ",
-        }), 200
+        return jsonify(
+            {
+                "type": "SPOUSE",
+                "person1CallsPerson2": "Chồng" if person2.gender == "M" else "Vợ",
+                "person2CallsPerson1": "Chồng" if person1.gender == "M" else "Vợ",
+            }
+        ), 200
 
     # ---- Thử quan hệ máu mủ trực tiếp trước ----
-    blood = _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map)
+    blood = _resolve_blood_relationship(
+        person1_id, person2_id, parents_map, spouses_map
+    )
 
     if blood:
         p1_calls_p2, p2_calls_p1 = _normalize_direction(blood, person1_id, person2_id)
-        return jsonify({
-            **blood,
-            "person1CallsPerson2": p1_calls_p2,
-            "person2CallsPerson1": p2_calls_p1,
-        }), 200
+        return jsonify(
+            {
+                **blood,
+                "person1CallsPerson2": p1_calls_p2,
+                "person2CallsPerson1": p2_calls_p1,
+            }
+        ), 200
 
     # ---- Không cùng huyết thống trực tiếp -> thử vợ/chồng của bà con máu mủ ----
     for spouse_id in spouses_map.get(person2_id, []):
-        blood_via_spouse = _resolve_blood_relationship(person1_id, spouse_id, parents_map, spouses_map)
+        blood_via_spouse = _resolve_blood_relationship(
+            person1_id, spouse_id, parents_map, spouses_map
+        )
         if not blood_via_spouse:
             continue
 
-        senior = blood_via_spouse.get("senior") or blood_via_spouse.get("ancestor") or {}
+        senior = (
+            blood_via_spouse.get("senior") or blood_via_spouse.get("ancestor") or {}
+        )
         senior_id = senior.get("id")
         if senior_id != spouse_id:
             continue  # spouse_id phải là bên "vai trên" thì mới có nghĩa Thím/Mợ/Dượng...
@@ -450,17 +499,21 @@ def get_relationship_between():
 
         affinal = _affinal_term(base_term, person2.gender)
         if affinal:
-            return jsonify({
-                "type": "AFFINAL",
-                "note": f"{person2.full_name} là vợ/chồng của người có quan hệ '{base_term}' với {person1.full_name}",
-                "person1CallsPerson2": affinal,
-                "person2CallsPerson1": "Cháu",
-            }), 200
+            return jsonify(
+                {
+                    "type": "AFFINAL",
+                    "note": f"{person2.full_name} là vợ/chồng của người có quan hệ '{base_term}' với {person1.full_name}",
+                    "person1CallsPerson2": affinal,
+                    "person2CallsPerson1": "Cháu",
+                }
+            ), 200
 
-    return jsonify({
-        "type": "UNRELATED",
-        "note": "Không tìm thấy quan hệ huyết thống hoặc hôn nhân giữa 2 người trong dữ liệu.",
-    }), 200
+    return jsonify(
+        {
+            "type": "UNRELATED",
+            "note": "Không tìm thấy quan hệ huyết thống hoặc hôn nhân giữa 2 người trong dữ liệu.",
+        }
+    ), 200
 
 
 def _normalize_direction(blood, person1_id, person2_id):

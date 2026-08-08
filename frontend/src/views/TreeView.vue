@@ -49,14 +49,16 @@ import FamilyChart from "./FamilyChart.vue";
 
         <div class="legend">
           <span
-          ><span class="dot" style="background: rgb(120, 159, 172)"></span>Nam</span
+            ><span class="dot" style="background: rgb(120, 159, 172)"></span
+            >Nam</span
           >
           <span
-            ><span class="dot" style="background: rgb(196, 138, 146)"></span>Nữ</span
+            ><span class="dot" style="background: rgb(196, 138, 146)"></span
+            >Nữ</span
           >
           <span
-          ><span class="dot" style="background: darkgray"></span>Đã mất</span
-        >
+            ><span class="dot" style="background: darkgray"></span>Đã mất</span
+          >
         </div>
       </div>
     </section>

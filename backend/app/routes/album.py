@@ -13,7 +13,9 @@ from app.models import Album, Photo
 album_bp = Blueprint("albums", __name__, url_prefix="/api")
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
-S3_KEY_PREFIX = "albums"  # tương đương UPLOAD_SUBDIR cũ, nhưng là "thư mục ảo" trong bucket
+S3_KEY_PREFIX = (
+    "albums"  # tương đương UPLOAD_SUBDIR cũ, nhưng là "thư mục ảo" trong bucket
+)
 
 
 def _allowed_file(filename):
@@ -177,6 +179,7 @@ def upload_photo(album_id):
     db.session.commit()
     return jsonify(photo.to_dict()), 201
 
+
 @album_bp.route("/photos/<photo_id>", methods=["PUT"])
 def update_photo(photo_id):
     photo = Photo.query.get(photo_id)
@@ -188,6 +191,7 @@ def update_photo(photo_id):
 
     db.session.commit()
     return jsonify(photo.to_dict()), 200
+
 
 @album_bp.route("/photos/<photo_id>", methods=["DELETE"])
 def delete_photo(photo_id):
@@ -224,6 +228,7 @@ def _delete_photo_file(photo_url):
         _s3_client().delete_object(Bucket=_bucket_name(), Key=key)
     except (ClientError, BotoCoreError) as e:
         current_app.logger.warning(f"Xoá S3 object thất bại ({key}): {e}")
+
 
 @album_bp.route("/photos/<photo_id>/download", methods=["GET"])
 def download_photo(photo_id):
