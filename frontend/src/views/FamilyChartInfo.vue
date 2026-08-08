@@ -3,7 +3,8 @@ import { ref, computed, watch, onBeforeUnmount } from "vue";
 import FamilyChart from "./FamilyChart.vue";
 import { tree } from "d3";
 import {
-  getPersonLineageStats
+  getPersonLineageStats,
+  getRelationship
 } from "../api/search.js";
 
 const chartRef = ref(null);
@@ -11,6 +12,7 @@ const chartRef = ref(null);
 /* ================== SEARCH BOX Ở CẤP TRANG ================== */
 const searchQuery = ref("");
 const searchDropdownOpen = ref(false);
+const selectedPersonId = ref(null); // id của người đang xem (dùng làm person1 khi so quan hệ)
 
 const filteredSearchOptions = computed(() => {
   if (!chartRef.value) return [];
@@ -30,6 +32,8 @@ function selectPerson(personId, label) {
   chartRef.value?.focusPerson(personId);
   searchDropdownOpen.value = false;
   searchQuery.value = "";
+  selectedPersonId.value = personId;
+  resetRelationState();
   fetchPersonStats(personId, label);
 }
 
@@ -39,10 +43,15 @@ function resetSearch() {
   searchDropdownOpen.value = false;
   personStats.value = null;
   statsError.value = "";
+  selectedPersonId.value = null;
+  findRelationshipMode.value = false;
+  resetRelationState();
 }
 
 // Bấm trực tiếp vào 1 thẻ trong cây cũng cập nhật thẻ thống kê tương tự
 function onPersonClick(personData) {
+  selectedPersonId.value = personData.id;
+  resetRelationState();
   fetchPersonStats(personData.id, personData.fullName);
 }
 
@@ -73,6 +82,64 @@ async function fetchPersonStats(personId, fallbackName) {
     statsError.value = `Không tải được thông tin: ${err.response?.data?.error || err.message}`;
   } finally {
     statsLoading.value = false;
+  }
+}
+/* ================== TÌM QUAN HỆ VỚI NGƯỜI KHÁC ================== */
+const findRelationshipMode = ref(false);
+
+const relationQuery = ref("");
+const relationDropdownOpen = ref(false);
+const relationResult = ref(null);
+const relationLoading = ref(false);
+const relationError = ref("");
+
+const filteredRelationOptions = computed(() => {
+  if (!chartRef.value) return [];
+  const q = relationQuery.value.trim().toLowerCase();
+  const options = chartRef.value.getSearchOptions();
+  const filtered = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+  // loại chính người đang xem (person1) ra khỏi danh sách chọn người thứ 2
+  return filtered.filter((o) => o.value !== selectedPersonId.value);
+});
+
+function handleRelationFocusOut() {
+  setTimeout(() => {
+    relationDropdownOpen.value = false;
+  }, 200);
+}
+
+function resetRelationState() {
+  relationQuery.value = "";
+  relationDropdownOpen.value = false;
+  relationResult.value = null;
+  relationError.value = "";
+}
+
+// Tắt checkbox thì dọn luôn kết quả đang hiện
+watch(findRelationshipMode, (enabled) => {
+  if (!enabled) resetRelationState();
+});
+
+async function selectRelationPerson(personId) {
+  relationDropdownOpen.value = false;
+  relationQuery.value = "";
+  relationError.value = "";
+  relationResult.value = null;
+
+  if (!selectedPersonId.value) {
+    relationError.value = "Vui lòng chọn 1 người ở ô tìm kiếm phía trên trước.";
+    return;
+  }
+
+  relationLoading.value = true;
+  try {
+    const { data } = await getRelationship(selectedPersonId.value, personId);
+    relationResult.value = data;
+  } catch (err) {
+    console.error("Không xác định được quan hệ:", err);
+    relationError.value = `Không xác định được quan hệ: ${err.response?.data?.error || err.message}`;
+  } finally {
+    relationLoading.value = false;
   }
 }
 </script>
@@ -179,7 +246,73 @@ async function fetchPersonStats(personId, fallbackName) {
             </div>
           </div>
         </div>
+        <!-- ================= CHECKBOX + DROPDOWN TÌM QUAN HỆ ================= -->
+<label class="relation-toggle">
+  <input type="checkbox" v-model="findRelationshipMode" />
+  Tìm quan hệ với người khác
+</label>
 
+<div
+  v-if="findRelationshipMode"
+  class="relation-search-wrap"
+  @focusout="handleRelationFocusOut"
+>
+  <p v-if="!selectedPersonId" class="relation-hint">
+    Hãy chọn 1 người ở ô tìm kiếm phía trên trước.
+  </p>
+
+  <template v-else>
+    <input
+      v-model="relationQuery"
+      type="text"
+      placeholder="Nhập tên người thứ 2 để so sánh quan hệ…"
+      class="search-input"
+      autocomplete="off"
+      @focus="relationDropdownOpen = true"
+      @input="relationDropdownOpen = true"
+    />
+    <div
+      v-if="relationDropdownOpen && filteredRelationOptions.length"
+      class="search-dropdown"
+    >
+      <div
+        v-for="opt in filteredRelationOptions"
+        :key="opt.value"
+        class="search-option"
+        style="color:black"
+        @click="selectRelationPerson(opt.value)"
+      >
+        {{ opt.label }}
+      </div>
+    </div>
+  </template>
+
+  <div v-if="relationLoading" class="stats-loading">Đang xác định quan hệ…</div>
+  <p v-else-if="relationError" class="alert-error stats-error">{{ relationError }}</p>
+
+  <div v-else-if="relationResult" class="relation-result">
+    <template v-if="relationResult.type === 'SPOUSE'">
+      <p class="relation-result-line">Hai người là <strong>vợ chồng</strong>.</p>
+    </template>
+
+    <template v-else-if="relationResult.type === 'UNRELATED'">
+      <p class="relation-result-line">
+        {{ relationResult.note || "Không tìm thấy quan hệ huyết thống giữa 2 người." }}
+      </p>
+    </template>
+
+    <template v-else>
+      <div class="relation-chip">
+        <span class="relation-label">Quan hệ giữa {{ personStats?.full_name }} và {{relationResult.senior?.fullName || relationResult.elder?.fullName  }} là: </span>
+        <span class="relation-value">{{ relationResult.person2CallsPerson1 }} - {{ relationResult.person1CallsPerson2 }}</span>
+      </div>
+      <p v-if="relationResult.commonAncestor?.fullName" class="relation-note">
+        Tổ tiên chung: {{ relationResult.commonAncestor.fullName }}
+      </p>
+      <p v-if="relationResult.note" class="relation-note">{{ relationResult.note }}</p>
+    </template>
+  </div>
+</div>
         <div class="tree-wrap">
           <div class="tree">
             <FamilyChart ref="chartRef" is-search @person-click="onPersonClick" />
@@ -332,5 +465,43 @@ async function fetchPersonStats(personId, fallbackName) {
 @media (max-width: 640px) {
   .stats-row { grid-template-columns: 1fr; }
   .search-row { flex-direction: column; }
+}
+.relation-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--color-ink, #2c281f);
+  cursor: pointer;
+}
+
+.relation-search-wrap {
+  margin-top: 12px;
+  position: relative;
+}
+.relation-hint {
+  font-size: 13.5px;
+  color: var(--color-ink-soft, #6b6455);
+  margin: 0;
+}
+
+.relation-result {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.relation-result-line {
+  font-size: 14.5px;
+  color: var(--color-ink, #2c281f);
+  margin: 0;
+}
+.relation-note {
+  width: 100%;
+  font-size: 12.5px;
+  color: var(--color-ink-soft, #6b6455);
+  margin: 4px 0 0;
 }
 </style>
