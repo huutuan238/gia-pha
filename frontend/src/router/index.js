@@ -11,7 +11,8 @@ import AlbumDetail from "../views/AlbumDetail.vue";
 import FamilyView from "../views/FamilyView.vue";
 import AdminDashBoard from "../views/AdminDashBoard.vue";
 import FamilyChartInfo from "../views/FamilyChartInfo.vue";
-import ChiStarView from "../views/ChiStarView.vue";
+import GoldBookView from "../views/GoldBookView.vue";
+import GoldBookDetailView from "../views/GoldBookDetailView.vue";
 import { authStore } from "../stores/auth.js";
 
 const router = createRouter({
@@ -27,6 +28,8 @@ const router = createRouter({
     { path: "/register", component: RegisterView },
     { path: "/events/:id", component: EventDetailView },
     { path: "/albums/:id", component: AlbumDetail },
+    { path: "/cong-duc", component:  GoldBookView},
+    { path: "/cong-duc/:id", component:  GoldBookDetailView},
     {
       path: "/admin",
       component: AdminDashBoard,
