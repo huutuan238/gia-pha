@@ -190,9 +190,6 @@ def _find_nearest_common_ancestor(ancestors1, ancestors2):
     """Chọn tổ tiên chung có tổng khoảng cách (dist1+dist2) nhỏ nhất — tức gần nhất."""
     common_ids = set(ancestors1) & set(ancestors2)
     if not common_ids:
-        # FIX: thiếu guard này gây ValueError: min() iterable argument is
-        # empty khi 2 người không có tổ tiên chung nào (VD: vợ mới cưới về,
-        # không có huyết thống chung với gia đình bên chồng).
         return None
 
     min_dist = min(ancestors1[cid][0] + ancestors2[cid][0] for cid in common_ids)
@@ -234,12 +231,6 @@ DIRECT_DESCENDANT_TERMS = {1: "Con", 2: "Cháu", 3: "Chắt"}
 def _collateral_term(senior_path, junior_path, dist_senior, junior_direct_parent_id):
     """
     Xưng hô khi lệch đúng 1 đời (senior là anh/chị/em RUỘT hoặc HỌ của bố/mẹ junior).
-
-    - branch_senior / branch_junior = 2 người CON TRỰC TIẾP của commonAncestor
-      trên mỗi nhánh -> dùng để so sibling_index, xác định nhánh nào trưởng.
-    - junior_direct_parent_id = cha/mẹ THẬT của junior (bước 1 từ junior đi lên)
-      -> chỉ dùng để xác định bên nội hay ngoại (giới tính), KHÔNG dùng để so
-      sibling_index.
     """
     senior_gender = _gender(senior_path[0])  # senior_path[0] luôn là chính senior
     parent_gender = _gender(junior_direct_parent_id)  # M -> bên nội, F -> bên ngoại
@@ -273,20 +264,21 @@ def _affinal_term(blood_term, spouse_gender):
     người kia là "Bác" thì vợ/chồng của họ cũng gọi là "Bác") — chỉ đổi
     từ khi có cặp tương ứng rõ ràng theo giới tính (VD: "Anh" -> "Chị").
     """
-    # Chồng được gọi là X (key) -> vợ của X được gọi là gì (value)
     MAP_IS_WIFE = {
         "Anh": "Chị",
         "Em": "Em",
-        "Chú": "Thím",
-        "Cậu": "Mợ",
+        "Chú": "Mự",
+        "Cậu": "Mự",
         "Bác": "Bác",
         "Ông": "Bà",
+        "Cháu": "Cháu",
+        "Chắt": "Chắt",
+        "Chút": "Chút",
     }
-    # Vợ được gọi là X (key) -> chồng của X được gọi là gì (value)
     MAP_IS_HUSBAND = {
         "Chị": "Anh",
         "Em": "Em",
-        "Cô": "Dượng",
+        "O": "Dượng",
         "Dì": "Dượng",
         "Bác": "Bác",
         "Bà": "Ông",
@@ -300,11 +292,9 @@ def _affinal_term(blood_term, spouse_gender):
 def _term_used_by(blood, caller_id, target_id):
     """
     Trả về từ mà caller_id dùng để gọi target_id, dựa vào kết quả
-    _resolve_blood_relationship — đọc đúng cho cả 3 kiểu type.
-
-    FIX: bản cũ chỉ đọc key "senior"/"junior", nên bỏ sót hoàn toàn
-    trường hợp SAME_GENERATION (dict đó dùng key "elder"/"younger"),
-    khiến case "chồng gọi Anh -> vợ phải gọi Chị" luôn rơi vào UNRELATED.
+    _resolve_blood_relationship — đọc đúng cho cả 3 kiểu type
+    (SAME_GENERATION dùng key "elder"/"younger", 2 kiểu còn lại dùng
+    "senior"/"junior").
     """
     if blood["type"] == "SAME_GENERATION":
         elder = blood.get("elder") or {}
@@ -317,7 +307,6 @@ def _term_used_by(blood, caller_id, target_id):
             else blood.get("youngerCallsElder")
         )
 
-    # DIRECT_LINE / DIFFERENT_GENERATION đều dùng key "senior"/"junior"
     senior = blood.get("senior") or {}
     senior_id = senior.get("id")
     return (
@@ -431,7 +420,7 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
             "seniorCallsJunior": "Cháu",
         }
 
-    # ---- Lệch 2 đời trở lên: dùng gần đúng Ông/Bà (+"trẻ"/"họ" nếu là quan hệ xa) ----
+    # ---- Lệch 2 đời trở lên ----
     senior_gender = _gender(senior_id)
     term_ladder = DIRECT_ANCESTOR_TERMS.get(gap)
 
@@ -461,16 +450,17 @@ def _resolve_blood_relationship(person1_id, person2_id, parents_map, spouses_map
     }
 
 
-def _resolve_affinal_relationship(root_id, spouse_id, target_id):
+def _resolve_affinal_relationship(
+    root_id, spouse_id, target_id, parents_map, spouses_map
+):
     """
-    Xử lý trường hợp AFFINAL theo 1 chiều: root_id <-> spouse_id (là vợ/chồng
-    của target_id, người có quan hệ máu mủ với root_id).
+    Xử lý trường hợp AFFINAL theo 1 chiều: root_id <-> spouse_id (spouse_id
+    là vợ/chồng của target_id, người có quan hệ máu mủ với root_id).
 
-    Trả về (root_calls_spouse, spouse_calls_root) hoặc None nếu không áp dụng
-    được (VD: target_id không phải "vai trên" so với spouse_id, hoặc không
-    map được sang từ AFFINAL tương ứng).
+    Trả về (root_calls_spouse, spouse_calls_root) hoặc None nếu không áp
+    dụng được.
     """
-    blood = _resolve_blood_relationship(root_id, target_id, *_build_relationship_maps())
+    blood = _resolve_blood_relationship(root_id, target_id, parents_map, spouses_map)
     if not blood:
         return None
 
@@ -478,9 +468,8 @@ def _resolve_affinal_relationship(root_id, spouse_id, target_id):
     if not root_term_for_target:
         return None
 
-    target_person = db.session.get(Person, target_id)
     spouse_person = db.session.get(Person, spouse_id)
-    if not target_person or not spouse_person:
+    if not spouse_person:
         return None
 
     affinal = _affinal_term(root_term_for_target, spouse_person.gender)
@@ -489,6 +478,55 @@ def _resolve_affinal_relationship(root_id, spouse_id, target_id):
 
     reciprocal_term = _term_used_by(blood, target_id, root_id)
     return affinal, (reciprocal_term or "Cháu")
+
+
+def _resolve_wife_to_wife_relationship(
+    person1_id, person2_id, parents_map, spouses_map
+):
+    """
+    Xử lý quan hệ giữa 2 người đều "về làm dâu" (vợ của 2 người CÓ QUAN HỆ
+    MÁU MỦ với nhau) — suy ra dựa vào quan hệ giữa 2 người CHỒNG.
+
+    VD: A và B là anh em ruột (A gọi B là "Em", B gọi A là "Anh")
+        -> vợ A gọi vợ B là _affinal_term("Em", nữ) = "Em"
+        -> vợ B gọi vợ A là _affinal_term("Anh", nữ) = "Chị"
+
+    Giả định đơn hôn (lấy vợ/chồng đầu tiên trong spouses_map nếu có nhiều).
+    """
+    husband1_id = next(iter(spouses_map.get(person1_id, [])), None)
+    husband2_id = next(iter(spouses_map.get(person2_id, [])), None)
+    if not husband1_id or not husband2_id or husband1_id == husband2_id:
+        return None
+
+    blood = _resolve_blood_relationship(
+        husband1_id, husband2_id, parents_map, spouses_map
+    )
+    if not blood:
+        return None
+
+    husband1_calls_husband2 = _term_used_by(blood, husband1_id, husband2_id)
+    husband2_calls_husband1 = _term_used_by(blood, husband2_id, husband1_id)
+    if not husband1_calls_husband2 or not husband2_calls_husband1:
+        return None
+
+    person1 = db.session.get(Person, person1_id)
+    person2 = db.session.get(Person, person2_id)
+
+    person1_calls_person2 = _affinal_term(husband1_calls_husband2, person2.gender)
+    person2_calls_person1 = _affinal_term(husband2_calls_husband1, person1.gender)
+    if not person1_calls_person2 or not person2_calls_person1:
+        return None
+
+    return {
+        "type": "WIFE_TO_WIFE",
+        "note": (
+            f"Suy ra từ quan hệ giữa 2 người chồng "
+            f"({_full_name(husband1_id)}: '{husband2_calls_husband1}' <-> "
+            f"{_full_name(husband2_id)}: '{husband1_calls_husband2}')"
+        ),
+        "person1CallsPerson2": person1_calls_person2,
+        "person2CallsPerson1": person2_calls_person1,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -536,14 +574,11 @@ def get_relationship_between():
             }
         ), 200
 
-    # ---- Không cùng huyết thống trực tiếp -> thử qua vợ/chồng của bà con máu mủ ----
-    # Xét cả 2 CHIỀU: person2 có thể là dâu/rể mới về (vợ/chồng của người máu
-    # mủ với person1), HOẶC ngược lại person1 mới là dâu/rể (vợ/chồng của
-    # người máu mủ với person2). Bản cũ chỉ xét 1 chiều nên bỏ sót nửa số case.
-
-    # Chiều 1: person2 là vợ/chồng của ai đó có quan hệ máu mủ với person1
+    # ---- Chiều 1: person2 là vợ/chồng của ai đó có quan hệ máu mủ với person1 ----
     for target_id in spouses_map.get(person2_id, []):
-        result = _resolve_affinal_relationship(person1_id, person2_id, target_id)
+        result = _resolve_affinal_relationship(
+            person1_id, person2_id, target_id, parents_map, spouses_map
+        )
         if result:
             p1_calls_p2, p2_calls_p1 = result
             return jsonify(
@@ -555,9 +590,11 @@ def get_relationship_between():
                 }
             ), 200
 
-    # Chiều 2: person1 là vợ/chồng của ai đó có quan hệ máu mủ với person2
+    # ---- Chiều 2: person1 là vợ/chồng của ai đó có quan hệ máu mủ với person2 ----
     for target_id in spouses_map.get(person1_id, []):
-        result = _resolve_affinal_relationship(person2_id, person1_id, target_id)
+        result = _resolve_affinal_relationship(
+            person2_id, person1_id, target_id, parents_map, spouses_map
+        )
         if result:
             p2_calls_p1, p1_calls_p2 = result
             return jsonify(
@@ -568,6 +605,13 @@ def get_relationship_between():
                     "person2CallsPerson1": p2_calls_p1,
                 }
             ), 200
+
+    # ---- Cả 2 đều "về làm dâu" (vợ của 2 người có quan hệ máu mủ với nhau) ----
+    wife_to_wife = _resolve_wife_to_wife_relationship(
+        person1_id, person2_id, parents_map, spouses_map
+    )
+    if wife_to_wife:
+        return jsonify(wife_to_wife), 200
 
     return jsonify(
         {
